@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+		<title>booterator3000</title>
+
+		<link rel="stylesheet" href="/clientfiles/slate.bootstrap4.css">
+		<script src="/clientfiles/jquery.min.js"></script>
+    <script src="/clientfiles/popper.min.js"></script>
+    <script src="/clientfiles/bootstrap.min.js"></script>
+    <script src="/clientfiles/custom.js"></script>
+		<script src="/clientfiles/underscore-min.js"></script>
+
+    </head>
+    <body>
+
+	<div class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
+	<div class="container">
+		<span class='px-0'>
+			<h1 title='профитные пары / всего пар / всего матчей'> 
+						<span id=dostupno_n_profit>0</span>
+						/ <span id=dostupno_n>0</span> 
+						<small> / <span id=matches_total>0</span> </small> 
+			</h1>
+		</span>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarResponsive">
+			<ul class="navbar-nav">
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="themes">Filters <span class="caret"></span></a>
+					<div class="dropdown-menu" aria-labelledby="themes">
+					<a class="dropdown-item" href="/default/">Default</a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="/filter1/">filter1</a>
+					<a class="dropdown-item" href="/filter2/">filter2</a>
+					</div>
+				</li>
+			</ul>
+			<ul class="nav navbar-nav ml-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="/calc">калькулятор</a>
+				</li>
+				<li class="nav-item">
+						<div class='nav-link'>
+							<span id=main_time_load class='' title='время загрузки данных'></span> /
+							<span id=main_time_parse class='' title='время парсинга данных'></span> < -
+						</div>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/?obnovitb">обновить</a>
+				</li>
+			</ul>
+	  </div>
+	</div>
+	</div>
+	
+
+<header class="header container clearfix"><h1> - </h1></header>
+
+<div class="container px-0 clearfix">
+		<div class="page-header">
+        <div class="row">
+          <div class="col-lg-8 col-md-7 col-sm-6">
+				<h1 title='профитные пары / всего пар / всего матчей'> </h1>	
+          </div>
+          <div class="col-lg-4 col-md-5 col-sm-6">
+          </div>
+        </div>
+		</div>
+
+</div>
+
+<div id="mainlist">
+	<div class="list-group">
+		<div class="list-group-item">
+				<h1>загрузка...</h1>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+	<div id="debuginfo1"></div>
+</div>
+
+<script>
+$(function(){
+	update_mainlist();
+});
+
+function onclick_show_items(parent_selector,childs_selector){
+	var p = $(parent_selector);
+	//p.find(childs_selector).toggle("slide", { direction: "right" }, 1000);
+	p.find(childs_selector).toggle();
+}
+
+
+var global_j = {};
+function update_mainlist(){
+	global_j._start_time_load = new Date();
+	$.ajax({
+			url: "/mainlist",
+			cache: false,
+			success: function(html){
+					global_j._end_time_load = new Date();
+					global_j._start_time_parse = new Date();
+					var j = JSON.parse(html);
+					view_data(j);
+
+					//$("#debuginfo1").html('<pre>'+JSON.stringify(j,null,'    ')+'</pre>');
+					//$('#debuginfo1').html(html);
+					//set_main_html_fields(j);
+			}
+	});
+}
+
+//выводим данные пользователю в читаемом виде
+function view_data(j){
+		set_main_html_fields(j);
+		global_j = j;
+
+		var mainlistobj = $('#mainlist');
+		mainlistobj.html('');
+
+		var matches_pair = j.matches_rel; //список пар событий
+		for(let i=0;i<matches_pair.length;i++){
+				var m = matches_pair[i];
+				view_match_pair(mainlistobj,i,m);
+		}
+
+		set_main_html_fields(j);
+}
+
+
+function set_main_html_fields(j){
+		$('#dostupno_n_profit').html(j.cnt_rel_profit);
+		$('#dostupno_n').html(j.cnt_rel);
+		$('#matches_total').html(j.cnt_matches_total);
+
+		var load_time = global_j._end_time_load.getTime() - global_j._start_time_load.getTime();
+		var parse_time = new Date().getTime() - global_j._start_time_parse;
+		$('#main_time_load').html(load_time/1000);
+		$('#main_time_parse').html(parse_time/1000);
+		
+}
+
+//выводим одну пару событий в одном блоке
+function view_match_pair(mainlistobj,i,m){
+
+		var coefs_prof2 = get_prof_coefs(m.matches);
+		var coefs_prof2_str = JSON.stringify(coefs_prof2,null,'    ');
+
+		var match = m.matches[0];
+		var uuid_rel = match.uuid_rel;
+		
+		var prof_coefs_html = get_prof_coefs_html(coefs_prof2);
+
+		var debug_info = '<pre>'+JSON.stringify(m,null,'    ')+'</pre>';
+
+		var html = `
+		<div class="card text-white bg-primary mb-3" id='${uuid_rel}' >
+			<div class='row'>
+				<div class='col-5'>
+					<b style="padding-left:10px;"> ${match.mtype}:</b>
+				</div>
+				<div class='col-5'>
+				</div>
+				<div class='col-2'>
+					<button type="button" class="btn btn-sm btn-outline-secondary" 
+						onclick="onclick_show_items('#${uuid_rel}','.debug_info')"
+					>
+						show debug
+					</button>
+				</div>
+			</div>
+			<div class="card-body mx-0 px-2 my-0 py-1">
+				<div class="list-group mainlistitem${i} ">`;
+			
+		for(let i=0;i<m.matches.length;i++){
+				var match = m.matches[i];
+				//match.json = JSON.parse(match.json);
+				var htmlitem = get_match_html(match);
+				html += htmlitem;
+		}
+		html += `
+				</div>
+					${prof_coefs_html}
+			</div>
+			<div class='debug_info' style='display:none;'>${debug_info}</div>
+		</div>
+		`;
+
+		mainlistobj.append(html);
+}
+
+function get_match_html(match){
+		var m = match;
+
+		var desc = m.mdesc;
+		if(desc!='-')	desc = '<small><br>'+desc+'</small>';
+		else	desc = '';
+
+		if(m.mtime=='-') m.mtime = ''; 
+
+		m.f_insert_coef = m.f_insert_coef.substr(8);
+
+		var s = `<div class="list-group-item px-2 py-1">
+			<div class="row">
+				<div class="col-md-1">
+					<nobr>
+						<big>${m.status}</big>
+						<big><big><span class="badge badge-primary badge-pill">${m.schet1}:${m.schet2}</span></big></big>
+					</nobr>
+				</div>
+				<div class="col-md-2">
+					<div><small title='время начала матча'>${m.timestart}</small></div>
+					<div><small title='длительность матча/инфа о состоянии матча'>${m.mtime}</small></div>
+				</div>
+				<div class="col-md-6">${m.p1} : ${m.p2} ${desc} </div>
+				<div class="col-md-1"><a href="${m.url}" target=_blank class="btn btn-secondary btn-sm"><small>${m.f_insert_coef}</small></a></div>
+				<div class="col-md-1"><a href="${m.url}" target=_blank class="btn btn-primary btn-sm"><small>${m.site}</small></a></div>
+			</div>
+		</div>`;
+		return s;
+}
+
+
+
+function get_prof_coefs(matches){
+		//return matches;
+		for(let i=0;i<matches.length;i++){
+				var m = matches[i];
+				if(m.json=='-') m.json = '{}';
+				try{
+					m.coefs = JSON.parse(m.json);
+					delete m.json;
+				}catch(err){
+					alert('m.json parse error:',JSON.stringify(m,null,'    '));
+				}
+		}
+
+		var prof_coefs = []; 
+		for(let i=0;i<matches.length;i++){
+				var m = matches[i];
+				var coefs = m.coefs;
+				
+				for(let name in coefs){
+						if(/^c/.test(name)==false) continue;
+						
+						var val = coefs[name];
+						if(!val || val=='-' || val<1.1) continue;
+
+						var pc1 = {site:m.site,val:val,name:name,match_i:i};
+
+						var pcs = get_max_prof_coefs_from_matches(name,matches,without_i=i); //выдаст макс.коэф для name=='c12_1' например выдаст 'c12_2':2.9
+						if(pcs){
+								pcs.push(pc1);
+								add_pcs_to_prof_coefs(pcs,prof_coefs);
+						}
+
+						var pcs2 = get_max_prof_coefs_from_matches_arr(name,matches); //выдаст три и более вариантов коэфициентов включая name
+						if(pcs2){
+								add_pcs_to_prof_coefs(pcs2,prof_coefs);
+						}
+				}
+		}
+		return prof_coefs;
+}
+
+function add_pcs_to_prof_coefs(pcs,prof_coefs){
+	pcs.sort(function(a,b){
+			if(a.name < b.name) return -1;
+			if(a.name > b.name) return 1;
+			return 0;
+	});
+
+	var p = {cnt:0, coefsum: 0, str:'', pcs:pcs};
+	for(let j=0;j<pcs.length;j++){
+			var pc = pcs[j];
+			p.cnt++;
+			p.coefsum += 1/pc.val;
+			p.str += pc.site+':'+pc.name+':'+pc.val+';';
+
+			p['site'+p.cnt] = pc.site;
+			p['name'+p.cnt] = pc.name;
+			p['val' +p.cnt] = pc.val;
+	}
+	p.coefsum = Math.round(p.coefsum*1000)/1000;
+	if( prof_coef_in_array(p,prof_coefs)==0 ){ //если таких коэфициентов ещё нет в массиве
+		prof_coefs.push(p);
+	}
+}
+
+//проверяем есть ли такие же пары коэфициентов p в массиве prof_coefs
+function prof_coef_in_array(p,prof_coefs){
+	for(let i=0;i<prof_coefs.length;i++){
+			var pi = prof_coefs[i];
+			if(p.coefsum==pi.coefsum && p.str==pi.str) return 1;
+	}
+	return 0;
+}
+
+function is_eq_names(names1,names2){
+	if(names1.length!=names2.length) return 0;
+	for(let i=0;i<names1.length;i++){
+		var name = names1[i];
+		if(names2.indexOf(name)<0) return 0;
+	}
+	return 1;	
+}
+
+function get_prof_coefs_html(prof_coefs) {
+	var random_id_name = 'id'+Math.random().toString(36).substring(7);
+	var html = `
+	<div class="offset-md-1" id='${random_id_name}'>
+		`;
+	var has_profs = 0;
+	var notprofcoefs       = 0;
+	var notprofcoefs_max   = 0;
+	var profcoefs1     = 0;
+	var profcoefs1_max = 0;
+	var profcoefs2     = 0;
+	var profcoefs2_max = 0;
+	
+	
+
+	prof_coefs.sort(function(a,b){
+			if(a.coefsum < b.coefsum) return -1;
+			if(a.coefsum > b.coefsum) return 1;
+			return 0;
+	});
+
+	for(let pi=0;pi<prof_coefs.length;pi++){
+		var p = prof_coefs[pi];
+
+		if(p.coefsum<1){
+			has_profs++;
+			if(has_profs==1) global_j.cnt_rel_profit++;
+		}
+
+		var classname_hideshow = 'not_profcoefs';
+		var classname = 'btn-outline-secondary';
+		if(p.coefsum<=0.9){
+			profcoefs2++;
+			classname_hideshow = 'profcoefs2';
+			classname = 'btn-outline-success';
+			if( p.coefsum > profcoefs2_max ) profcoefs2_max = p.coefsum;
+		}else
+		if(p.coefsum<1){
+			profcoefs1++;
+			classname_hideshow = 'profcoefs1';
+			classname = 'btn-outline-info';
+			if( p.coefsum > profcoefs1_max ) profcoefs1_max = p.coefsum;
+		}else
+		if(p.coefsum>=1){
+			notprofcoefs++;
+			if( p.coefsum > notprofcoefs_max ) notprofcoefs_max = p.coefsum;
+		}
+
+		var profprc = Math.round((1-p.coefsum)*1000)/10+' %'; 
+
+		html += `<div class="card card-body mx-0 px-2 my-1 py-1 ${classname_hideshow}" style='display:none;'>
+			<div class="row">  
+			<div class="col-md-2 col-3">  
+				<button type="button" class="btn ${classname}" title='профит'><b>${profprc}</b></button>
+			</div>
+			<div class="col-md-10 col-9">  
+			`;
+		for(let i=0;i<p.pcs.length;i++){
+				var pc = p.pcs[i];
+				html += `<div class="row">
+					<div class="col-md-3 col-6">${pc.site}</div>	
+					<div class="col-md-2 col-3"><button type="button" class="btn ${classname} btn-sm">${pc.name}</button></div>	
+					<div class="col-md-1 col-1"><button type="button" class="btn ${classname} btn-sm"><b>${pc.val}</b></button></div>	
+				</div>
+					`
+		}
+		html += '</div></div></div>';
+	}
+	html += `</div></div>`;
+
+	var class_profcoefs2 = 'btn-outline-success';
+	var class_profcoefs1 = 'btn-outline-info';
+	if(!profcoefs2) class_profcoefs2 = 'btn-outline-secondary';
+	if(!profcoefs1) class_profcoefs1 = 'btn-outline-secondary';
+
+	html_begin = `
+	<div>
+	<button type="button" class="btn ${class_profcoefs2} btn-sm" 
+		onclick="onclick_show_items('#${random_id_name}','.profcoefs2')">${profcoefs2} / max: ${profcoefs2_max}</button>
+	<button type="button" class="btn ${class_profcoefs1} btn-sm" 
+		onclick="onclick_show_items('#${random_id_name}','.profcoefs1')">${profcoefs1} / max: ${profcoefs1_max}</button>
+	<button type="button" class="btn btn-outline-secondary btn-sm" 
+		onclick="onclick_show_items('#${random_id_name}','.not_profcoefs')">${notprofcoefs} / max: ${notprofcoefs_max}</button>
+	`;
+	return html_begin+html;
+}
+
+//возвращает arr[{site:'www',val:2.9,name:'c12_2',match_i:-1}]
+//с максимальным коэфициентом по кореллирующему(щим, - если name=arr) коэфициентам
+function get_max_prof_coefs_from_matches(name,matches,without_i){
+		var name2 = get_name_coef2(name);
+		if(!name2) return null;
+		var res = {val:0};
+		for(let i=0;i<matches.length;i++){
+				if(without_i==i) continue;
+				var m = matches[i];
+				var coefs = m.coefs;
+				var val = coefs[name2];
+				if(val && val!='-'){
+						if(res.val < val){
+								res.val = val;
+								res.site = m.site;
+								res.name = name2;
+								res.match_i = i;
+						}
+				}
+		}
+		if(res.val == 0) return null;
+		return [res];
+}
+
+//возвращает arr[{site:'www',val:2.9,name:'c1X2_2',match_i:-1}]
+//с максимальными коэфициентами name и коррелирующими с ним
+function get_max_prof_coefs_from_matches_arr(name,matches){
+		var names = get_name_coef_arr(name);
+		if(!names) return null;
+		var results = [];
+		for(let j=0;j<names.length;j++){
+			var res = {val:0};
+			var name2 = names[j];
+			for(let i=0;i<matches.length;i++){
+				var m = matches[i];
+				var coefs = m.coefs;
+				var val = coefs[name2];
+				if(val && val!='-'){
+						if(res.val < val){
+								res.val = val;
+								res.site = m.site;
+								res.name = name2;
+								res.match_i = i;
+						}
+				}
+			}
+			if(res.val == 0) return null;
+			results.push(res);
+		}
+		return results;
+}
+
+
+var arr_coef2 = {
+	"c12_1" : "c12_2",
+	"c12_2" : "c12_1",
+	"c1X2_1" : "c1X2_X2",
+	"c1X2_2" : "c1X2_1X",
+	"c1X2_X" : "c1X2_12",
+	"c1X2_X2": "c1X2_1",
+	"c1X2_1X": "c1X2_2",
+	"c1X2_12": "c1X2_X",
+	"c1X2t1_1" : "c1X2t1_X2",
+	"c1X2t1_2" : "c1X2t1_1X",
+	"c1X2t1_X" : "c1X2t1_12",
+	"c1X2t2_X2": "c1X2t2_1",
+	"c1X2t2_1X": "c1X2t2_2",
+	"c1X2t2_12": "c1X2t2_X",
+	"callteamgoal_no" : "callteamgoal_yes",
+	"callteamgoal_yes" : "callteamgoal_no",
+};
+//возвращает название противоположного коэфициента
+function get_name_coef2(name){
+		var name2 = arr_coef2[name];
+		if(name2) return name2;
+		
+		//"ctotalm_1_5": "1.75",
+		//"ctotalb_1_5": "1.90",
+		if(/^ctotalm_/.test(name)) return name.replace('m','b');
+		if(/^ctotalb_/.test(name)) return name.replace('b','m');
+
+    //"ctotalp1m_5_5": "1.55",
+    //"ctotalp1b_5_5": "2.00",
+		if(/^ctotalp[12]m_/.test(name)) return name.replace('m','b');
+		if(/^ctotalp[12]b_/.test(name)) return name.replace('b','m');
+
+		return null;
+}
+
+var arr_coef_arr = {
+	"c1X2_1" : ["c1X2_1","c1X2_2","c1X2_X"],
+	"c1X2_2" : ["c1X2_1","c1X2_2","c1X2_X"],
+	"c1X2_X" : ["c1X2_1","c1X2_2","c1X2_X"],
+	"c1X2t1_1" : ["c1X2t1_1","c1X2t1_2","c1X2t1_X"],
+	"c1X2t1_2" : ["c1X2t1_1","c1X2t1_2","c1X2t1_X"],
+	"c1X2t1_X" : ["c1X2t1_1","c1X2t1_2","c1X2t1_X"],
+	"c1X2t2_X2": ["c1X2t2_1","c1X2t2_2","c1X2t2_X"],
+	"c1X2t2_1X": ["c1X2t2_1","c1X2t2_2","c1X2t2_X"],
+	"c1X2t2_12": ["c1X2t2_1","c1X2t2_2","c1X2t2_X"],
+	"cnextgoal_1": ["cnextgoal_1","cnextgoal_X","cnextgoal_2"],
+    "cnextgoal_X": ["cnextgoal_1","cnextgoal_X","cnextgoal_2"],
+    "cnextgoal_2": ["cnextgoal_1","cnextgoal_X","cnextgoal_2"],
+};
+function get_name_coef_arr(name){
+		var name2 = arr_coef_arr[name];
+		if(name2) return name2;
+		return null;
+}
+</script>
+</body></html>
