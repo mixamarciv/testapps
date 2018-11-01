@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>test js doc</title>
+    <style>* { padding: 0; margin: 0; }</style>
+    <script src="js/phaser.min.js"></script>
+</head>
+<body>
+
+<script>
+
+var config = {
+    type: Phaser.AUTO,
+    width: 320,
+    height: 240,
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+var game = new Phaser.Game(config);
+
+var ball;
+
+function preload() {
+    game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    game.scale.pageAlignHorizontally = true;
+    game.scale.pageAlignVertically = true;
+    game.stage.backgroundColor = '#f09';
+
+    game.load.image('ball', 'img/ball.png');
+    ball = game.add.sprite(50, 50, 'ball');
+}
+function create() {}
+function update() {}
+
+</script>
+
+</body>
+</html>

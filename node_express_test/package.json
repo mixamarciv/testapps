@@ -14,7 +14,8 @@
     "kill-prev-app-process": "https://github.com/mixamarciv/kill-prev-app-process/tarball/master",
     "iconv-lite": "*",
     "express": "*",
-    "node.extend": "*"
+    "node.extend": "*",
+    "phaser": ">=2.7.0"
   },
   "devDependencies": {
     "express": "*"
