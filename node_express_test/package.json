@@ -8,14 +8,13 @@
   },
   "dependencies": {
     "tress": "*",
-    "chrome-remote-interface": "*",
     "minimist": "*",
     "mixa_std_js_functions": "https://github.com/mixamarciv/mixa_std_js_functions/tarball/master",
     "kill-prev-app-process": "https://github.com/mixamarciv/kill-prev-app-process/tarball/master",
     "iconv-lite": "*",
     "express": "*",
     "node.extend": "*",
-    "phaser": ">=2.7.0"
+    "phaser-ce": "*"
   },
   "devDependencies": {
     "express": "*"

@@ -80,4 +80,18 @@ const page_list2 = function (req,res){
 
 
 
+router.get('/phaser_test', rfnc.asyncRoute(async function(req, res){
+	let clientfilespath = path.join2(s.data.work_path,'../clientfiles/');
+
+	let phaserjsfile = path.join2(clientfilespath,'/phaser.min.js');
+	let b = fs.existsSync(phaserjsfile);
+	if(!b){
+		let srcfile = path.join2(clientfilespath,'../node_modules/phaser-ce/build/phaser.min.js');
+		wlogf('copy phaser-ce file from: %s to: %s',srcfile,phaserjsfile);
+		fs.copyFileSync(srcfile,phaserjsfile);
+	}
+	let htmlfile = path.join2(clientfilespath,'/html/phaser_test.html');
+	let html = fs.readFileSync(htmlfile);
+	rfnc.res_send(req, res, html.toString());
+}));
 
