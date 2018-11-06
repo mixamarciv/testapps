@@ -18,12 +18,20 @@ var GOptions = {
 GOptions.width = window.screen.width-100;
 GOptions.height = window.screen.height-200;
 
+GOptions.width = 720;
+GOptions.height = 850;
+
 var playercursor;
 
 window.game = new Phaser.Game({
-  height: GOptions.height,
   renderer: Phaser.CANVAS,
+  height: GOptions.height,
   width: GOptions.width,
+
+  scaleMode:   Phaser.ScaleManager.USER_SCALE,
+  scaleH:      1,
+  scaleV:      0.9,
+
   state: {
     init: function() {
       var debug = this.game.debug;
@@ -118,17 +126,21 @@ function create(game){
   }
 
   game.extraLoader.image("hex1", "/hex.gif");    
+  game.extraLoader.spritesheet('hexsprite', "/hexsprite.png",128,128);
   game.extraLoader.start();
 
   game.cursors = game.input.keyboard.createCursorKeys();
-  game.world.setBounds(0, 0, 1920, 1920);
+  
   //game.camera.setSize(240, 320);
 }
 
 function createEx(game){
-  game.camera.flash( '#ff0',700 );//[color] [, duration] [, force] [, alpha])
+  game.camera.flash( '#ff0',300 );//[color] [, duration] [, force] [, alpha])
   //setTimeout(() => {
   createMap();
+
+  var gd = window.gamedata;
+  game.world.setBounds(0, 0, gd.mapsize.x, gd.mapsize.y);
 
   var focusbutton = window.gamedata.maphexbuttons[0][0];
   game.camera.focusOn(focusbutton);
@@ -138,6 +150,7 @@ function createEx(game){
 function createMap(){
     let game = window.game;
     //game.add.image(100, 100, 'hex1');
+    let scale = 0.9;
     let cntX = 7;
     let cntY = 7;
     let objOffsetX = 96;
@@ -167,13 +180,20 @@ function createMap(){
       for(let iy=0;iy<cntY;iy++){
         offsetX += objOffsetX;
         offsetY += objOffsetY;
-        var hexbutton = game.add.button(offsetX, offsetY, 'hex1', hexClick);
+        //frames in this order: over, out, down
+        var hexbutton = game.add.button(offsetX, offsetY, 'hexsprite', hexClick, 4,2,2);
+
+        hexbutton.anchor.setTo(0, 0);
+        hexbutton.scale.setTo(scale,scale);
         maphexbuttons[ix][iy] = hexbutton;
       }
     }
+
+    window.gamedata.mapsize = { x: offsetX + 128, y: offsetX + 128 }
     window.gamedata.maphexbuttons = maphexbuttons;
 }
 
 function hexClick(hexbtn){
-
+  //hexbtn.inputEnabled = false;
+  hexbtn.setFrames(4, 3, 3);
 }
