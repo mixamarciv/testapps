@@ -3,8 +3,8 @@ function createMap(){
   let game = window.game;
   //game.add.image(100, 100, 'hex1');
   let scale = 0.9;
-  let cntX = 20;
-  let cntY = 40;
+  let cntX = 10;
+  let cntY = 10;
 
   let objSize = 128;
 
@@ -20,10 +20,20 @@ function createMap(){
   //offsetY += 64;
   var maphexbuttons = [];
 
+  var textstyle = { 
+    font: "32px Arial", 
+    fill: "#ffff22", 
+    wordWrap: false, 
+    wordWrapWidth: objSize, 
+    align: "center", 
+    //backgroundColor: "#ffff00" 
+  };
+
+  /*****************  v2: */
   for(let iy=0;iy<cntY;iy++){
     offsetX = offsetXstart;
     if(iy%2==0) offsetX += objSize*3/4;
-    offsetY += objSize / 2;
+    offsetY += objSize/2;
     maphexbuttons[iy] = [];
     for(let ix=0;ix<cntX;ix++){
       
@@ -35,34 +45,12 @@ function createMap(){
       hexbutton.scale.setTo(scale,scale);
       maphexbuttons[iy][ix] = hexbutton;
       hexbutton.gd = {x: ix, y: iy};
+      hexbutton.text = game.add.text(hexbutton.x, hexbutton.y, ix+':'+iy, textstyle);
+      hexbutton.text.anchor.set(-0.8,-1);
     }
   }
-  /********
-  for(let ix=0;ix<cntX;ix++){
-    //offsetX = offsetXstart + (ix-1)*objOffsetX;
-    //offsetY = offsetYstart - (ix+2)*objOffsetY;
-    if(ix%2==0){
-        offsetX = 0;
-    }else{
-        offsetX = offsetXstart + objOffsetX;
-    }
-    offsetY = offsetYstart - (ix+2)*objOffsetY;
+  /**********************/
 
-    offsetX = offsetXstart + (ix-1)*objOffsetX;
-    offsetY = offsetYstart - (ix+2)*objOffsetY;
-    maphexbuttons[ix] = [];
-    for(let iy=0;iy<cntY;iy++){
-      offsetX += objOffsetX;
-      offsetY += objOffsetY;
-      //frames in this order: over, out, down
-      var hexbutton = game.add.button(offsetX, offsetY, 'hexsprite', hexClick, 4,2,2);
-
-      //hexbutton.anchor.setTo(0, 0);
-      hexbutton.scale.setTo(scale,scale);
-      maphexbuttons[ix][iy] = hexbutton;
-    }
-  }
-  ********/
 
   window.gamedata.mapsize = { 
     x: offsetX + objSize*2, 
@@ -70,9 +58,14 @@ function createMap(){
   }
   console.log('offsetX: '+offsetX);
   window.gamedata.maphexbuttons = maphexbuttons;
+  createuserobj();
 }
 
 function hexClick(hexbtn){
   //hexbtn.inputEnabled = false;
   hexbtn.setFrames(4, 3, 3);
+}
+
+function createuserobj(){
+  var btns = window.gamedata.maphexbuttons;
 }

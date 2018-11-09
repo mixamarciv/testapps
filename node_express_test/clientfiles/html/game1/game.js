@@ -5,7 +5,8 @@ var GOptions = window.GOptions;
 var playercursor;
 
 window.game = new Phaser.Game({
-  renderer: Phaser.CANVAS,
+  //renderer: Phaser.CANVAS,
+  renderer: Phaser.WEBGL,
   height: GOptions.height,
   width: GOptions.width,
 
