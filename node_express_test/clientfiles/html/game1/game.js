@@ -2,7 +2,7 @@ console.clear();
 
 var colors = window.colors;
 var GOptions = window.GOptions;
-var playercursor;
+
 
 window.game = new Phaser.Game({
   //renderer: Phaser.CANVAS,
@@ -29,7 +29,7 @@ window.game = new Phaser.Game({
       console.log('create');
 
       this.extraLoader = new Phaser.Loader(this.game);
-      this.extraLoader.baseURL = '/clientfiles/html/img/hex1';
+      this.extraLoader.baseURL = GOptions.images.baseURL;
       this.extraLoader.resetLocked = true;
       monitorLoaderExtra(this.extraLoader);
 
@@ -61,12 +61,9 @@ window.game = new Phaser.Game({
 });
 
 function create(game){
-  window.gamedata = {
-    maphexbuttons: []   // maphexbuttons[x][y] = button
-  }
 
-  game.extraLoader.image("hex1", "/hex.gif");    
-  game.extraLoader.spritesheet('hexsprite', "/hexsprite.png",128,128);
+  //game.extraLoader.image("hex1", "/hex.gif");    
+  game.extraLoader.spritesheet('hexsprite', GOptions.images.hexsprite.path,128,128);
   game.extraLoader.start();
 
   game.cursors = game.input.keyboard.createCursorKeys();

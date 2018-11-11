@@ -10,6 +10,7 @@ function init() {
 
 function preload() {
   console.log('preload');
+  /***
   this.load.maxParallelDownloads = 6;
   this.load.baseURL = 'https://cdn.jsdelivr.net/gh/samme/phaser-examples-assets@v1.0.0/sprites/';
   this.load.crossOrigin = 'anonymous';
@@ -21,7 +22,9 @@ function preload() {
   ]; 
   this.load.images(images, images);
   this.load.resetLocked = true;
+  
   monitorLoader(this.load);
+  ***/
 }
 
 
