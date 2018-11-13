@@ -7,7 +7,7 @@ module.exports = config;
 config.argv = argv;
 
 config.app = {          // общие параметры приложения
-	host: argv.host || '127.0.0.1',
+	host: argv.host || '',//'127.0.0.1',
 	port: argv.port || 9800 
 }
 

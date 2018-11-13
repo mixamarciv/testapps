@@ -11,7 +11,7 @@
 TITLE test express
 CD "%curpath%/.."
 
-node app.js --port 9801 --host=127.0.0.1  
+node app.js --port 9801 --host= 
 
 @echo ==== end   ===================================================================
 @pause

@@ -56,18 +56,20 @@ function createHexButton(x,y,xpos,ypos,scale){
 
   hexbtn.scale.setTo(scale,scale);
   var hexButtonTextStyle = {};
-  hexbtn.text = game.add.text(hexbtn.x, hexbtn.y,'*', hexButtonTextStyle);
-  hexbtn.text.setTextBounds(-5, -5, maingamedata.objSize, maingamedata.objSize);
+
+
   //hexbtn.text.anchor.set(1);
   
   hexbtn.gd = new makeHexObjectData(hexbtn,x,y);
-  var rnd = getRandomInt(1, 5);
+
+  var rnd = getRandomInt(1, 3);
   hexbtn.gd.setVal(rnd);
 
   return hexbtn;
 }
 
 function makeHexObjectData(hexbtn,x,y){
+  let game = window.game;
   var maingamedata = window.gamedata;
 
   let hexButtonTextStyle = { 
@@ -80,7 +82,10 @@ function makeHexObjectData(hexbtn,x,y){
     boundsAlignV: "middle",
     //backgroundColor: "#ffff00" 
   };
-  
+  hexbtn.text = game.add.text(hexbtn.x, hexbtn.y,'*', hexButtonTextStyle);
+  hexbtn.text.setTextBounds(-5, -5, maingamedata.objSize, maingamedata.objSize);
+
+
   const hs = window.GOptions.images.hexsprite.sprites;
   
   var gd = {
