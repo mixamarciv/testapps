@@ -49,8 +49,29 @@ function createMap(){
 
 function createHexButton(x,y,xpos,ypos,scale){
   var maingamedata = window.gamedata;
+
+  const hs = window.GOptions.images.hexsprite.sprites;
+  
+  var hexbtn = game.add.button(xpos, ypos, 'hexsprite', hexClick,hs.neutral,hs.neutral,hs.neutral);
+
+  hexbtn.scale.setTo(scale,scale);
+  var hexButtonTextStyle = {};
+  hexbtn.text = game.add.text(hexbtn.x, hexbtn.y,'*', hexButtonTextStyle);
+  hexbtn.text.setTextBounds(-5, -5, maingamedata.objSize, maingamedata.objSize);
+  //hexbtn.text.anchor.set(1);
+  
+  hexbtn.gd = new makeHexObjectData(hexbtn,x,y);
+  var rnd = getRandomInt(1, 5);
+  hexbtn.gd.setVal(rnd);
+
+  return hexbtn;
+}
+
+function makeHexObjectData(hexbtn,x,y){
+  var maingamedata = window.gamedata;
+
   let hexButtonTextStyle = { 
-    font: "32px Arial", 
+    font: "bold 32px Arial", 
     fill: "#ffff22", 
     wordWrap: false, 
     wordWrapWidth: maingamedata.objSize, 
@@ -59,25 +80,9 @@ function createHexButton(x,y,xpos,ypos,scale){
     boundsAlignV: "middle",
     //backgroundColor: "#ffff00" 
   };
-
+  
   const hs = window.GOptions.images.hexsprite.sprites;
   
-  var hexbtn = game.add.button(xpos, ypos, 'hexsprite', hexClick,hs.neutral,hs.neutral,hs.neutral);
-
-  hexbtn.scale.setTo(scale,scale);
-  hexbtn.text = game.add.text(hexbtn.x, hexbtn.y, x+':'+y, hexButtonTextStyle);
-  hexbtn.text.setTextBounds(-5, -5, maingamedata.objSize, maingamedata.objSize);
-  //hexbtn.text.anchor.set(1);
-  
-  hexbtn.gd = new makeHexObjectData(hexbtn,x,y);
-  //gd.setVal(1);
-
-  return hexbtn;
-}
-
-function makeHexObjectData(hexbtn,x,y){
-  const hs = window.GOptions.images.hexsprite.sprites;
-  var maingamedata = window.gamedata;
   var gd = {
     bntobj: hexbtn,
     x: x,
@@ -90,7 +95,10 @@ function makeHexObjectData(hexbtn,x,y){
   }
   gd.setVal = function(val){
     gd.value = val;
-    hexbtn.text.setText(val+' ('+gd.x+':'+gd.y+')');
+    hexbtn.text.setText(gd.value);
+    if(gd.owner==maingamedata.user1.id){
+      hexbtn.text.setStyle(hexButtonTextStyle,updateImmediately=1);
+    }
   }
   gd.getVal = ()=>{ return gd.value; }
 
@@ -215,6 +223,7 @@ function createuserobj(){
   btn.gd.setActiveUser1();
 }
 
+//random >=min && <max
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
