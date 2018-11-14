@@ -1,10 +1,11 @@
 
 var GOptions = {
   debug: {
-    main: 0,
+    main: 1,
     loader: 0,
     userMoveHex: 1,   // пишем лог перемещения по клеткам
     showHexInfo: 0,    // выводим позиции клеток внутри хексов
+    showClearMapInfo: 1, // выводить информацию по очистке карты
   },
   usePlugin: {
     kineticScrolling: 1
@@ -61,5 +62,9 @@ window.gamedata = {   // основные данные игры
     id: 5000,
     name: 'nagibatelb'
   },
-  maphexbuttons: []   // maphexbuttons[x][y] = button
+  maphexbuttons: [],   // maphexbuttons[x][y] = button
+  mapObjects: {  // данные карты игры (нужны для очистки/пересоздания карты)
+    buttons: [],
+    text: [],
+  }, 
 }

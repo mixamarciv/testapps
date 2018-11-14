@@ -51,14 +51,45 @@ function createMap(){
   createuserobj();
 }
 
+function clearMap(){
+  const debug = window.GOptions.debug;
+  var mapObjects = window.gamedata.mapObjects;
+
+  {
+    var cnt = 0;
+    var buttons = mapObjects.buttons;
+    for(let i=0;i<buttons.length;i++){
+      var o = buttons[i];
+      o.destroy();
+      cnt++;
+    }
+    mapObjects.buttons = [];
+    if(debug.showClearMapInfo) console.log('удалено хексов: '+cnt);
+  }
+  {
+    var cnt = 0;
+    var text = mapObjects.text;
+    for(let i=0;i<text.length;i++){
+      var o = text[i];
+      o.destroy();
+      cnt++;
+    }
+    mapObjects.text = [];
+    if(debug.showClearMapInfo) console.log('удалено текстовых блоков: '+cnt);
+  }
+
+}
+
 function createHexButton(x,y,xpos,ypos,scale){
   var maingamedata = window.gamedata;
+  var mapObjects = window.gamedata.mapObjects;
   const GOptions = window.GOptions;
   const hs = GOptions.images.hexsprite.sprites;
   const debug = GOptions.debug;
 
   var hexbtn = game.add.button(xpos, ypos, 'hexsprite', hexClick,hs.neutral,hs.neutral,hs.neutral);
-
+  maingamedata.goupmap.add(hexbtn);
+  mapObjects.buttons.push(hexbtn);
   //hexbtn.scale.setTo(scale,scale);
   var hexButtonTextStyle = {};
   //hexbtn.text.anchor.set(1);
@@ -74,7 +105,7 @@ function createHexButton(x,y,xpos,ypos,scale){
 function makeHexObjectData(hexbtn,x,y){
   let game = window.game;
   var maingamedata = window.gamedata;
-
+  var mapObjects = window.gamedata.mapObjects;
   const GOptions = window.GOptions;
   const hs = GOptions.images.hexsprite.sprites;
   const debug = GOptions.debug;
@@ -90,7 +121,10 @@ function makeHexObjectData(hexbtn,x,y){
     //backgroundColor: "#ffff00" 
   };
   hexbtn.text = game.add.text(hexbtn.x, hexbtn.y,'*', hexButtonTextStyle);
+  maingamedata.goupmap.add(hexbtn.text);
+  hexbtn.text.z = 101;
   hexbtn.text.setTextBounds(-5, -5, maingamedata.objSize, maingamedata.objSize);
+  mapObjects.text.push(hexbtn.text);
   
   var gd = {
     bntobj: hexbtn,

@@ -10,15 +10,6 @@ function init() {
   //Load the plugin
   if(GOptions.usePlugin.kineticScrolling){
     this.game.kineticScrolling = this.game.plugins.add(Phaser.Plugin.KineticScrolling);
-    this.game.kineticScrolling.configure({
-        kineticMovement: true,
-        timeConstantScroll: 325, //really mimic iOS
-        horizontalScroll: true,
-        verticalScroll: true,
-        horizontalWheel: false,
-        verticalWheel: true,
-        deltaWheel: 40
-    });
   }
 }
 

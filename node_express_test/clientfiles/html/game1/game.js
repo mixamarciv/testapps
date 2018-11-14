@@ -7,6 +7,8 @@ var worldScale = 1;
 var gameWorld;
 var multitouchDistanceToScale = 0;
 
+var debugObj = {};
+
 window.game = new Phaser.Game({
   //renderer: Phaser.CANVAS,
   renderer: Phaser.CANVAS,
@@ -49,32 +51,33 @@ window.game = new Phaser.Game({
       game.input.addPointer();
       game.input.addPointer();
       //game.input.pointer2.start(movePoiterStart);
+
+      var maingamedata = window.gamedata;
+      maingamedata.goupmap = new Phaser.Group(game, game.world, 'z100map');
+      maingamedata.goupmenu = new Phaser.Group(game, game.world, 'z500menu');
+      
+      this.game.kineticScrolling.configure({
+          kineticMovement: true,
+          timeConstantScroll: 325, //really mimic iOS
+          horizontalScroll: true,
+          verticalScroll: true,
+          horizontalWheel: false,
+          verticalWheel: true,
+          deltaWheel: 40
+      });
       create(this);
     },
 
     update: function() {
+      var goupmap = window.gamedata.goupmap;
       function setCamPos(x,y){
         game.camera.setPosition(game.camera.x + x, game.camera.y + y);
+        //game.camera.setPosition(goupmap.x + x, goupmap.y + y);
       }
       if      (this.cursors.up.isDown   ) setCamPos(0, -5);
       else if (this.cursors.down.isDown ) setCamPos(0, +5);
       if      (this.cursors.left.isDown ) setCamPos(-5, 0);
       else if (this.cursors.right.isDown) setCamPos(+5, 0);
-
-      //перемещаем камеру курсором:
-      /*******
-      if (this.game.input.activePointer.isDown) {	
-        if (this.game.origDragPoint) {		
-          // move the camera by the amount the mouse has moved since last update		
-          this.game.camera.x += this.game.origDragPoint.x - this.game.input.activePointer.position.x;		
-          this.game.camera.y += this.game.origDragPoint.y - this.game.input.activePointer.position.y;	
-        }	
-        // set new drag origin to current position	
-        this.game.origDragPoint = this.game.input.activePointer.position.clone();
-      }else {	
-        this.game.origDragPoint = null;
-      }
-      ********/
 
       // zoom
       if (   game.input.keyboard.isDown(Phaser.Keyboard.PLUS)
@@ -103,13 +106,15 @@ window.game = new Phaser.Game({
       }
 
       worldScale = Phaser.Math.clamp(worldScale, min=0.25, max=2);
-      game.world.scale.set(worldScale);
+      //game.world.scale.set(worldScale);
+      goupmap.scale.set(worldScale);
       //var oldCameraScale = game.camera.scale.clone();
       //var cameraScaleRatio = Phaser.Point.divide(game.camera.scale, oldCameraScale);
       //game.camera.focusOn(Phaser.Point.multiply(center, cameraScaleRatio));
     },
 
     render: function() {
+      this.game.debug.text(debugObj.x+':'+debugObj.y, 2, 14, "#00ff00");  
       if(GOptions.debug.main){
         var debug = this.game.debug;
         //this.loadRender();
@@ -126,9 +131,6 @@ window.game = new Phaser.Game({
   }
 });
 
-function movePoiterStart(){
-  //game.debug.pointer(game.input.pointer2);
-}
 
 function create(game){
 
@@ -159,30 +161,47 @@ function createEx(game){
 
 function createMainObjects(){
   const hs = window.GOptions.images.hexsprite.sprites;
-
+  var maingamedata = window.gamedata;
+  var group = maingamedata.goupmenu;
+  //goup.left = 0;
+  //goup.top = 0;
+  //goup.fixedToCamera = true;
   {
     var hexbtn = game.add.button(0, 0, 'hexsprite', 
       setGameFullScreen,hs.user1,hs.user1,hs.user1);
     hexbtn.fixedToCamera = true;
-    hexbtn.cameraOffset.setTo(0, 0);
+    //hexbtn.cameraOffset.setTo(0, 0);
+    group.add(hexbtn);
+    debugObj = hexbtn;
   }
   {
     var hexbtn = game.add.button(128, 0, 'hexsprite', 
       clickButton_TEST1,hs.user1,hs.user1,hs.user1);
     hexbtn.fixedToCamera = true;
-    hexbtn.cameraOffset.setTo(128, 0);
+    //hexbtn.cameraOffset.setTo(128, 0);
+    group.add(hexbtn);
   }
   {
     var hexbtn = game.add.button(256, 0, 'hexsprite', 
       clickButton_TEST2,hs.user1,hs.user1,hs.user1);
     hexbtn.fixedToCamera = true;
-    hexbtn.cameraOffset.setTo(256, 0);
+    //hexbtn.cameraOffset.setTo(256, 0);
+    group.add(hexbtn);
   }
-
-
-  var t = game.add.text(0, 0, "this text is fixed to the camera", { font: "32px Arial", fill: "#ffffff", align: "center" });
-  t.fixedToCamera = true;
-  t.cameraOffset.setTo(200, 500);
+  {
+    var hexbtn = game.add.button(382, 0, 'hexsprite', 
+      clickButton_destroyMap,hs.user2,hs.user2,hs.user2);
+    hexbtn.fixedToCamera = true;
+    //hexbtn.cameraOffset.setTo(382, 0);
+    group.add(hexbtn);
+  }
+  {
+    var t = game.add.text(200, 500, "this text is fixed to the camera",
+      { font: "32px Arial", fill: "#ffffff", align: "center" });
+    t.fixedToCamera = true;
+    //t.cameraOffset.setTo(200, 500);
+    group.add(t);
+  }
 }
 
 function onFullScreenChange() {
@@ -215,8 +234,8 @@ function setGameFullScreen() {
 
 function clickButton_TEST1(hexbtn){
   hexbtn.tint = Math.random() * 0xFFFFFF;
-  game.camera.scale.x -= 0.1;
-  game.camera.scale.y -= 0.1;
+  game.camera.scale.x -= 0.01;
+  game.camera.scale.y -= 0.01;
   //game.camera.scale.x -= 0.1;
   //game.camera.scale.y -= 0.1;
   //game.scale.setupScale(1.3, 1.5);
@@ -225,4 +244,11 @@ function clickButton_TEST1(hexbtn){
 function clickButton_TEST2(btn){
   console.log('анимация исчезновения спрайта');
   game.add.tween(btn).to( { alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
+}
+
+function clickButton_destroyMap(){
+  console.log('очистка карты');
+  clearMap();
+  console.log('создание карты');
+  createMap();
 }
