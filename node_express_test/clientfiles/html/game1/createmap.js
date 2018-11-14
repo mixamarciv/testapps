@@ -1,10 +1,14 @@
+//var game = window.game;
+//var maingamedata = window.gamedata;
+
+
 
 function createMap(){
   let game = window.game;
   //game.add.image(100, 100, 'hex1');
   let scale = 0.9;
   let cntX = 5;
-  let cntY = 10;
+  let cntY = 20;
 
   let objSize = 128;
   window.gamedata.objSize = 128;
@@ -49,15 +53,14 @@ function createMap(){
 
 function createHexButton(x,y,xpos,ypos,scale){
   var maingamedata = window.gamedata;
+  const GOptions = window.GOptions;
+  const hs = GOptions.images.hexsprite.sprites;
+  const debug = GOptions.debug;
 
-  const hs = window.GOptions.images.hexsprite.sprites;
-  
   var hexbtn = game.add.button(xpos, ypos, 'hexsprite', hexClick,hs.neutral,hs.neutral,hs.neutral);
 
-  hexbtn.scale.setTo(scale,scale);
+  //hexbtn.scale.setTo(scale,scale);
   var hexButtonTextStyle = {};
-
-
   //hexbtn.text.anchor.set(1);
   
   hexbtn.gd = new makeHexObjectData(hexbtn,x,y);
@@ -72,6 +75,10 @@ function makeHexObjectData(hexbtn,x,y){
   let game = window.game;
   var maingamedata = window.gamedata;
 
+  const GOptions = window.GOptions;
+  const hs = GOptions.images.hexsprite.sprites;
+  const debug = GOptions.debug;
+
   let hexButtonTextStyle = { 
     font: "bold 32px Arial", 
     fill: "#ffff22", 
@@ -84,9 +91,6 @@ function makeHexObjectData(hexbtn,x,y){
   };
   hexbtn.text = game.add.text(hexbtn.x, hexbtn.y,'*', hexButtonTextStyle);
   hexbtn.text.setTextBounds(-5, -5, maingamedata.objSize, maingamedata.objSize);
-
-
-  const hs = window.GOptions.images.hexsprite.sprites;
   
   var gd = {
     bntobj: hexbtn,
@@ -100,9 +104,15 @@ function makeHexObjectData(hexbtn,x,y){
   }
   gd.setVal = function(val){
     gd.value = val;
-    hexbtn.text.setText(gd.value);
+    let showValue = val;
+    if(debug.showHexInfo){
+      showValue += `[${gd.x}:${gd.y}]`;
+    }
+    hexbtn.text.setText(showValue);
     if(gd.owner==maingamedata.user1.id){
-      hexbtn.text.setStyle(hexButtonTextStyle,updateImmediately=1);
+      hexButtonTextStyle.fill = '#ff00ff';
+      //hexbtn.text.setStyle(hexButtonTextStyle,updateImmediately=0);
+      hexbtn.text.addColor(hexButtonTextStyle.fill, 0);
     }
   }
   gd.getVal = ()=>{ return gd.value; }
@@ -134,28 +144,39 @@ function makeHexObjectData(hexbtn,x,y){
     var f = gd;
     var t = to.gd;
     if(f.owner==t.owner){
-      console.log('нельзя ходить по уже захваченным объектам');
+      if(debug.userMoveHex) console.log('нельзя ходить по уже захваченным объектам');
       return 0;
     }
-    let chet;
+    
     let rzx = t.x - f.x;
-    if(rzx<-1 || rzx>1){
-      console.log('по оси X можем ходить только +/-1 ');
-      return 0;  
-    }
     let rzy = t.y - f.y;
-    if(rzy<-2 || rzy>2){
-      console.log('по оси Y если можем ходить только не более +/-2');
-      return 0;  
+    let nechetY = f.y%2;
+
+    if(debug.userMoveHex) console.log(`проверка хода ${f.x}:${f.y}(${nechetY}) -> ${t.x}:${t.y} rzx:${rzx}, rzy:${rzy}`);
+    
+    if(!nechetY) {
+      if(rzx!=0){
+        if(rzx<0  || rzx>1) return 0;
+        if(rzy<-1 || rzy>1 || rzy==0) return 0;
+        return 1;
+      }
+      if(rzx==0){
+        if(rzy<-2  || rzy>2) return 0;
+        return 1;
+      }
     }
-    if(rzx!=0 && (rzy<-1 || rzy>1)){
-      console.log('по оси Y можем ходить не более +/-1 если по оси X +/-1');
-      return 0;  
+    if(nechetY) {
+      if(rzx!=0){
+        if(rzx>0  || rzx<-1) return 0;
+        if(rzy<-1 || rzy>1 || rzy==0) return 0;
+        return 1;
+      }
+      if(rzx==0){
+        if(rzy<-2  || rzy>2) return 0;
+        return 1;
+      }
     }
-    if(rzx!=0 && rzy==0){
-      console.log('по оси X можем ходить только если по оси X +/-1');
-      return 0;  
-    }
+    
     return 1;
   }
 
@@ -185,30 +206,35 @@ function makeHexObjectData(hexbtn,x,y){
 }
 
 function hexClick(hexbtn){
+  const GOptions = window.GOptions;
+  const debug = GOptions.debug;
   var maingamedata = window.gamedata;
   var activeBtn = maingamedata.activeuser1btn;
-  if(activeBtn==hexbtn){//если нажали итак активную кнопку
-    console.log('нажали уже активную кнопку');
+
+  if(activeBtn==hexbtn){ //если нажали итак активную кнопку
+    if(debug.userMoveHex) console.log('нажали уже активную кнопку');
     return; 
   }
 
   if(hexbtn.gd.getOwner() == maingamedata.user1.id){  //если нажали на кнопку юзера1
-    console.log('нажали на кнопку юзера1');
+    if(debug.userMoveHex) console.log('нажали на кнопку юзера1');
     if(hexbtn.gd.getVal()>1){
-      console.log('там больше 1 - делаем её активной');
+      if(debug.userMoveHex) console.log('там больше 1 - делаем её активной');
       hexbtn.gd.setActiveUser1();  //и если там больше 1 то делаем её активной
     }
     return;
   }
 
   if(activeBtn.gd.canMoveTo(hexbtn)==0){ //если не можем переместиться на эту кнопку из текущей
-    console.log('не можем переместиться на эту кнопку из текущей');
+    if(debug.userMoveHex) console.log('не можем переместиться на эту кнопку из текущей');
     return;
   }
 
   let val = activeBtn.gd.getVal();
   if( val > 1 ){
-    console.log('захватываем выбранный объект');
+    if(debug.userMoveHex) {
+      console.log('захватываем выбранный объект ['+activeBtn.gd.x+':'+activeBtn.gd.y+' -> '+hexbtn.gd.x+':'+hexbtn.gd.y+']');
+    } 
     activeBtn.gd.moveUser1(hexbtn);
   }
 }
@@ -224,7 +250,7 @@ function createuserobj(){
   var pos = {x:getRandomInt(0,gd.cntX),y:getRandomInt(0,gd.cntY)}
   console.log(pos);
   var btn = btns[pos.x][pos.y];
-  btn.gd.setVal(9);
+  btn.gd.setVal(12);
   btn.gd.setActiveUser1();
 }
 

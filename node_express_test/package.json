@@ -14,7 +14,8 @@
     "iconv-lite": "*",
     "express": "*",
     "node.extend": "*",
-    "phaser-ce": "*"
+    "phaser-ce": "*",
+    "phaser-kinetic-scrolling-plugin": "*"
   },
   "devDependencies": {
     "express": "*"

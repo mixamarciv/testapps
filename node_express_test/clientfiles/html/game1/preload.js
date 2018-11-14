@@ -6,10 +6,28 @@ function init() {
   var debug = this.game.debug;
   debug.lineHeight = 20;
   debug.font = '16px monospace';
+
+  //Load the plugin
+  if(GOptions.usePlugin.kineticScrolling){
+    this.game.kineticScrolling = this.game.plugins.add(Phaser.Plugin.KineticScrolling);
+    this.game.kineticScrolling.configure({
+        kineticMovement: true,
+        timeConstantScroll: 325, //really mimic iOS
+        horizontalScroll: true,
+        verticalScroll: true,
+        horizontalWheel: false,
+        verticalWheel: true,
+        deltaWheel: 40
+    });
+  }
 }
 
 function preload() {
   console.log('preload');
+  this.game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
+  this.game.scale.pageAlignHorizontally = true;
+  this.game.scale.pageAlignVertically = true;
+  //this.game.stage.backgroundColor = '#eee';
   /***
   this.load.maxParallelDownloads = 6;
   this.load.baseURL = 'https://cdn.jsdelivr.net/gh/samme/phaser-examples-assets@v1.0.0/sprites/';
