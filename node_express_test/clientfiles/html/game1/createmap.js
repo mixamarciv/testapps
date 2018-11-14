@@ -6,12 +6,12 @@
 function createMap(){
   let game = window.game;
   //game.add.image(100, 100, 'hex1');
-  let scale = 0.9;
+  let scale = 1;
   let cntX = 5;
   let cntY = 20;
 
-  let objSize = 128;
-  window.gamedata.objSize = 128;
+  let objSize = window.GOptions.images.hexsprite.size;
+  window.gamedata.objSize = objSize;
   window.gamedata.cntX = cntX;
   window.gamedata.cntY = cntY;
 
@@ -49,6 +49,13 @@ function createMap(){
 
   window.gamedata.maphexbuttons = maphexbuttons;
   createuserobj();
+
+  var gd = window.gamedata;
+  game.world.setBounds(0, 0, gd.mapsize.x, gd.mapsize.y);
+  //window.gamedata.groupmap.setBounds(0, 0, gd.mapsize.x, gd.mapsize.y);
+
+  var focusbutton = gd.activeuser1btn; //кнопка текущего юзера
+  game.camera.focusOn(focusbutton);
 }
 
 function clearMap(){
@@ -88,7 +95,7 @@ function createHexButton(x,y,xpos,ypos,scale){
   const debug = GOptions.debug;
 
   var hexbtn = game.add.button(xpos, ypos, 'hexsprite', hexClick,hs.neutral,hs.neutral,hs.neutral);
-  maingamedata.goupmap.add(hexbtn);
+  maingamedata.groupmap.add(hexbtn);
   mapObjects.buttons.push(hexbtn);
   //hexbtn.scale.setTo(scale,scale);
   var hexButtonTextStyle = {};
@@ -111,8 +118,8 @@ function makeHexObjectData(hexbtn,x,y){
   const debug = GOptions.debug;
 
   let hexButtonTextStyle = { 
-    font: "bold 32px Arial", 
-    fill: "#ffff22", 
+    font: "bold 28px Arial", 
+    fill: "#bbb", 
     wordWrap: false, 
     wordWrapWidth: maingamedata.objSize, 
     //align: "center",
@@ -121,9 +128,8 @@ function makeHexObjectData(hexbtn,x,y){
     //backgroundColor: "#ffff00" 
   };
   hexbtn.text = game.add.text(hexbtn.x, hexbtn.y,'*', hexButtonTextStyle);
-  maingamedata.goupmap.add(hexbtn.text);
-  hexbtn.text.z = 101;
-  hexbtn.text.setTextBounds(-5, -5, maingamedata.objSize, maingamedata.objSize);
+  maingamedata.groupmap.add(hexbtn.text);
+  hexbtn.text.setTextBounds(0, 0, maingamedata.objSize-2, maingamedata.objSize+2);
   mapObjects.text.push(hexbtn.text);
   
   var gd = {
@@ -144,7 +150,7 @@ function makeHexObjectData(hexbtn,x,y){
     }
     hexbtn.text.setText(showValue);
     if(gd.owner==maingamedata.user1.id){
-      hexButtonTextStyle.fill = '#ff00ff';
+      hexButtonTextStyle.fill = '#aeaeff';
       //hexbtn.text.setStyle(hexButtonTextStyle,updateImmediately=0);
       hexbtn.text.addColor(hexButtonTextStyle.fill, 0);
     }
@@ -227,6 +233,7 @@ function makeHexObjectData(hexbtn,x,y){
 
     if( val1 < val2 ){
       to.gd.setVal(val2 - val1);
+      gd.setOwnerUser1();
       to.gd.setActiveUser1();
       return;
     }

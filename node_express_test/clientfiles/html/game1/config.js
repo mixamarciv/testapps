@@ -1,11 +1,11 @@
 
 var GOptions = {
   debug: {
-    main: 1,
+    main: 0,
     loader: 0,
-    userMoveHex: 1,   // пишем лог перемещения по клеткам
+    userMoveHex: 0,   // пишем лог перемещения по клеткам
     showHexInfo: 0,    // выводим позиции клеток внутри хексов
-    showClearMapInfo: 1, // выводить информацию по очистке карты
+    showClearMapInfo: 0, // выводить информацию по очистке карты
   },
   usePlugin: {
     kineticScrolling: 1
@@ -39,7 +39,7 @@ window.GOptions = GOptions;
 
 
 GOptions.images = {
-  baseURL: '/clientfiles/html/img/hex1',
+  baseURL: '/clientfiles/html/img/hex2',
   hexsprite: {
     path: '/hexsprite.png',
     sprites: {
@@ -49,7 +49,7 @@ GOptions.images = {
       user2: 3,
       active2: 4,
     },
-    size: 128
+    size: 64
   }
 }
 

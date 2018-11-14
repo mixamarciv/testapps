@@ -53,8 +53,8 @@ window.game = new Phaser.Game({
       //game.input.pointer2.start(movePoiterStart);
 
       var maingamedata = window.gamedata;
-      maingamedata.goupmap = new Phaser.Group(game, game.world, 'z100map');
-      maingamedata.goupmenu = new Phaser.Group(game, game.world, 'z500menu');
+      maingamedata.groupmap = new Phaser.Group(game, game.world, 'z100map');
+      maingamedata.groupmenu = new Phaser.Group(game, game.world, 'z500menu');
       
       this.game.kineticScrolling.configure({
           kineticMovement: true,
@@ -69,7 +69,7 @@ window.game = new Phaser.Game({
     },
 
     update: function() {
-      var goupmap = window.gamedata.goupmap;
+      var groupmap = window.gamedata.groupmap;
       function setCamPos(x,y){
         game.camera.setPosition(game.camera.x + x, game.camera.y + y);
         //game.camera.setPosition(goupmap.x + x, goupmap.y + y);
@@ -107,7 +107,7 @@ window.game = new Phaser.Game({
 
       worldScale = Phaser.Math.clamp(worldScale, min=0.25, max=2);
       //game.world.scale.set(worldScale);
-      goupmap.scale.set(worldScale);
+      groupmap.scale.set(worldScale);
       //var oldCameraScale = game.camera.scale.clone();
       //var cameraScaleRatio = Phaser.Point.divide(game.camera.scale, oldCameraScale);
       //game.camera.focusOn(Phaser.Point.multiply(center, cameraScaleRatio));
@@ -133,9 +133,9 @@ window.game = new Phaser.Game({
 
 
 function create(game){
-
+  let objSize = window.GOptions.images.hexsprite.size;
   //game.extraLoader.image("hex1", "/hex.gif");    
-  game.extraLoader.spritesheet('hexsprite', GOptions.images.hexsprite.path,128,128);
+  game.extraLoader.spritesheet('hexsprite', GOptions.images.hexsprite.path, objSize, objSize);
   game.extraLoader.start();
 
   game.cursors = game.input.keyboard.createCursorKeys();
@@ -148,11 +148,7 @@ function createEx(game){
 
   createMap();
 
-  var gd = window.gamedata;
-  game.world.setBounds(0, 0, gd.mapsize.x, gd.mapsize.y);
 
-  var focusbutton = gd.activeuser1btn; //кнопка текущего юзера
-  game.camera.focusOn(focusbutton);
 
 
   createMainObjects();
@@ -162,7 +158,7 @@ function createEx(game){
 function createMainObjects(){
   const hs = window.GOptions.images.hexsprite.sprites;
   var maingamedata = window.gamedata;
-  var group = maingamedata.goupmenu;
+  var group = maingamedata.groupmenu;
   //goup.left = 0;
   //goup.top = 0;
   //goup.fixedToCamera = true;
