@@ -4,7 +4,7 @@ var GOptions = {
     main: 0,
     loader: 0,
     userMoveHex: 1,   // пишем лог перемещения по клеткам
-    showHexInfo: 1    // выводим позиции клеток внутри хексов
+    showHexInfo: 0,    // выводим позиции клеток внутри хексов
   },
   usePlugin: {
     kineticScrolling: 1
