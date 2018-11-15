@@ -1,7 +1,7 @@
 
 var GOptions = {
   debug: {
-    main: 0,
+    main: 1,
     loader: 0,
     userMoveHex: 0,   // пишем лог перемещения по клеткам
     showHexInfo: 0,    // выводим позиции клеток внутри хексов
@@ -13,12 +13,22 @@ var GOptions = {
   fullScreen: 1,
   width: window.screen.availWidth,
   height: window.screen.availHeight,
+  gameMap: {
+    loadType: 1,  //0 - buttons, 1 - objects
+    cntX: 10,
+    cntY: 20,
+    scale: 1,
+  },
+  gameMenu: {
+    loadType: 1,  //0 - buttons, 1 - objects
+    screenHSize: 0.12,   // какую часть экрана будет занимать
+  }
 }
 
 GOptions.width  = 600;
 GOptions.height = 800;
 
-{//определяем размер перед загрузкой
+{//определяем размер перед загрузкой  89125552202 9121283621
   //вот тут док для айфона и ещё немного полезной инфы:
   //  https://www.joshmorony.com/how-to-scale-a-game-for-all-device-sizes-in-phaser/
   // и тут:
@@ -54,6 +64,13 @@ GOptions.images = {
 }
 
 window.gamedata = {   // основные данные игры
+  menu: {
+    mainBtn: null,
+    mainText: null,
+    //restartBtn: null,
+    //restartText: null,
+    settingsBtn: null,
+  },
   user1: {
     id: 3000,
     name: 'pro100gamer'
@@ -67,4 +84,8 @@ window.gamedata = {   // основные данные игры
     buttons: [],
     text: [],
   }, 
+  mapsize: {
+    width: GOptions.width,
+    height: GOptions.height,
+  }
 }

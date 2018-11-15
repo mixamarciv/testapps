@@ -1,14 +1,13 @@
 //var game = window.game;
 //var maingamedata = window.gamedata;
 
-
-
 function createMap(){
   let game = window.game;
+  const GOptions = window.GOptions;
   //game.add.image(100, 100, 'hex1');
   let scale = 1;
-  let cntX = 5;
-  let cntY = 20;
+  let cntX = GOptions.gameMap.cntX;
+  let cntY = GOptions.gameMap.cntY;
 
   let objSize = window.GOptions.images.hexsprite.size;
   window.gamedata.objSize = objSize;
@@ -43,19 +42,12 @@ function createMap(){
 
 
   window.gamedata.mapsize = { 
-    x: offsetX + objSize*2, 
-    y: offsetY + objSize*4 
+    width: offsetX + objSize*2, 
+    height: offsetY + objSize*4 
   }
 
   window.gamedata.maphexbuttons = maphexbuttons;
   createuserobj();
-
-  var gd = window.gamedata;
-  game.world.setBounds(0, 0, gd.mapsize.x, gd.mapsize.y);
-  //window.gamedata.groupmap.setBounds(0, 0, gd.mapsize.x, gd.mapsize.y);
-
-  var focusbutton = gd.activeuser1btn; //кнопка текущего юзера
-  game.camera.focusOn(focusbutton);
 }
 
 function clearMap(){
@@ -67,6 +59,7 @@ function clearMap(){
     var buttons = mapObjects.buttons;
     for(let i=0;i<buttons.length;i++){
       var o = buttons[i];
+      o.gd = null;
       o.destroy();
       cnt++;
     }
@@ -94,8 +87,21 @@ function createHexButton(x,y,xpos,ypos,scale){
   const hs = GOptions.images.hexsprite.sprites;
   const debug = GOptions.debug;
 
-  var hexbtn = game.add.button(xpos, ypos, 'hexsprite', hexClick,hs.neutral,hs.neutral,hs.neutral);
-  maingamedata.groupmap.add(hexbtn);
+  var hexbtn = null
+  
+  if(GOptions.gameMap.loadType==0){
+    hexbtn = game.add.button(xpos, ypos, 'hexsprite', hexClick,hs.neutral,hs.neutral,hs.neutral);
+    maingamedata.groupmap.add(hexbtn);
+  }else
+  if(GOptions.gameMap.loadType==1){
+
+    var hexbtn = maingamedata.groupmap.create(xpos, ypos, 'hexsprite');
+    //gem.name = 'gem' + i.toString() + 'x' + j.toString();
+    hexbtn.inputEnabled = true;
+    hexbtn.events.onInputDown.add(hexClick, hexbtn);
+    hexbtn.frame = hs.neutral;
+  }
+
   mapObjects.buttons.push(hexbtn);
   //hexbtn.scale.setTo(scale,scale);
   var hexButtonTextStyle = {};
@@ -158,24 +164,49 @@ function makeHexObjectData(hexbtn,x,y){
   gd.getVal = ()=>{ return gd.value; }
 
   gd.setNeutral = function(){
-    hexbtn.setFrames(hover=hs.neutral, deflt=hs.neutral, click=hs.neutral);
+    if(GOptions.gameMap.loadType==0){
+      hexbtn.setFrames(hover=hs.neutral, deflt=hs.neutral, click=hs.neutral);
+    }else
+    if(GOptions.gameMap.loadType==1){
+      hexbtn.frame = hs.neutral;
+    }
   }
   gd.setActiveUser1 = function(){
-    hexbtn.setFrames(hover=hs.active1, deflt=hs.active1, click=hs.active1);
+    if(GOptions.gameMap.loadType==0){
+      hexbtn.setFrames(hover=hs.active1, deflt=hs.active1, click=hs.active1);
+    }else
+    if(GOptions.gameMap.loadType==1){
+      hexbtn.frame = hs.active1;
+    }
     gd.owner = maingamedata.user1.id;
     maingamedata.activeuser1btn = hexbtn;
   }
   gd.setOwnerUser1 = function(){
-    hexbtn.setFrames(hover=hs.user1, deflt=hs.user1, click=hs.active1);
+    if(GOptions.gameMap.loadType==0){
+      hexbtn.setFrames(hover=hs.user1, deflt=hs.user1, click=hs.user1);
+    }else
+    if(GOptions.gameMap.loadType==1){
+      hexbtn.frame = hs.user1;
+    }
     gd.owner = maingamedata.user1.id;
   }
   gd.setActiveUser2 = function(){
-    hexbtn.setFrames(hover=hs.active2, deflt=hs.active2, click=hs.active2);
+    if(GOptions.gameMap.loadType==0){
+      hexbtn.setFrames(hover=hs.active2, deflt=hs.active2, click=hs.active2);
+    }else
+    if(GOptions.gameMap.loadType==1){
+      hexbtn.frame = hs.active2;
+    }
     gd.owner = maingamedata.user2.id;
     window.gamedata.activeuser2btn = hexbtn;
   }
   gd.setOwnerUser2 = function(){
-    hexbtn.setFrames(hover=hs.user2, deflt=hs.user2, click=hs.active2);
+    if(GOptions.gameMap.loadType==0){
+      hexbtn.setFrames(hover=hs.user2, deflt=hs.user2, click=hs.user2);
+    }else
+    if(GOptions.gameMap.loadType==1){
+      hexbtn.frame = hs.user2;
+    }
     gd.owner = maingamedata.user2.id;
   }
 
