@@ -11,8 +11,9 @@ var multitouchDistanceToScale = 0;
 var debugObj = {};
 
 window.game = new Phaser.Game({
-  //renderer: Phaser.CANVAS,
   renderer: Phaser.CANVAS,
+  //renderer: Phaser.WEBGL,
+  //renderer: Phaser.WEBGL_MULTI,
   height: GOptions.height,
   width: GOptions.width,
 
@@ -183,7 +184,7 @@ function createEx(game){
 
 function createGameObjects(){
   //game.camera.flash( '#ff0',300 );
-  //clearMap();
+  clearMap();
   createMap();
   //game.camera.flash( '#ff0',300 );//[color] [, duration] [, force] [, alpha])
   

@@ -1,7 +1,7 @@
 
 var GOptions = {
   debug: {
-    main: 1,
+    main: 0,
     loader: 0,
     userMoveHex: 0,   // пишем лог перемещения по клеткам
     showHexInfo: 0,    // выводим позиции клеток внутри хексов
@@ -83,6 +83,7 @@ window.gamedata = {   // основные данные игры
   mapObjects: {  // данные карты игры (нужны для очистки/пересоздания карты)
     buttons: [],
     text: [],
+    gd: [],      // данные по объектам  {x:1,y:4,val:8,owner:user1,button:->,text:->}
   }, 
   mapsize: {
     width: GOptions.width,
