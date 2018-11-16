@@ -4,8 +4,8 @@ var colors = window.colors;
 var GOptions = window.GOptions;
 
 var worldScale = 1;
-var menuScale = 1;
-var gameWorld;
+var movePointer = null;
+
 var multitouchDistanceToScale = 0;
 
 var debugObj = {};
@@ -36,9 +36,7 @@ window.game = new Phaser.Game({
 
     create: function() {
       console.log('create');
-      //Load the plugin
-      //this.game.kineticScrolling = this.game.plugins.add(Phaser.Plugin.KineticScrolling);
-      if(GOptions.usePlugin.kineticScrolling) this.game.kineticScrolling.start();
+      //if(GOptions.usePlugin.kineticScrolling) this.game.kineticScrolling.start();
 
       if(GOptions.fullScreen){
         game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
@@ -52,12 +50,16 @@ window.game = new Phaser.Game({
 
       game.input.addPointer();
       game.input.addPointer();
+
+      game.input.addMoveCallback(moveCursor, this);
+      //game.input.addTouchLockCallback(movePointerBegin, this, movePointerEnd)
       //game.input.pointer2.start(movePoiterStart);
 
       var maingamedata = window.gamedata;
       maingamedata.groupmap = new Phaser.Group(game, game.world, 'z100map');
       maingamedata.groupmenu = new Phaser.Group(game, game.world, 'z500menu');
       
+      /*********************
       this.game.kineticScrolling.configure({
           kineticMovement: true,
           timeConstantScroll: 325, //really mimic iOS
@@ -67,15 +69,17 @@ window.game = new Phaser.Game({
           verticalWheel: true,
           deltaWheel: 40
       });
+      *********************/
       create(this);
     },
 
     update: function() {
-      
-      function setCamPos(x,y){
-        game.camera.setPosition(game.camera.x + x, game.camera.y + y);
-        //game.camera.setPosition(goupmap.x + x, goupmap.y + y);
+
+      if(game.input.mousePointer.isUp && game.input.pointer1.isUp){
+        //если отпустили курсор мышки или тап
+        movePointer = null; 
       }
+      
       if      (this.cursors.up.isDown   ) setCamPos(0, -5);
       else if (this.cursors.down.isDown ) setCamPos(0, +5);
       if      (this.cursors.left.isDown ) setCamPos(-5, 0);
@@ -109,27 +113,15 @@ window.game = new Phaser.Game({
 
       worldScale = Phaser.Math.clamp(worldScale, min=0.25, max=2);
       var groupmap = window.gamedata.groupmap;
-      var groupmenu = window.gamedata.groupmenu;
 
-      //game.world.scale.set(worldScale);
-      //groupmap.scale.set(worldScale);
-      
-      //groupmenu.scale.set(menuScale);
       groupmap.scale.set(worldScale);
       var b = window.gamedata.mapsize;
-      //b.width *= worldScale;
-      //b.height *= worldScale;
       game.world.setBounds(0, 0, b.width*worldScale, b.height*worldScale);
-      //var oldCameraScale = game.camera.scale.clone();
-      //var cameraScaleRatio = Phaser.Point.divide(game.camera.scale, oldCameraScale);
-      //game.camera.focusOn(Phaser.Point.multiply(center, cameraScaleRatio));
     },
 
     render: function() {
-      
-      
       {
-        var text = ' Wscale: '+Math.round(worldScale*100)/100+' Mscale: '+Math.round(menuScale*100)/100;
+        var text = ' Wscale: '+Math.round(worldScale*100)/100+' ';
         this.game.debug.text(text, 2, 28, "#00ff00"); 
       }
       {
@@ -143,6 +135,10 @@ window.game = new Phaser.Game({
           var text = 'debugObj: '+o.x+':'+o.y+` size: ${o.width}:${o.height} scale: ${o.scale.x}:${o.scale.y}`;
           this.game.debug.text(text, 2, 60, "#00ff00"); 
         }
+      }
+      {
+        var t = window.gamedata.time;
+        this.game.debug.text('createMap: '+t.createMap, 2, 80, "#00ff00"); 
       }
 
       if(GOptions.debug.main){
@@ -161,6 +157,30 @@ window.game = new Phaser.Game({
 
   }
 });
+
+function setCamPos(x,y){
+  game.camera.setPosition(game.camera.x + x, game.camera.y + y);
+  //game.camera.setPosition(goupmap.x + x, goupmap.y + y);
+}
+
+function moveCursor(poh,x,y) {
+  if(game.input.mousePointer.isDown || game.input.pointer1.isDown){
+    if(game.input.pointer2.isDown){ // если нажали несколько кнопок
+      movePointer = null;
+      return;
+    }
+    //console.log('mousePointer isDown');
+    //const {x,y} = game.input.pointer1;
+    if(!movePointer){
+      movePointer = {x:x,y:y};
+      return;
+    }
+    game.camera.setPosition(game.camera.x + movePointer.x-x, game.camera.y + movePointer.y-y);
+    movePointer = {x:x,y:y};
+  }else{
+    movePointer = null;
+  }
+}
 
 
 function create(game){

@@ -14,10 +14,11 @@ var GOptions = {
   width: window.screen.availWidth,
   height: window.screen.availHeight,
   gameMap: {
-    loadType: 1,  //0 - buttons, 1 - objects
+    loadType: 2,  //0 - buttons, 1 - objects, 2 - obj+text
     cntX: 10,
-    cntY: 20,
-    scale: 1,
+    cntY: 40,
+    scale: 1,   // 50x50 загружаются за 1,6сек
+                // 20x20 - 50-100мс (тел 300мс) теперь 400мс (тел200мс)
   },
   gameMenu: {
     loadType: 1,  //0 - buttons, 1 - objects
@@ -49,21 +50,24 @@ window.GOptions = GOptions;
 
 
 GOptions.images = {
-  baseURL: '/clientfiles/html/img/hex2',
+  baseURL: '/clientfiles/html/img/hex4',
   hexsprite: {
     path: '/hexsprite.png',
     sprites: {
-      neutral: 2,
-      user1: 0,
-      active1: 1,
-      user2: 3,
-      active2: 4,
+      neutral: 0,
+      user1: 1,
+      //active1: 1,
+      user2: 2,
+      //active2: 4,
     },
-    size: 64
+    size: 64  //20  64
   }
 }
 
 window.gamedata = {   // основные данные игры
+  time: {
+
+  },
   menu: {
     mainBtn: null,
     mainText: null,

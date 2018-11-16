@@ -9,7 +9,7 @@ function init() {
 
   //Load the plugin
   if(GOptions.usePlugin.kineticScrolling){
-    this.game.kineticScrolling = this.game.plugins.add(Phaser.Plugin.KineticScrolling);
+    //this.game.kineticScrolling = this.game.plugins.add(Phaser.Plugin.KineticScrolling);
   }
 }
 
@@ -35,9 +35,6 @@ function preload() {
   monitorLoader(this.load);
   ***/
 }
-
-
-
 
 function monitorLoader(loader) {
   loader.onLoadStart   .add(function ()              { console.log(    'start'             ); });
