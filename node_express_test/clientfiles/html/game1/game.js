@@ -1,13 +1,17 @@
 console.clear();
 
+const round = Math.round;
+
+var PIXEL_RATIO = 1;
 var colors = window.colors;
 var GOptions = window.GOptions;
 
 var worldScale = 1;
 var movePointer = null;
-
+var movePointerFromMenu = 0;
 var multitouchDistanceToScale = 0;
 
+var debugData = {};
 var debugObj = {};
 
 window.game = new Phaser.Game({
@@ -20,6 +24,7 @@ window.game = new Phaser.Game({
   scaleMode:   Phaser.ScaleManager.USER_SCALE,
   scaleH:      1,
   scaleV:      1,
+  zoom: 3,
 
   state: {
     init: init,
@@ -77,7 +82,8 @@ window.game = new Phaser.Game({
 
       if(game.input.mousePointer.isUp && game.input.pointer1.isUp){
         //если отпустили курсор мышки или тап
-        movePointer = null; 
+        movePointer = null;
+        movePointerFromMenu = 0; 
       }
       
       if      (this.cursors.up.isDown   ) setCamPos(0, -5);
@@ -104,7 +110,7 @@ window.game = new Phaser.Game({
         }else{
           var newdist = game.input.pointer1.position.distance(game.input.pointer2) - multitouchDistanceToScale;
           var msize = Math.max(game.scale.width,game.scale.height);
-          worldScale += newdist/msize;
+          worldScale += newdist*PIXEL_RATIO/msize;
           multitouchDistanceToScale = game.input.pointer1.position.distance(game.input.pointer2);
         }
       }else{
@@ -121,7 +127,9 @@ window.game = new Phaser.Game({
 
     render: function() {
       {
-        var text = ' Wscale: '+Math.round(worldScale*100)/100+' ';
+        var text = ' PIXEL_RATIO: '+PIXEL_RATIO+'; '+
+        ' w.dPR: '+window.devicePixelRatio+
+        ' Wscale: '+Math.round(worldScale*100)/100+' ';
         this.game.debug.text(text, 2, 28, "#00ff00"); 
       }
       {
@@ -139,6 +147,18 @@ window.game = new Phaser.Game({
       {
         var t = window.gamedata.time;
         this.game.debug.text('createMap: '+t.createMap, 2, 80, "#00ff00"); 
+      }
+      {
+        var t = movePointer;
+        if( t) debugData._lastmovePointer = t;
+        if(!t) t = debugData._lastmovePointer;
+        if( t){
+          this.game.debug._lastmovePointer = t;
+          this.game.debug.text('movePointer: '+round(t.x)+','+round(t.y),
+             2, 100, "#00ff00"); 
+        }
+        this.game.debug.cameraInfo(game.camera, 20, 150);
+        this.game.debug.inputInfo(20, 300, colors.lime);
       }
 
       if(GOptions.debug.main){
@@ -164,6 +184,9 @@ function setCamPos(x,y){
 }
 
 function moveCursor(poh,x,y) {
+  if(movePointerFromMenu) return;
+  x *= PIXEL_RATIO;
+  y *= PIXEL_RATIO;
   if(game.input.mousePointer.isDown || game.input.pointer1.isDown){
     if(game.input.pointer2.isDown){ // если нажали несколько кнопок
       movePointer = null;
@@ -172,10 +195,18 @@ function moveCursor(poh,x,y) {
     //console.log('mousePointer isDown');
     //const {x,y} = game.input.pointer1;
     if(!movePointer){
+      const cam = game.camera;
+      var menuPos = cam.height - cam.height*GOptions.gameMenu.screenHSize;
+      if( y > menuPos){
+        movePointerFromMenu = 1;
+        console.log('mapMenuClick('+x+','+y+')');
+        return mapMenuClick(x,y);
+      } 
       movePointer = {x:x,y:y};
       return;
     }
-    game.camera.setPosition(game.camera.x + movePointer.x-x, game.camera.y + movePointer.y-y);
+    game.camera.setPosition(game.camera.x + movePointer.x-x, 
+                            game.camera.y + movePointer.y-y);
     movePointer = {x:x,y:y};
   }else{
     movePointer = null;
@@ -198,9 +229,11 @@ function create(game){
 
 //запускается в preload.js после загрузки всех объектов
 function createEx(game){
+  UPDATE_PIXEL_RATIO();
   createGameObjects();
   createMapMenu();
 }
+
 
 function createGameObjects(){
   //game.camera.flash( '#ff0',300 );
@@ -217,6 +250,7 @@ function createGameObjects(){
 
 
 function setGameFullScreen() {
+  console.log('setGameFullScreen()');
   var game = window.game;
   window.gamedata.menu.settingsBtn.tint = Math.random()* 0xffffff;
   //var test = 'begin';
@@ -244,6 +278,7 @@ function onFullScreenChange() {
     console.log('выход из полноэкранного режима '+width+'x'+height);
     game.scale.setGameSize(width, height);
     resizeMenu(1);
+    UPDATE_PIXEL_RATIO();
     //groupmap.scale.setGameSize(width, height);
   }else{
     var width = window.screen.width;
@@ -251,7 +286,33 @@ function onFullScreenChange() {
     console.log('переход в полноэкранный режим '+width+'x'+height);
     game.scale.setGameSize(width, height);
     resizeMenu(1);
+    UPDATE_PIXEL_RATIO();
     //groupmap.scale.setGameSize(width, height);
   }
 }
 
+function UPDATE_PIXEL_RATIO() {
+  PIXEL_RATIO = window.devicePixelRatio;
+
+  PIXEL_RATIO = Math.floor( PIXEL_RATIO );
+  if(PIXEL_RATIO>1){
+    if(game.camera.height<=640) return PIXEL_RATIO = 1; 
+  }
+  /****
+  var ctx = document.createElement("canvas");
+  
+  .getContext("2d"),
+
+      var canvas = document.getElementById('canvas');
+      var ctx = canvas.getContext('2d');
+      dpr = window.devicePixelRatio || 1,
+      // The backing store size in relation to the canvas element
+      bsr = ctx.webkitBackingStorePixelRatio ||
+      ctx.mozBackingStorePixelRatio ||
+      ctx.msBackingStorePixelRatio ||
+      ctx.oBackingStorePixelRatio ||
+      ctx.backingStorePixelRatio || 1
+
+  PIXEL_RATIO = Math.ceil( dpr / bsr );
+  *****/
+};

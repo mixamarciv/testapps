@@ -1,3 +1,9 @@
+//random >=min && <max
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
+  
 function time_long_str(time_begin,time_end){
   if(!time_begin['getTime']){
         if(time_begin['toFixed']){

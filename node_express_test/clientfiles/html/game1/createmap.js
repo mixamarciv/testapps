@@ -160,13 +160,12 @@ function createHexButton(x,y,xpos,ypos,scale){
     textobj: text,
     x: x,
     y: y,
-    value: 1, // значение силы по умолчанию
+    value: 0, // значение силы по умолчанию 0 - нельзя ходить
     owner: 0, // владелец по умолчанию
   };
   mapObjects.gd[id] = gd;
   
-  var rnd = getRandomInt(1, 3);
-  gd_setVal(gd,rnd);
+  gd_setVal(gd,0);
 
   return hexbtn;
 }
@@ -175,11 +174,19 @@ function gd_setVal(gd,val){
     gd.value = val;
     if(GOptions.gameMap.loadType==2){
       const hs = GOptions.images.hexsprite.sprites;
+      if(val==0){
+        gd.bntobj.frame = hs.neutral;
+        gd.bntobj.visible = false;
+        gd.bntobj.alpha = 0;
+        return;
+        //game.add.tween(gd.bntobj).to( { alpha: 1 }, 1, Phaser.Easing.Linear.None, true);
+      }
+      gd.bntobj.visible = true;
       var frame = hs.neutral;
       if(gd.owner==window.gamedata.user1.id) frame = hs.user1;
       else if(gd.owner==window.gamedata.user2.id) frame = hs.user2;
       frame = frame*20 + val-1;
-      console.log('SET FRAME '+gd.bntobj.frame+'->'+frame);
+      //console.log('SET FRAME '+gd.bntobj.frame+'->'+frame);
       gd.bntobj.frame = frame;
       return;
     }
@@ -310,25 +317,30 @@ function gd_moveUser1(gd,togd){
     let val1 = togd.value;
     let val2 = gd.value;
 
+    //gd.value = 1;
     gd_setVal(gd,1);
 
     if( val1 > val2 ){
+      //gd_setVal(gd,1);
       gd_setVal(togd, val1 - val2);
       return;
     }
 
     if( val1 < val2 ){
-      gd_setVal(togd,val2 - val1);
+      togd.value = val2 - val1;
+      //gd_setVal(gd,1);
       gd_setOwnerUser1(gd);
       gd_setActiveUser1(togd);
       return;
     }
 
     if( val1 == val2 ){
+      //gd_setVal(gd,1);
       gd_setVal(togd,1);
       return;
     }
 }
+
 
 
 function hexClick(hexbtn){
@@ -341,8 +353,8 @@ function hexClick(hexbtn){
 
   var id = hexbtn._id;
   var gd = window.gamedata.mapObjects.gd[id];
-  console.log('id: '+id);
-  console.log(gd);
+  //console.log('id: '+id);
+  //console.log(gd);
 
   if(gd.owner == window.gamedata.user1.id){  //если нажали на кнопку юзера1
     if(debug.userMoveHex) console.log('нажали на кнопку юзера1');
@@ -355,8 +367,8 @@ function hexClick(hexbtn){
 
   var activebtnId = window.gamedata.activeuser1btn._id;
   var agd = window.gamedata.mapObjects.gd[activebtnId];
-  console.log('active id: '+activebtnId);
-  console.log(agd);
+  //console.log('active id: '+activebtnId);
+  //console.log(agd);
 
   if(gd_canMoveTo(agd,gd)==0){ //если не можем переместиться на эту кнопку из текущей
     if(debug.userMoveHex) console.log('не можем переместиться на эту кнопку из текущей');
@@ -373,25 +385,73 @@ function hexClick(hexbtn){
 }
 
 
+function get_gd(id){
+  return window.gamedata.mapObjects.gd[id];
+}
+
+function get_gdpos(x,y){
+  var btn = window.gamedata.maphexbuttons[x][y];
+  var gd = get_gd(btn._id);
+  return gd;
+}
+
 //создаем пользовательские объекты:
 function createuserobj(){
+  const map = GOptions.gameMap;
   var btns = window.gamedata.maphexbuttons;
 
+  //задаем случайные позиции игроков
+  var posU1 = {x:getRandomInt(0,map.cntX),y:getRandomInt(0,map.cntY)}
+  //console.log('posU1: ',posU1);
+  var btn1 = btns[posU1.x][posU1.y];
+  var gd1 = get_gd(btn1._id);
+  //console.log('user1: ',gd1);
+  gd_setVal(gd1,20);
+  gd_setActiveUser1(gd1);
 
-  //задаем случайные позиции объекта
-  var pos = {x:getRandomInt(0,window.gamedata.cntX),y:getRandomInt(0,window.gamedata.cntY)}
-  console.log(pos);
-  var btn = btns[pos.x][pos.y];
-  var id = btn._id;
-  var gd = window.gamedata.mapObjects.gd[id];
-  console.log('set active id: '+id);
-  console.log(gd);
-  gd_setVal(gd,20);
-  gd_setActiveUser1(gd);
+  var posU2 = { x: map.cntX-posU1.x-1, y: map.cntY-posU1.y-1}
+  //console.log('posU2: ',posU2);
+  var btn2 = btns[posU2.x][posU2.y];
+  var gd2 = get_gd(btn2._id);
+  //console.log('user2: ',gd2);
+  gd_setVal(gd2,20);
+  gd_setActiveUser2(gd2);
+
+
+  //задаем значения клеток
+  
+  //gd_setVal(gd,rnd);
+  var cntx2 = map.cntX/2;
+  var cnty2 = map.cntY/2;
+  for(let i=0;i<cntx2;i++){
+    for(let j=0;j<cnty2;j++){
+     
+      var gd1 = get_gdpos(cntx2+i,cnty2+j);
+      var gd2 = get_gdpos(cntx2-i-1,cnty2-j-1);
+
+      var gd3 = get_gdpos(cntx2-i-1,cnty2+j);
+      var gd4 = get_gdpos(cntx2+i,cnty2-j-1);
+      
+      game.add.tween(gd1.bntobj).to( { alpha: 1 }, 500, Phaser.Easing.Linear.None, true);
+      game.add.tween(gd2.bntobj).to( { alpha: 1 }, 500, Phaser.Easing.Linear.None, true);
+
+      game.add.tween(gd3.bntobj).to( { alpha: 1 }, 500, Phaser.Easing.Linear.None, true);
+      game.add.tween(gd4.bntobj).to( { alpha: 1 }, 500, Phaser.Easing.Linear.None, true);
+
+      if(gd1.owner==0 && gd2.owner==0){
+        var rnd1 = getRandomInt(0, 9);
+        gd_setVal(gd1,rnd1);
+        gd_setVal(gd2,rnd1);
+      }
+
+      if(gd3.owner==0 && gd4.owner==0){
+        var rnd2 = getRandomInt(0, 20);
+        gd_setVal(gd3,rnd2);
+        gd_setVal(gd4,rnd2);
+      }
+    }
+  }
+
 }
 
-//random >=min && <max
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
-}
 

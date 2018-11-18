@@ -1,42 +1,47 @@
-function createMapMenu(){
+
+function createMapMenu(){  
   //var maingamedata = window.gamedata;
   var group = window.gamedata.groupmenu;
   
+  //const mapMenuClickTurn = 
   //goup.left = 0;
   //goup.top = 0;
   //goup.fixedToCamera = true;
   //group.fixedToCamera = true;
   group.y = game.camera.height - 100;
 
+  
   //var cam = game.camera.height - 100;
   window.gamedata.menu.buttons = [];
   var btnWidth = 400;
   var btnHeight = 125;
   {
+    var clickFnc = function(){};
     var btn = null;
     if(GOptions.gameMenu.loadType==0){
-      btn = game.add.button(100, 0, 'button',createGameObjects);
+      btn = game.add.button(100, 0, 'button',clickFnc);
       group.add(btn);
     }else
     if(GOptions.gameMenu.loadType==1){
       btn = group.create(100, 0, 'button');
       btn.inputEnabled = true;
-      btn.events.onInputDown.add(createGameObjects, btn);
+      btn.events.onInputDown.add(clickFnc, btn);
     }
     //btn.fixedToCamera = true;
     //btn.tint = 0x00ff00;
     window.gamedata.menu.mainBtn = btn;
   }
   {
+    var clickFnc = function(){};
     var btn = null;
     if(GOptions.gameMenu.loadType==0){
-      btn = game.add.button(100, 0, 'settings',setGameFullScreen);
+      btn = game.add.button(100, 0, 'settings',clickFnc);
       group.add(btn);
     }else
     if(GOptions.gameMenu.loadType==1){
       btn = group.create(100, 0, 'settings');
       btn.inputEnabled = true;
-      btn.events.onInputDown.add(setGameFullScreen, btn);
+      btn.events.onInputDown.add(clickFnc, btn);
     }
     //btn.fixedToCamera = true;
     //btn.tint = 0xff00ff;
@@ -63,6 +68,15 @@ function createMapMenu(){
   resizeMenu(1);
 }
 
+function mapMenuClickSettings(){
+  setGameFullScreen();
+}
+
+function mapMenuClickTurn(){
+  createGameObjects();
+}
+
+
 function resizeMenu(force) {
   if (!force) return;
   var group = window.gamedata.groupmenu;
@@ -74,7 +88,6 @@ function resizeMenu(force) {
   var btnHeight = 125;
   var btn2Size = 512;
   
-  debugObj = menu.mainBtn;
 
   menu.settingsBtn.fixedToCamera = false;
   var scalest = Math.round(needHSize/btn2Size*100)/100;
@@ -131,3 +144,17 @@ function clickButton_destroyMap(){
   createMap();
 }
 
+function mapMenuClick(x,y){ // обработка нажатий меню
+  //срабатывает на события во время/вместо перемещения по карте в moveCursor
+  // когда пользователь нажимает ниже cam.height - cam.height * GOptions.gameMenu.screenHSize
+  var menu = window.gamedata.menu;
+
+  if(x < menu.mainBtn.width) {
+    return mapMenuClickTurn();
+  }
+  console.log(x +' > '+ menu.settingsBtn.x);
+  if(x > menu.mainBtn.width) {
+    return mapMenuClickSettings();
+  }
+  
+}

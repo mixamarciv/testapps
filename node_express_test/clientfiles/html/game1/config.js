@@ -15,8 +15,8 @@ var GOptions = {
   height: window.screen.availHeight,
   gameMap: {
     loadType: 2,  //0 - buttons, 1 - objects, 2 - obj+text
-    cntX: 10,
-    cntY: 40,
+    cntX: 8,
+    cntY: 20,
     scale: 1,   // 50x50 загружаются за 1,6сек
                 // 20x20 - 50-100мс (тел 300мс) теперь 400мс (тел200мс)
   },
@@ -94,3 +94,5 @@ window.gamedata = {   // основные данные игры
     height: GOptions.height,
   }
 }
+
+
