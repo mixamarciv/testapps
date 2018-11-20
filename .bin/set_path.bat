@@ -47,5 +47,14 @@ CD "%this_file_path%"
 
 @SET PATH=c:\windows\system32;%PATH%
 @SET PATH=%PHP_PATH%;%PATH%
+
+
+
+@SET ANDROID_HOME=C:\Users\user\AppData\Local\Android\sdk
+@SET PATH=%PATH%;%ANDROID_HOME%
+
+@SET JAVA_HOME=c:\pg\app\Java\jdk1.8.0_191
+@SET PATH=%PATH%;%JAVA_HOME%\bin\
+
 :: ===========================================================================
 

@@ -9,6 +9,14 @@
     <!--script src="/clientfiles/phaser-kinetic-scrolling-plugin.min.js"></script-->
     
 </head>
+<style>
+    * { padding: 0; margin: 0; }
+    body {
+        padding: 0px;
+        margin: 0px;
+        background: black;
+    }
+</style>
 <body>
 
 <!--
@@ -21,21 +29,16 @@
 <script src="/clientfiles/html/game1/config.js"></script>
 <script src="/clientfiles/html/game1/preload.js"></script>
 <script src="/clientfiles/html/game1/createmap.js"></script>
-
-
 <script src="/clientfiles/html/game1/game.js"></script>
-
 <script src="/clientfiles/html/game1/createmapmenu.js"></script>
+<script src="/clientfiles/html/game1/debug.js"></script>
 
 <script>
-setTimeout(function(){
-    //location.reload();
-},1000);
+    start_game();
+    setTimeout(function(){
+        //location.reload();
+    },1000);
 </script>
-
-<script>
-</script>
-
 
 </body>
 </html>

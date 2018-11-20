@@ -1,6 +1,3 @@
-console.clear();
-
-var GOptions = window.GOptions;
 
 function init() {
   var debug = this.game.debug;
@@ -13,7 +10,7 @@ function init() {
   }
 }
 
-function preload() {
+function game_preload() {
   console.log('preload');
   this.game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
   this.game.scale.pageAlignHorizontally = true;

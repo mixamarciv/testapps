@@ -49,7 +49,7 @@ function createMapMenu(){
   }
   {
     var style = {
-      font: "bold 28px Arial", 
+      font: "bold 28px Verdana", 
       fill: "#eee", 
       wordWrap: true, 
       wordWrapWidth: 1000, 
@@ -86,7 +86,7 @@ function resizeMenu(force) {
   
   var btnWidth = 400;
   var btnHeight = 125;
-  var btn2Size = 512;
+  var btn2Size = 125;
   
 
   menu.settingsBtn.fixedToCamera = false;
@@ -97,6 +97,7 @@ function resizeMenu(force) {
   menu.settingsBtn.y = 0;
   debugObj = menu.settingsBtn;
   menu.settingsBtn.fixedToCamera = true;
+  menu.settingsBtn.tint = 0xcccccc;
 
 
   menu.mainBtn.fixedToCamera = false;
@@ -119,7 +120,7 @@ function resizeMenu(force) {
   menu.mainText.fixedToCamera = true;
 
 
-  console.log(`scale: ${scalebh}:${scalebw}  - ${scalest} `+menu.mainTextStyle.font);
+  console.log(`needHSize ${needHSize}; scale: ${scalebh}:${scalebw}  - ${scalest} `+menu.mainTextStyle.font);
   //устанавливаем позицию группы элементов меню на экране
   group.y = game.camera.height - menu.settingsBtn.height;
   //menu.settingsBtn.fixedToCamera = true;
