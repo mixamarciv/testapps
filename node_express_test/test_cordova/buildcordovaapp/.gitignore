@@ -1,0 +1,8 @@
+hooks/
+node_modules/
+platforms/
+plugins/
+res/
+www/clientfiles/
+www__default/
+package-lock.json
