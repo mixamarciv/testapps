@@ -22,7 +22,7 @@ var GOptions = {
   },
   gameMenu: {
     loadType: 1,  //0 - buttons, 1 - objects
-    screenHSize: 0.08,   // какую часть экрана будет занимать
+    screenHSize: 0.07,   // какую часть экрана будет занимать
   }
 }
 
@@ -54,6 +54,9 @@ GOptions.images = {
   hexsprite: {
     path: '/hexsprite.png',
     sprites: {
+      scaleMin: 0.97,
+      scaleMax: 1.03,
+      scaleMaxVal: 10,
       neutral: 0,
       user1: 1,
       //active1: 1,
@@ -65,15 +68,24 @@ GOptions.images = {
 }
 
 window.gamedata = {   // основные данные игры
+  status: {
+    text: '',      // строка статуса используется для вывода в update_status()
+    cntuser1: 0,   // количество захваченных хексов у игрока1
+    cntuser2: 0,
+    turnuser: 'user1',     // кто сейчас ходит ['user1','user2']
+    turntype: 'move',      // тип хода ['move','inc','wait']
+  },
   time: {
 
   },
   menu: {
     mainBtn: null,
     mainText: null,
-    //restartBtn: null,
-    //restartText: null,
+    statusText: null,
     settingsBtn: null,
+    msgText1: null,
+    msgText2: null,
+    msgText3: null,
   },
   user1: {
     id: 3000,
@@ -83,13 +95,14 @@ window.gamedata = {   // основные данные игры
     id: 5000,
     name: 'nagibatelb'
   },
-  maphexbuttons: [],   // maphexbuttons[x][y] = button
+  maphexbuttons: [],   // maphexbuttons[x][y] = gd button
   mapObjects: {  // данные карты игры (нужны для очистки/пересоздания карты)
-    buttons: [],
-    text: [],
-    gd: [],      // данные по объектам  {x:1,y:4,val:8,owner:user1,button:->,text:->}
+    gdlist: [],  // данные по объектам  {x:1,y:4,val:8,owner:user1,button:->,text:->}
+    gdmap: {},   // gd[id]    
   }, 
   mapsize: {
+    cntX: 0,   // количество уже созданных объектов
+    cntY: 0,  
     width: GOptions.width,
     height: GOptions.height,
   }

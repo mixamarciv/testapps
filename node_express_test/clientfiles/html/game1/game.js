@@ -131,6 +131,8 @@ function game_update() {
   groupmap.scale.set(worldScale);
   var b = window.gamedata.mapsize;
   game.world.setBounds(0, 0, b.width*worldScale, b.height*worldScale);
+
+  game_update_mapmenu();
 }
 
 function game_render() {
@@ -200,6 +202,7 @@ function createGameObjects(){
 
   clearMap();
   createMap();
+  createuserobj();
   //game.camera.flash( '#ff0',300 );//[color] [, duration] [, force] [, alpha])
   
   var gd = window.gamedata;

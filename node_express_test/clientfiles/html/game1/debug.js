@@ -8,12 +8,13 @@ function show_debug_info() {
   }
   {
     var b = window.gamedata.mapsize;
-    var text = 'map width: '+Math.round(b.width*worldScale)+' height: '+Math.round(b.height*worldScale);
+    var mapcnt = b.cntX+'x'+b.cntY;
+    var text = 'map['+mapcnt+'] width: '+Math.round(b.width*worldScale)+' height: '+Math.round(b.height*worldScale);
     this.game.debug.text(text, 2, 40, "#00ff00");  
   }
   {
     var o = debugObj;
-    if(o.scale){
+    if(o && o.scale){
       var text = 'debugObj: '+o.x+':'+o.y+` size: ${o.width}:${o.height} scale: ${o.scale.x}:${o.scale.y}`;
       this.game.debug.text(text, 2, 60, "#00ff00"); 
     }
