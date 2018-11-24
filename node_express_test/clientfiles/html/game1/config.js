@@ -55,7 +55,7 @@ GOptions.images = {
     path: '/hexsprite.png',
     sprites: {
       scaleMin: 0.80,
-      scaleMax: 1.07,
+      scaleMax: 1.05,
       scaleMaxVal: 10,
       neutral: 0,
       user1: 1,

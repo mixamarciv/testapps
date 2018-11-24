@@ -185,29 +185,66 @@ function mapMenuClick(x,y){ // обработка нажатий меню
 //пользователь завершает ход 
 function gameUser1EndTurn(){
   var st = window.gamedata.status;
-  if(st.turnuser!='user1') return gameUser1ShowAlertWait(); // если сейчас ходит не наш игрок
+  if(st.turntype=='wait'){ // если сейчас ходит не наш игрок
+    gameUser1ShowAlertWait(); 
+    return 
+  }
   if(st.turntype=='move') { // если пользователь ходил 
     st.turntype='inc';
     gameUser1ShowTurnChangeToInc();
     return;
   }
-
+  if(st.turntype=='inc') { // если пользователь увеличивал силы то передаем ход сопернику 
+    st.turntype='wait';
+    gameUser1ShowTurnChangeToWait();
+    return;
+  }
 }
 
-function gameUser1ShowAlertWait(){
-  gameMessageShow(window.gamedata.menu.msgText1, 'жди своей очереди','#fff',1500,400);
-}
 
 function gameUser1ShowTurnChangeToInc(){
   var mainText = window.gamedata.menu.mainText;
   var mainBtn = window.gamedata.menu.mainBtn;
   var st = window.gamedata.status;
   mainText.setText('раздай силы +'+st.cntuser1);
-  mainBtn.tint = 0x0fff0f;
+  mainBtn.tint = 0xafafff;
 
   //выводим сообщение:
   gameMessageClears(window.gamedata.menu.msgText1, window.gamedata.menu.msgText2);
   gameMessageShow(window.gamedata.menu.msgText1, 'ход завершен','#fff',0,1500,400);
-  gameMessageShow(window.gamedata.menu.msgText2, 'раздай +'+st.cntuser1+' силы','#11c9d7',800,1500,1500);
+  gameMessageShow(window.gamedata.menu.msgText2, 'раздай +'+st.cntuser1+' силы','#11c9d7',1400,1500,1500);
 }
 
+function gameUser1ShowTurnChangeToWait(){
+  var mainText = window.gamedata.menu.mainText;
+  var mainBtn = window.gamedata.menu.mainBtn;
+  var st = window.gamedata.status;
+  mainText.setText('ждем хода соперника');
+  mainBtn.tint = 0xffafaf;
+
+  //выводим сообщение:
+  gameMessageClears(window.gamedata.menu.msgText1, window.gamedata.menu.msgText2);
+  gameMessageShow(window.gamedata.menu.msgText1, 'начат ход соперника','#fff',0,1500,400);
+  var msgs = [
+    'думаю не стоит переживать',
+    'он ещё не знает что уже проиграл',
+    'пусть ещё чуток порадуется',
+    'это его последние ходы',
+    'его время пошло',
+    'не долго ему осталось',
+  ]
+  gameMessageShow(window.gamedata.menu.msgText2, 'думаю не стоит переживать','#fee',1400,1900,1500);
+}
+
+function gameUser1ShowAlertWait(){
+  gameMessageClears(window.gamedata.menu.msgText1, window.gamedata.menu.msgText2);
+  var msgs = [
+    'жди своей очереди',
+    'соперник ещё не походил',
+    'ждем хода соперника',
+    'он ещё думает',
+    'терпение, только терпение',
+    'сейчас сейчас',
+  ]
+  gameMessageShow(window.gamedata.menu.msgText1, msgs,'#fee',0,1500,400);
+}

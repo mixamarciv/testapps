@@ -53,12 +53,20 @@ function gameMessageClear(msgt){
   }
 }
 
+function msg_getRandomMessage(m){
+  var i = getRandomInt(0, m.length);
+  return m[i];
+}
+
 function gameMessageShow(msgt,message,color,ms_wait,ms_show,ms_hide){
   if(ms_wait){
       msgt._timeout = setTimeout(() => {
         gameMessageShow(msgt,message,color,ms_wait=0,ms_show,ms_hide);
       }, ms_wait);
       return;
+  }
+  if(typeof message == "object"){
+    message = msg_getRandomMessage(message);
   }
 /*******
   if(msgt._idmsg){ // если уже выполняется какая то анимация по этой кнопке
@@ -78,10 +86,11 @@ function gameMessageShow(msgt,message,color,ms_wait,ms_show,ms_hide){
   var menu = window.gamedata.menu;
   var cam = game.camera;
   //var msgt = window.gamedata.menu.msgText1;
-  var textSize = round(menu.mainBtn.height)/1.2;
+  var textSize = round(menu.mainBtn.height)*1.5;
   var style = {
     font: "bold "+textSize+"px Verdana", 
     fill: color,//"#fff", 
+    align: 'center',
     wordWrap: true, 
     wordWrapWidth: round(cam.width*0.95), 
     boundsAlignH: "center", 
@@ -92,19 +101,26 @@ function gameMessageShow(msgt,message,color,ms_wait,ms_show,ms_hide){
   
   msgt.fixedToCamera = false;
   msgt.x = cam.x+cam.width/2;
-  msgt.y = cam.y+(cam.height - menu.settingsBtn.height)/1.5;
+  var movetox = msgt.x;
+
+  var topY = cam.y+msgt.height/2;
+  var bottomY = topY+(cam.height - menu.settingsBtn.height - msgt.height);
+  msgt.y = topY + (bottomY - topY)/2;
+  var movetoy = topY + (bottomY - topY)/1.5;
+
   msgt.setTextBounds(0, 0, 0, 0);
   //msgt.fixedToCamera = true;  //только с нефиксированной камерой можно двигать объекты!!!!
 
 
   var scaleMax = (cam.width-cam.width/10)/msgt.width;
-
+  msgt.scale.x = scaleMax * 0.85;
+  msgt.scale.y = scaleMax * 0.85;
   
-  addTween(msgt, msgt, { x: msgt.x, y: cam.y+(cam.height - menu.settingsBtn.height - msgt.height) }, ms_show, ()=>{}); //перемещаем вниз
+  addTween(msgt, msgt, { x: movetox, y: movetoy }, ms_show, ()=>{}); //перемещаем вниз
   
-  addTween(msgt, msgt, { alpha:1 }, 100,()=>{});
+  addTween(msgt, msgt, { alpha:1 }, 200,()=>{});
 
-  addTween(msgt, msgt.scale, { x:scaleMax*0.95, y:scaleMax*0.95 }, ms_show, ()=>{
+  addTween(msgt, msgt.scale, { x:scaleMax, y:scaleMax }, ms_show, ()=>{
       //addTween(msgt, msgt.scale, { x:scaleMax*0.92, y:scaleMax*0.92 }, ms_show*0.8, ()=>{
         addTween(msgt, msgt, { alpha: 0 }, ms_hide, ()=>{
           msgt.scale.x = 1;

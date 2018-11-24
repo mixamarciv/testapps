@@ -179,7 +179,7 @@ function hexClick(hexbtn){
   
   debugObj = hexbtn;
   var st = window.gamedata.status;
-  if(st.turntype=='move'){
+  if(st.turntype=='move'){  // если пользователь движется
     if(window.gamedata.activeuser1btn==hexbtn){ //если нажали итак активную кнопку
       if(debug.userMoveHex) console.log('нажали уже активную кнопку');
       return; 
@@ -216,9 +216,12 @@ function hexClick(hexbtn){
         console.log('захватываем выбранный объект ['+agd.x+':'+agd.y+' -> '+gd.x+':'+gd.y+']');
       } 
       agd.moveUser1(gd);
+    }else{
+      gameUser1ShowCantMoveWithoutEnergy();
+      return;
     }
   }else
-  if(st.turntype=='inc'){
+  if(st.turntype=='inc'){ // если увеличивает силы клеток
     var gd = get_gdhex(hexbtn._id);
     if(gd.owner != window.gamedata.user1.id){  //если нажали на кнопку не юзера1
       return gameUser1ShowCanIncOnlyUser1();
@@ -272,12 +275,25 @@ function gameUser1ShowCanMoveOnlyNearEnemy(){
   gameMessageShow(window.gamedata.menu.msgText1, 'захватить можно только соседние клетки','#fff',0,1500,400);
 }
 
+function gameUser1ShowCantMoveWithoutEnergy(){
+  gameMessageClears(window.gamedata.menu.msgText1);
+  gameMessageShow(window.gamedata.menu.msgText1, 'нет сил для хода','#fff',0,1500,400);
+}
+
 function gameUser1ShowCanIncOnlyUser1(){
   gameMessageClears(window.gamedata.menu.msgText1);
-  gameMessageShow(window.gamedata.menu.msgText1, 'увеличивать силу можно только своим клеткам','#fff',0,1500,400);
+  gameMessageShow(window.gamedata.menu.msgText1, 'увеличить силу можно только своим клеткам','#fff',0,1500,400);
 }
 
 function gameUser1ShowCantIncOverMax(){
   gameMessageClears(window.gamedata.menu.msgText1);
-  gameMessageShow(window.gamedata.menu.msgText1, 'у этой клетки уже максимум силы','#fff',0,1500,400);
+  var msg = [
+    'достигнут максимум',
+    'дальше уже перебор',
+    'хватит',
+    'больше уже не могу',
+    'дальше не реально',
+    'у этой клетки уже максимум силы',
+  ]
+  gameMessageShow(window.gamedata.menu.msgText1, msg,'#fff',0,1500,400);
 }
