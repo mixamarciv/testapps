@@ -164,3 +164,6 @@ function animate_new_map(){
     }
   }
 }
+
+function gl_endTurn(){
+}

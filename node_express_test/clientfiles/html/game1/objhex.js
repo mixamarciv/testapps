@@ -64,20 +64,16 @@ function gd_setVal(val){
       this.bntobj.tint = 0xffffff;
     }
 
-    if(val>=hs.scaleMaxVal){
-      this.bntobj.scale.x = hs.scaleMax;
-      this.bntobj.scale.y = hs.scaleMax;
-    }else
-    if(val==1){
-      this.bntobj.scale.x = hs.scaleMin;
-      this.bntobj.scale.y = hs.scaleMin;
-    }else{
+    {
       var scale = hs.scaleMin + (hs.scaleMax - hs.scaleMin)/hs.scaleMaxVal*val;
+      if(val==1) scale = hs.scaleMin;
+      else if(val>=hs.scaleMaxVal) scale = hs.scaleMax;
+      
       this.bntobj.scale.x = scale;
       this.bntobj.scale.y = scale;
 
       var sz = window.gamedata.objSize;
-      var offset = (sz - sz * scale);
+      var offset = (sz - sz * scale)/2;
       console.log(offset);
       this.bntobj.x = this.xpos + offset;
       this.bntobj.y = this.ypos + offset;
@@ -182,40 +178,59 @@ function hexClick(hexbtn){
   const debug = window.GOptions.debug;
   
   debugObj = hexbtn;
-
-  if(window.gamedata.activeuser1btn==hexbtn){ //если нажали итак активную кнопку
-    if(debug.userMoveHex) console.log('нажали уже активную кнопку');
-    return; 
-  }
-
-  var gd = get_gdhex(hexbtn._id);
-  //console.log('id: '+id);
-  //console.log(gd);
-
-  if(gd.owner == window.gamedata.user1.id){  //если нажали на кнопку юзера1
-    if(debug.userMoveHex) console.log('нажали на кнопку юзера1');
-    if(gd.getVal()>1){
-      if(debug.userMoveHex) console.log('значение больше 1 - выставляем активной');
-      gd.setActiveUser1();
+  var st = window.gamedata.status;
+  if(st.turntype=='move'){
+    if(window.gamedata.activeuser1btn==hexbtn){ //если нажали итак активную кнопку
+      if(debug.userMoveHex) console.log('нажали уже активную кнопку');
+      return; 
     }
-    return;
-  }
 
-  var agd = get_gdhex(window.gamedata.activeuser1btn._id);
-  //console.log('active id: '+activebtnId);
-  //console.log(agd);
+    var gd = get_gdhex(hexbtn._id);
+    //console.log('id: '+id);
+    //console.log(gd);
 
-  if(agd.canMoveTo(gd)==0){ //если не можем переместиться на эту кнопку из текущей
-    if(debug.userMoveHex) console.log('не можем переместиться на эту кнопку из текущей');
-    return;
-  }
+    if(gd.owner == window.gamedata.user1.id){  //если нажали на кнопку юзера1
+      if(debug.userMoveHex) console.log('нажали на кнопку юзера1');
+      if(gd.getVal()>1){
+        if(debug.userMoveHex) console.log('значение больше 1 - выставляем активной');
+        gd.setActiveUser1();
+      }else{
+        return gameUser1ShowCanMoveOnlyEnemy();
+      }
+      return;
+    }
 
-  let val = agd.getVal();
-  if( val > 1 ){
-    if(debug.userMoveHex) {
-      console.log('захватываем выбранный объект ['+agd.x+':'+agd.y+' -> '+gd.x+':'+gd.y+']');
-    } 
-    agd.moveUser1(gd);
+    var agd = get_gdhex(window.gamedata.activeuser1btn._id);
+    //console.log('active id: '+activebtnId);
+    //console.log(agd);
+
+    if(agd.canMoveTo(gd)==0){ //если не можем переместиться на эту кнопку из текущей
+      if(debug.userMoveHex) console.log('не можем переместиться на эту кнопку из текущей');
+      return gameUser1ShowCanMoveOnlyNearEnemy();
+      return;
+    }
+
+    let val = agd.getVal();
+    if( val > 1 ){
+      if(debug.userMoveHex) {
+        console.log('захватываем выбранный объект ['+agd.x+':'+agd.y+' -> '+gd.x+':'+gd.y+']');
+      } 
+      agd.moveUser1(gd);
+    }
+  }else
+  if(st.turntype=='inc'){
+    var gd = get_gdhex(hexbtn._id);
+    if(gd.owner != window.gamedata.user1.id){  //если нажали на кнопку не юзера1
+      return gameUser1ShowCanIncOnlyUser1();
+      return;
+    }
+    var val = gd.getVal();
+    if(val<20){
+      gd.setVal(val+1);
+    }else{
+      return gameUser1ShowCantIncOverMax();
+      return;
+    }
   }
 }
 
@@ -245,4 +260,24 @@ function updatehex_catch(tohex,fromhex){
     st.cntuser2--;
   }
   update_status();
+}
+
+function gameUser1ShowCanMoveOnlyEnemy(){
+  gameMessageClears(window.gamedata.menu.msgText1);
+  gameMessageShow(window.gamedata.menu.msgText1, 'захватить можно только чужие клетки','#fff',0,1500,400);
+}
+
+function gameUser1ShowCanMoveOnlyNearEnemy(){
+  gameMessageClears(window.gamedata.menu.msgText1);
+  gameMessageShow(window.gamedata.menu.msgText1, 'захватить можно только соседние клетки','#fff',0,1500,400);
+}
+
+function gameUser1ShowCanIncOnlyUser1(){
+  gameMessageClears(window.gamedata.menu.msgText1);
+  gameMessageShow(window.gamedata.menu.msgText1, 'увеличивать силу можно только своим клеткам','#fff',0,1500,400);
+}
+
+function gameUser1ShowCantIncOverMax(){
+  gameMessageClears(window.gamedata.menu.msgText1);
+  gameMessageShow(window.gamedata.menu.msgText1, 'у этой клетки уже максимум силы','#fff',0,1500,400);
 }

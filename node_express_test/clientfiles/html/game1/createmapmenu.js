@@ -3,14 +3,6 @@ function createMapMenu(){
   //var maingamedata = window.gamedata;
   var group = window.gamedata.groupmenu;
   
-  //const mapMenuClickTurn = 
-  //goup.left = 0;
-  //goup.top = 0;
-  //goup.fixedToCamera = true;
-  //group.fixedToCamera = true;
-  group.y = game.camera.height - 100;
-
-  
   //var cam = game.camera.height - 100;
   window.gamedata.menu.buttons = [];
   var btnWidth = 400;
@@ -71,30 +63,7 @@ function createMapMenu(){
   }
 
   {//блок для вывода разных сообщений
-    var style = {
-      font: "bold 28px Verdana", 
-      fill: "#eee", 
-      wordWrap: true, 
-      wordWrapWidth: 5000, 
-      //align: "center",
-      boundsAlignH: "center", 
-      boundsAlignV: "middle",
-      //backgroundColor: "#ffff00" 
-    };
-    var msgText1 = game.add.text(0, -200, "-",style);
-    msgText1.alpha = 0;
-    group.add(msgText1);
-    window.gamedata.menu.msgText1 = msgText1;
-
-    var msgText2 = game.add.text(0, -200, "-",style);
-    msgText2.alpha = 0;
-    group.add(msgText2);
-    window.gamedata.menu.msgText2 = msgText2;
-
-    var msgText3 = game.add.text(0, -200, "-",style);
-    msgText3.alpha = 0;
-    group.add(msgText3);
-    window.gamedata.menu.msgText3 = msgText3;
+    createTextMessages();
   }
   resizeMenu(1);
 }
@@ -213,93 +182,32 @@ function mapMenuClick(x,y){ // обработка нажатий меню
   
 }
 
+//пользователь завершает ход 
 function gameUser1EndTurn(){
   var st = window.gamedata.status;
-  if(st.turnuser!='user1') return gameUser1ShowAlertWait();
-  if(st.turntype=='move') {
-    gameUser1ShowAlertTurnTypeInc();
+  if(st.turnuser!='user1') return gameUser1ShowAlertWait(); // если сейчас ходит не наш игрок
+  if(st.turntype=='move') { // если пользователь ходил 
+    st.turntype='inc';
+    gameUser1ShowTurnChangeToInc();
+    return;
   }
+
 }
 
 function gameUser1ShowAlertWait(){
-  gameShowMessageAlert(window.gamedata.menu.msgText1, 'жди своей очереди',1500,400);
+  gameMessageShow(window.gamedata.menu.msgText1, 'жди своей очереди','#fff',1500,400);
 }
 
-function gameUser1ShowAlertTurnTypeInc(){
+function gameUser1ShowTurnChangeToInc(){
+  var mainText = window.gamedata.menu.mainText;
+  var mainBtn = window.gamedata.menu.mainBtn;
   var st = window.gamedata.status;
-  gameShowMessageAlert(window.gamedata.menu.msgText1, 'ход завершен','#fff',0,1500,400);
-  gameShowMessageAlert(window.gamedata.menu.msgText2, 'раздай +'+st.cntuser1+' силы','#11c9d7',800,1500,1500);
+  mainText.setText('раздай силы +'+st.cntuser1);
+  mainBtn.tint = 0x0fff0f;
+
+  //выводим сообщение:
+  gameMessageClears(window.gamedata.menu.msgText1, window.gamedata.menu.msgText2);
+  gameMessageShow(window.gamedata.menu.msgText1, 'ход завершен','#fff',0,1500,400);
+  gameMessageShow(window.gamedata.menu.msgText2, 'раздай +'+st.cntuser1+' силы','#11c9d7',800,1500,1500);
 }
 
-function gameShowMessageAlert(msgt,message,color,ms_wait,ms_show,ms_hide){
-  if(ms_wait){
-      setTimeout(() => {
-        gameShowMessageAlert(msgt,message,color,ms_wait=0,ms_show,ms_hide);
-      }, ms_wait);
-      return;
-  }
-
-  if(msgt._idmsg){ // если уже выполняется какая то анимация по этой кнопке
-    //останавливаем все анимации и возвращаем исходное состояние
-    msgt._tweens.forEach(element => {
-      element.stop(false);
-    });
-    msgt.alpha = 0;
-    msgt.scale.x = 1;
-    msgt.scale.y = 1; 
-  }
-  var idmsg = Math.random()*10000000+1;
-  msgt._idmsg = idmsg;
-  msgt._tweens = [];
-
-  var menu = window.gamedata.menu;
-  var cam = game.camera;
-  //var msgt = window.gamedata.menu.msgText1;
-  var textSize = round(menu.mainBtn.height)/1.2;
-  var style = {
-    font: "bold "+textSize+"px Verdana", 
-    fill: color,//"#fff", 
-    wordWrap: true, 
-    wordWrapWidth: 5000, 
-    boundsAlignH: "center", 
-    boundsAlignV: "middle",
-  };
-  msgt.setText(message);
-  msgt.setStyle(style, updateImmediately=1);
-  
-  msgt.fixedToCamera = false;
-  msgt.x = cam.x+cam.width/2;
-  msgt.y = cam.y+(cam.height - menu.settingsBtn.height)/1.5;
-  msgt.setTextBounds(0, 0, 0, 0);
-  //msgt.fixedToCamera = true;  //только с нефиксированной камерой можно двигать объекты!!!!
-
-
-  var scaleMax = (cam.width-cam.width/10)/msgt.width;
-
-  
-  addTween(msgt, msgt, { x: msgt.x, y: cam.y+(cam.height - menu.settingsBtn.height - msgt.height) }, ms_show, ()=>{}); //перемещаем вниз
-  
-  addTween(msgt, msgt, { alpha:1 }, 100,()=>{});
-
-  addTween(msgt, msgt.scale, { x:scaleMax, y:scaleMax }, ms_show*0.2, ()=>{
-      addTween(msgt, msgt.scale, { x:scaleMax*0.92, y:scaleMax*0.92 }, ms_show*0.8, ()=>{
-        addTween(msgt, msgt, { alpha: 0 }, ms_hide, ()=>{
-          msgt.scale.x = 1;
-          msgt.scale.y = 1;
-          msgt._idmsg = 0;
-        });
-      });
-  });
-
-}
-
-function addTween(msgt,toobj,to,time,fnc){
-  var t = game.add.tween(toobj).to( to, time, Phaser.Easing.Linear.None, true);
-  msgt._tweens.push(t);
-  t.onComplete.add(fnc);
-  return t;
-}
-
-function game_update_mapmenu(){
-
-}

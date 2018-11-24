@@ -132,7 +132,6 @@ function game_update() {
   var b = window.gamedata.mapsize;
   game.world.setBounds(0, 0, b.width*worldScale, b.height*worldScale);
 
-  game_update_mapmenu();
 }
 
 function game_render() {
