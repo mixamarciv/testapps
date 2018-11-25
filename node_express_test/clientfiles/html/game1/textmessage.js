@@ -86,7 +86,7 @@ function gameMessageShow(msgt,message,color,ms_wait,ms_show,ms_hide){
   var menu = window.gamedata.menu;
   var cam = game.camera;
   //var msgt = window.gamedata.menu.msgText1;
-  var textSize = round(menu.mainBtn.height)*1.5;
+  var textSize = round(menu.mainBtn.height*0.7);
   var style = {
     font: "bold "+textSize+"px Verdana", 
     fill: color,//"#fff", 
@@ -105,8 +105,8 @@ function gameMessageShow(msgt,message,color,ms_wait,ms_show,ms_hide){
 
   var topY = cam.y+msgt.height/2;
   var bottomY = topY+(cam.height - menu.settingsBtn.height - msgt.height);
-  msgt.y = topY + (bottomY - topY)/2;
-  var movetoy = topY + (bottomY - topY)/1.5;
+  msgt.y = topY + (bottomY - topY)/2;  // середина экрана
+  var movetoy = topY + (bottomY - topY)/1.6;   
 
   msgt.setTextBounds(0, 0, 0, 0);
   //msgt.fixedToCamera = true;  //только с нефиксированной камерой можно двигать объекты!!!!

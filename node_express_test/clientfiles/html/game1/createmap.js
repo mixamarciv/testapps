@@ -46,7 +46,7 @@ function createMap(){
   }
 
   window.gamedata.maphexbuttons = maphexbuttons;
-  window.gamedata.time.createMap = time_long_str(start_load);
+  window.gamedata.timeload.createMap = time_long_str(start_load);
   
 }
 
@@ -96,12 +96,16 @@ function createuserobj(){
   //console.log('posU1: ',posU1);
   var gd1 = get_gdhexbypos(posU1.x,posU1.y);
   //console.log('user1: ',gd1);
+  window.gamedata.mainuser1btn_id = gd1.id;
   gd1.setActiveUser1(18);
 
 
   var gd2 = get_gdhexbypos(posU2.x,posU2.y);
   //console.log('user2: ',gd2);
+  
+  window.gamedata.mainuser2btn_id = gd2.id;
   gd2.setActiveUser2(20);
+
 
   setstatus_new_map();
   animate_new_map();
@@ -113,7 +117,7 @@ function setstatus_new_map(){
   st.cntuser2 = 1;
   st.turnuser = 'user1'; // кто сейчас ходит
   st.turntype = 'move';  
-  update_status();
+  menuMainUpdateStatus();
 }
 
 function animate_new_map(){
@@ -139,8 +143,10 @@ function animate_new_map(){
       var timeout = timeoutj*timeoutms;
       timeoutj += 0.15;
 
+      var rnd0 = getInitHexValue();
       if(gd1.owner==0 && gd2.owner==0){
         var rnd1 = getInitHexValue();
+        rnd1 = rnd0;
         gd1.setVal(rnd1);
         gd2.setVal(rnd1);
         game.add.tween(gd1.bntobj).to( { alpha: 1 }, timeout, Phaser.Easing.Linear.None, true);
@@ -152,6 +158,7 @@ function animate_new_map(){
 
       if(gd3.owner==0 && gd4.owner==0){
         var rnd2 = getInitHexValue();
+        rnd2 = rnd0;
         gd3.setVal(rnd2);
         gd4.setVal(rnd2);
         game.add.tween(gd3.bntobj).to( { alpha: 1 }, timeout, Phaser.Easing.Linear.None, true);

@@ -69,6 +69,9 @@ function createMapMenu(){
 }
 
 function mapMenuClickSettings(){
+  window.gamedata.menu.settingsBtn.tint = Math.random()* 0xffffff;
+  console.log('id1: '+window.gamedata.mainuser1btn_id);
+  console.log('id2: '+window.gamedata.mainuser2btn_id);
   setGameFullScreen();
 }
 
@@ -135,7 +138,7 @@ function resizeMenu(force) {
 }
 
 
-function update_status(){
+function menuMainUpdateStatus(){
   var stText = window.gamedata.menu.statusText;
   if(!stText) return;
   var st = window.gamedata.status;
@@ -197,17 +200,17 @@ function gameUser1EndTurn(){
   if(st.turntype=='inc') { // если пользователь увеличивал силы то передаем ход сопернику 
     st.turntype='wait';
     gameUser1ShowTurnChangeToWait();
+
+    gameStartTurnEnemy();
     return;
   }
 }
 
 
 function gameUser1ShowTurnChangeToInc(){
-  var mainText = window.gamedata.menu.mainText;
-  var mainBtn = window.gamedata.menu.mainBtn;
   var st = window.gamedata.status;
-  mainText.setText('раздай силы +'+st.cntuser1);
-  mainBtn.tint = 0xafafff;
+  st.cntuser1cansend = st.cntuser1;
+  menuMainBtnUpdate();
 
   //выводим сообщение:
   gameMessageClears(window.gamedata.menu.msgText1, window.gamedata.menu.msgText2);
@@ -215,12 +218,22 @@ function gameUser1ShowTurnChangeToInc(){
   gameMessageShow(window.gamedata.menu.msgText2, 'раздай +'+st.cntuser1+' силы','#11c9d7',1400,1500,1500);
 }
 
+function menuMainBtnUpdate(){
+  var mainText = window.gamedata.menu.mainText;
+  var mainBtn = window.gamedata.menu.mainBtn;
+  var st = window.gamedata.status;
+  var text = 'раздай силы +'+st.cntuser1cansend;
+  if(st.cntuser1cansend<=0) text = 'вы раздали все силы';
+  mainText.setText(text);
+  mainBtn.tint = 0xf0f000; // зеленый
+}
+
 function gameUser1ShowTurnChangeToWait(){
   var mainText = window.gamedata.menu.mainText;
   var mainBtn = window.gamedata.menu.mainBtn;
   var st = window.gamedata.status;
   mainText.setText('ждем хода соперника');
-  mainBtn.tint = 0xffafaf;
+  mainBtn.tint = 0xf050f0;
 
   //выводим сообщение:
   gameMessageClears(window.gamedata.menu.msgText1, window.gamedata.menu.msgText2);
@@ -244,7 +257,6 @@ function gameUser1ShowAlertWait(){
     'ждем хода соперника',
     'он ещё думает',
     'терпение, только терпение',
-    'сейчас сейчас',
   ]
   gameMessageShow(window.gamedata.menu.msgText1, msgs,'#fee',0,1500,400);
 }

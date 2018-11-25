@@ -215,7 +215,6 @@ function createGameObjects(){
 function setGameFullScreen() {
   console.log('setGameFullScreen()');
   var game = window.game;
-  window.gamedata.menu.settingsBtn.tint = Math.random()* 0xffffff;
   //var test = 'begin';
   //window.gamedata.menu.mainText.setText(test);
   if (game.scale.isFullScreen){

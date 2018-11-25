@@ -17,11 +17,13 @@ function show_debug_info() {
     if(o && o.scale){
       var text = 'debugObj: '+o.x+':'+o.y+` size: ${o.width}:${o.height} scale: ${o.scale.x}:${o.scale.y}`;
       this.game.debug.text(text, 2, 60, "#00ff00"); 
+      text = 'id: '+o._id;
+      this.game.debug.text(text, 2, 80, "#00ff00"); 
     }
   }
   {
-    var t = window.gamedata.time;
-    this.game.debug.text('createMap: '+t.createMap, 2, 80, "#00ff00"); 
+    var t = window.gamedata.timeload;
+    this.game.debug.text('createMap: '+t.createMap, 2, 100, "#00ff00"); 
   }
   {
     var t = movePointer;
@@ -30,7 +32,7 @@ function show_debug_info() {
     if( t){
       this.game.debug._lastmovePointer = t;
       this.game.debug.text('movePointer: '+round(t.x)+','+round(t.y),
-         2, 100, "#00ff00"); 
+         2, 120, "#00ff00"); 
     }
   }
   

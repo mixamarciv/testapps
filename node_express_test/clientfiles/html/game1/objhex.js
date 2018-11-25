@@ -35,6 +35,7 @@ function createHexButton(x,y,xpos,ypos,scale){
   gd.setOwnerUser2  = gd_setOwnerUser2;
   gd.canMoveTo      = gd_canMoveTo;
   gd.moveUser1      = gd_moveUser1;
+  gd.nearHexes      = gd_getnearhexes;
 
 
   return gd;
@@ -53,16 +54,27 @@ function gd_setVal(val){
     
     this.bntobj.visible = true;
     var frame = hs.neutral;
-    if(this.owner==window.gamedata.user1.id) frame = hs.user1;
-    else if(this.owner==window.gamedata.user2.id) frame = hs.user2;
+    if(this.owner==window.gamedata.user1.id){
+      frame = hs.user1;
+      if(this.id == window.gamedata.mainuser1btn_id){ // если это главный хекс
+        this.bntobj.tint = 0xb0b0ff;
+      }else{
+        this.bntobj.tint = 0xffffff;
+      }
+    }else if(this.owner==window.gamedata.user2.id){
+      frame = hs.user2;
+      if(this.id == window.gamedata.mainuser2btn_id){ // если это главный хекс
+        this.bntobj.tint = 0xb0ffb0;
+      }else{
+        this.bntobj.tint = 0xffffff;
+      }
+    }else{ // если это нейтральный хекс
+      this.bntobj.tint = 0xbbbbbb;  
+    }
     frame = frame*20 + val-1;
     //console.log('SET FRAME '+gd.bntobj.frame+'->'+frame);
     this.bntobj.frame = frame;
-    if(frame<20){
-      this.bntobj.tint = 0xbbbbbb;
-    }else{
-      this.bntobj.tint = 0xffffff;
-    }
+    
 
     {
       var scale = hs.scaleMin + (hs.scaleMax - hs.scaleMin)/hs.scaleMaxVal*val;
@@ -125,30 +137,60 @@ function gd_canMoveTo(togd){
 
     if(GOptions.debug.userMoveHex) console.log(`проверка хода ${f.x}:${f.y}(${nechetY}) -> ${t.x}:${t.y} rzx:${rzx}, rzy:${rzy}`);
     
-    if(!nechetY) {
-      if(rzx!=0){
-        if(rzx<0  || rzx>1) return 0;
-        if(rzy<-1 || rzy>1 || rzy==0) return 0;
-        return 1;
+
+    if(!nechetY) { 
+      if(rzx==1){
+        if(rzy==-1 || rzy==1) return 1; 
+        return 0; 
+      } 
+      if(rzx==0){ 
+        if(rzy<-2  || rzy>2) return 0; 
+        return 1; 
       }
-      if(rzx==0){
-        if(rzy<-2  || rzy>2) return 0;
-        return 1;
+      return 0;
+    } 
+    if(nechetY) { 
+      if(rzx==-1){ 
+        if(rzy==-1 || rzy==1) return 1; 
+        return 0; 
+      } 
+      if(rzx==0){ 
+        if(rzy<-2  || rzy>2) return 0; 
+        return 1; 
       }
-    }
-    if(nechetY) {
-      if(rzx!=0){
-        if(rzx>0  || rzx<-1) return 0;
-        if(rzy<-1 || rzy>1 || rzy==0) return 0;
-        return 1;
-      }
-      if(rzx==0){
-        if(rzy<-2  || rzy>2) return 0;
-        return 1;
-      }
-    }
-    
+      return 0; 
+    } 
+
+
+     
     return 1;
+}
+
+//возвращает соседние квадраты
+function gd_getnearhexes(){
+  var h = [];
+  var x = this.x, y = this.y;
+  let nechetY = y%2;
+  if(nechetY) {
+    h.push(get_gdhexbypos(x+1,y-1));
+    h.push(get_gdhexbypos(x+1,y+1));
+    h.push(get_gdhexbypos(x,y-2));
+    h.push(get_gdhexbypos(x,y-1));
+    h.push(get_gdhexbypos(x,y+0));
+    h.push(get_gdhexbypos(x,y+1));
+    h.push(get_gdhexbypos(x,y+2));
+    return h;
+  }
+  //if(!nechetY) 
+  {
+    h.push(get_gdhexbypos(x+1,y+1));
+    h.push(get_gdhexbypos(x,y-2));
+    h.push(get_gdhexbypos(x,y-1));
+    h.push(get_gdhexbypos(x,y+0));
+    h.push(get_gdhexbypos(x,y+1));
+    h.push(get_gdhexbypos(x,y+2));
+    return h;
+  }
 }
 
 function gd_moveUser1(togd){ 
@@ -227,9 +269,20 @@ function hexClick(hexbtn){
       return gameUser1ShowCanIncOnlyUser1();
       return;
     }
+
+    var st = window.gamedata.status;
+    if(st.cntuser1cansend<=0){ //если нет сил на раздачу
+      gameUser1ShowCantInc();
+      return;
+    }
+
     var val = gd.getVal();
     if(val<20){
+      st.cntuser1cansend--;
       gd.setVal(val+1);
+      
+      menuMainBtnUpdate();
+      return;
     }else{
       return gameUser1ShowCantIncOverMax();
       return;
@@ -262,7 +315,7 @@ function updatehex_catch(tohex,fromhex){
   if(fromhex.owner == window.gamedata.user2.id){
     st.cntuser2--;
   }
-  update_status();
+  menuMainUpdateStatus();
 }
 
 function gameUser1ShowCanMoveOnlyEnemy(){
@@ -289,11 +342,16 @@ function gameUser1ShowCantIncOverMax(){
   gameMessageClears(window.gamedata.menu.msgText1);
   var msg = [
     'достигнут максимум',
-    'дальше уже перебор',
-    'хватит',
-    'больше уже не могу',
-    'дальше не реально',
     'у этой клетки уже максимум силы',
+  ]
+  gameMessageShow(window.gamedata.menu.msgText1, msg,'#fff',0,1500,400);
+}
+
+function gameUser1ShowCantInc(){
+  gameMessageClears(window.gamedata.menu.msgText1);
+  var msg = [
+    'нет силы',
+    'все силы израсходованы',
   ]
   gameMessageShow(window.gamedata.menu.msgText1, msg,'#fff',0,1500,400);
 }

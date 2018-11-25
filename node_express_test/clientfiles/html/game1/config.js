@@ -15,8 +15,8 @@ var GOptions = {
   height: window.screen.availHeight,
   gameMap: {
     loadType: 2,  //0 - buttons, 1 - objects, 2 - obj+text
-    cntX: 12,    // 8
-    cntY: 30,   // 20
+    cntX: 6,   //12 должно быть четное!
+    cntY: 20,  //30 должно быть четное!
     scale: 1,   // 50x50 загружаются за 1,6сек
                 // 20x20 - 50-100мс (тел 300мс) теперь 400мс (тел200мс)
   },
@@ -71,11 +71,13 @@ window.gamedata = {   // основные данные игры
   status: {
     text: '',      // строка статуса используется для вывода в update_status()
     cntuser1: 0,   // количество захваченных хексов у игрока1
+    cntuser1cansend: 0, // количество силы у игрока1 которую он может раздать
     cntuser2: 0,
+    cntuser2cansend: 0, // количество силы у игрока2 которую он может раздать
     turnuser: 'user1',     // кто сейчас ходит ['user1','user2']
     turntype: 'move',      // тип хода ['move','inc','wait']
   },
-  time: {
+  timeload: {
 
   },
   menu: {
@@ -105,7 +107,11 @@ window.gamedata = {   // основные данные игры
     cntY: 0,  
     width: GOptions.width,
     height: GOptions.height,
-  }
+  },
+  activeuser1btn: null,
+  activeuser2btn: null,
+  mainuser1btn_id: null,
+  mainuser2btn_id: null,
 }
 
 
