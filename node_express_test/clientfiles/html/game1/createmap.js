@@ -25,7 +25,7 @@ function createMap(){
   //offsetY += 64;
   var maphexbuttons = [];
 
-  /*****************  v2: */
+  /*****************  v2: *
   for(let iy=0;iy<cntY;iy++){
     offsetX = offsetXstart;
     if(iy%2==0) offsetX += objSize*3/4;
@@ -33,6 +33,19 @@ function createMap(){
     for(let ix=0;ix<cntX;ix++){
       var hexbutton = new createHexButton(ix,iy,offsetX,offsetY,scale);
       offsetX += objSize*1.5;
+      if(!maphexbuttons[ix]) maphexbuttons[ix] = [];
+      maphexbuttons[ix][iy] = hexbutton;
+    }
+  }
+  /**********************/
+  /*****************  v3: */
+  for(let ix=0;ix<cntX;ix++){
+    offsetY = offsetYstart;
+    if(ix%2==0) offsetY += objSize*0.5;
+    offsetX += objSize*0.8;
+    for(let iy=0;iy<cntY;iy++){
+      var hexbutton = new createHexButton(ix,iy,offsetX,offsetY,scale);
+      offsetY += objSize;
       if(!maphexbuttons[ix]) maphexbuttons[ix] = [];
       maphexbuttons[ix][iy] = hexbutton;
     }
@@ -115,7 +128,8 @@ function setstatus_new_map(){
   var st = window.gamedata.status;
   st.cntuser1 = 1;
   st.cntuser2 = 1;
-  st.turnuser = 'user1'; // кто сейчас ходит
+  st.turnuser = window.gamedata.user1;
+  st.turnuser.cansend = 1;
   st.turntype = 'move';  
   menuMainUpdateStatus();
 }

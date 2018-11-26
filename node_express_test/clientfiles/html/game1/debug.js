@@ -14,10 +14,11 @@ function show_debug_info() {
   }
   {
     var o = debugObj;
-    if(o && o.scale){
-      var text = 'debugObj: '+o.x+':'+o.y+` size: ${o.width}:${o.height} scale: ${o.scale.x}:${o.scale.y}`;
+    if(o && o.x!==undefined){
+      var text = 'debugObj: '+o.x+':'+o.y+` size: ${o.width}:${o.height} `;
       this.game.debug.text(text, 2, 60, "#00ff00"); 
       text = 'id: '+o._id;
+      if(o.scale) text += ` scale: ${o.scale.x}:${o.scale.y}`;
       this.game.debug.text(text, 2, 80, "#00ff00"); 
     }
   }

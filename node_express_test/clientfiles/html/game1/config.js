@@ -15,7 +15,7 @@ var GOptions = {
   height: window.screen.availHeight,
   gameMap: {
     loadType: 2,  //0 - buttons, 1 - objects, 2 - obj+text
-    cntX: 6,   //12 должно быть четное!
+    cntX: 20,   //12 должно быть четное!
     cntY: 20,  //30 должно быть четное!
     scale: 1,   // 50x50 загружаются за 1,6сек
                 // 20x20 - 50-100мс (тел 300мс) теперь 400мс (тел200мс)
@@ -23,7 +23,8 @@ var GOptions = {
   gameMenu: {
     loadType: 1,  //0 - buttons, 1 - objects
     screenHSize: 0.07,   // какую часть экрана будет занимать
-  }
+  },
+  turnSleep: 300,
 }
 
 GOptions.width  = 600;
@@ -54,8 +55,8 @@ GOptions.images = {
   hexsprite: {
     path: '/hexsprite.png',
     sprites: {
-      scaleMin: 0.80,
-      scaleMax: 1.05,
+      scaleMin: 0.80,  // 0.80
+      scaleMax: 1.05,  // 1.05
       scaleMaxVal: 10,
       neutral: 0,
       user1: 1,
@@ -71,10 +72,10 @@ window.gamedata = {   // основные данные игры
   status: {
     text: '',      // строка статуса используется для вывода в update_status()
     cntuser1: 0,   // количество захваченных хексов у игрока1
-    cntuser1cansend: 0, // количество силы у игрока1 которую он может раздать
+    //cntuser1cansend: 0, // количество силы у игрока1 которую он может раздать
     cntuser2: 0,
-    cntuser2cansend: 0, // количество силы у игрока2 которую он может раздать
-    turnuser: 'user1',     // кто сейчас ходит ['user1','user2']
+    //cntuser2cansend: 0, // количество силы у игрока2 которую он может раздать
+    turnuser: null,   // кто сейчас ходит [gamedata.user1,gamedata.user2]
     turntype: 'move',      // тип хода ['move','inc','wait']
   },
   timeload: {
@@ -91,11 +92,13 @@ window.gamedata = {   // основные данные игры
   },
   user1: {
     id: 3000,
-    name: 'pro100gamer'
+    name: 'pro100gamer',
+    cansend: 0, // количество силы у игрока1 которую он может раздать
   },
   user2: {
     id: 5000,
-    name: 'nagibatelb'
+    name: 'nagibatelb',
+    cansend: 0, // количество силы у игрока2 которую он может раздать
   },
   maphexbuttons: [],   // maphexbuttons[x][y] = gd button
   mapObjects: {  // данные карты игры (нужны для очистки/пересоздания карты)

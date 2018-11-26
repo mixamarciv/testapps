@@ -3,6 +3,9 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
+async function sleep_ms(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
   
 function time_long_str(time_begin,time_end){
   if(!time_begin['getTime']){

@@ -28,6 +28,7 @@ function createHexButton(x,y,xpos,ypos,scale){
 
   gd.setVal         = gd_setVal;
   gd.getVal         = gd_getVal;
+  gd.incVal         = gd_incVal;
   gd.setNeutral     = gd_setNeutral;
   gd.setActiveUser1 = gd_setActiveUser1;
   gd.setOwnerUser1  = gd_setOwnerUser1;
@@ -35,8 +36,9 @@ function createHexButton(x,y,xpos,ypos,scale){
   gd.setOwnerUser2  = gd_setOwnerUser2;
   gd.canMoveTo      = gd_canMoveTo;
   gd.moveUser1      = gd_moveUser1;
-  gd.nearHexes      = gd_getnearhexes;
-
+  gd.moveUser2      = gd_moveUser2;
+  gd.nearHexes      = gd_nearHexes;
+  gd.nearHexesToCanMove = gd_nearHexesToCanMove;
 
   return gd;
 }
@@ -86,7 +88,7 @@ function gd_setVal(val){
 
       var sz = window.gamedata.objSize;
       var offset = (sz - sz * scale)/2;
-      console.log(offset);
+      //console.log(offset);
       this.bntobj.x = this.xpos + offset;
       this.bntobj.y = this.ypos + offset;
     }
@@ -126,71 +128,72 @@ function gd_setOwnerUser2(val){
 function gd_canMoveTo(togd){ 
     var f = this;
     var t = togd;
+    if(togd.getVal()==0) return 0;
     if(f.owner==t.owner){
-      if(GOptions.debug.userMoveHex) console.log('нельзя ходить по уже захваченным объектам');
+      //if(GOptions.debug.userMoveHex) console.log('нельзя ходить по уже захваченным объектам');
       return 0;
     }
     
-    let rzx = t.x - f.x;
-    let rzy = t.y - f.y;
-    let nechetY = f.y%2;
+    let rzx = f.x - t.x;
+    let rzy = f.y - t.y;
+    let nechetX = f.x%2;
 
-    if(GOptions.debug.userMoveHex) console.log(`проверка хода ${f.x}:${f.y}(${nechetY}) -> ${t.x}:${t.y} rzx:${rzx}, rzy:${rzy}`);
+    //if(GOptions.debug.userMoveHex) console.log(`проверка хода ${f.x}:${f.y}(${nechetX}) -> ${t.x}:${t.y} rzx:${rzx}, rzy:${rzy}`);
     
+    if(rzx==0 && (rzy==1 || rzy==-1)) return 1;  // ход по вертикали
 
-    if(!nechetY) { 
-      if(rzx==1){
-        if(rzy==-1 || rzy==1) return 1; 
-        return 0; 
-      } 
-      if(rzx==0){ 
-        if(rzy<-2  || rzy>2) return 0; 
-        return 1; 
-      }
-      return 0;
+    if(rzx>1 || rzx<-1) return 0;
+
+    if(!nechetX) {
+      if(rzy==0 || rzy==-1) return 1;
     } 
-    if(nechetY) { 
-      if(rzx==-1){ 
-        if(rzy==-1 || rzy==1) return 1; 
-        return 0; 
-      } 
-      if(rzx==0){ 
-        if(rzy<-2  || rzy>2) return 0; 
-        return 1; 
-      }
-      return 0; 
+    if(nechetX) { 
+      if(rzy==0 || rzy==1 ) return 1; 
     } 
 
-
-     
-    return 1;
+    return 0;
 }
 
 //возвращает соседние квадраты
-function gd_getnearhexes(){
+function gd_nearHexes(){
   var h = [];
   var x = this.x, y = this.y;
-  let nechetY = y%2;
-  if(nechetY) {
+
+  h.push(get_gdhexbypos(x,y-1));
+  h.push(get_gdhexbypos(x,y+1));
+
+  let nechetX = x%2;
+  if(nechetX) {
+    h.push(get_gdhexbypos(x+1,y+0));
     h.push(get_gdhexbypos(x+1,y-1));
-    h.push(get_gdhexbypos(x+1,y+1));
-    h.push(get_gdhexbypos(x,y-2));
-    h.push(get_gdhexbypos(x,y-1));
-    h.push(get_gdhexbypos(x,y+0));
-    h.push(get_gdhexbypos(x,y+1));
-    h.push(get_gdhexbypos(x,y+2));
-    return h;
-  }
-  //if(!nechetY) 
+    h.push(get_gdhexbypos(x-1,y+0));
+    h.push(get_gdhexbypos(x-1,y-1));
+  }else //if(!nechetY) 
   {
+    h.push(get_gdhexbypos(x+1,y+0));
     h.push(get_gdhexbypos(x+1,y+1));
-    h.push(get_gdhexbypos(x,y-2));
-    h.push(get_gdhexbypos(x,y-1));
-    h.push(get_gdhexbypos(x,y+0));
-    h.push(get_gdhexbypos(x,y+1));
-    h.push(get_gdhexbypos(x,y+2));
-    return h;
+    h.push(get_gdhexbypos(x-1,y+0));
+    h.push(get_gdhexbypos(x-1,y+1));
   }
+
+  var h2 = [];
+  for(let i in h){
+    if(h[i]) h2.push(h[i]); 
+  }
+  return h2;
+}
+
+//возвращает соседние квадраты которые можно захватить
+function gd_nearHexesToCanMove(){
+  var h = this.nearHexes();
+  var hm = [];
+  for(var i in h){
+    let gd = h[i];
+    if( gd && this.canMoveTo(gd) ){
+      hm.push(gd); 
+    }
+  }
+  return hm;
 }
 
 function gd_moveUser1(togd){ 
@@ -215,19 +218,38 @@ function gd_moveUser1(togd){
     }
 }
 
+function gd_moveUser2(togd){ 
+  let valto = togd.value;    // val1
+  let valfrom = this.value;  // val2
+
+  //this.setVal(1);
+  this.setOwnerUser2(1);
+
+  if( valto > valfrom ){
+    return togd.setVal(valto - valfrom);
+  }
+
+  if( valto < valfrom ){
+    updatehex_catch(this,togd);
+    togd.setActiveUser2(valfrom - valto);
+    return ;
+  }
+
+  if( valto == valfrom ){
+    return togd.setVal(1);
+  }
+}
 
 function hexClick(hexbtn){
   const debug = window.GOptions.debug;
-  
-  debugObj = hexbtn;
+  var gd = get_gdhex(hexbtn._id);
+  debugObj = gd;
   var st = window.gamedata.status;
   if(st.turntype=='move'){  // если пользователь движется
     if(window.gamedata.activeuser1btn==hexbtn){ //если нажали итак активную кнопку
       if(debug.userMoveHex) console.log('нажали уже активную кнопку');
       return; 
     }
-
-    var gd = get_gdhex(hexbtn._id);
     //console.log('id: '+id);
     //console.log(gd);
 
@@ -264,22 +286,22 @@ function hexClick(hexbtn){
     }
   }else
   if(st.turntype=='inc'){ // если увеличивает силы клеток
-    var gd = get_gdhex(hexbtn._id);
+
     if(gd.owner != window.gamedata.user1.id){  //если нажали на кнопку не юзера1
       return gameUser1ShowCanIncOnlyUser1();
       return;
     }
 
     var st = window.gamedata.status;
-    if(st.cntuser1cansend<=0){ //если нет сил на раздачу
+    if( act_currentUserCntEnergy() <= 0 ){ //если нет сил на раздачу
       gameUser1ShowCantInc();
       return;
     }
 
     var val = gd.getVal();
     if(val<20){
-      st.cntuser1cansend--;
-      gd.setVal(val+1);
+      //st.cntuser1cansend--;
+      gd.incVal();
       
       menuMainBtnUpdate();
       return;
@@ -290,12 +312,28 @@ function hexClick(hexbtn){
   }
 }
 
+//увеличиваем значение силы хекса
+function gd_incVal(){
+  if( act_currentUserCntEnergy() <= 0 ) return 0;
+  if( this.getVal() >= 20 ) return 0;
+  if( this.owner != act_currentUser().id ) return 0;
+  
+  var val = this.getVal();
+  act_currentUserIncVal();
+  this.setVal(val+1);
+  return 1;
+}
 
 function get_gdhex(id){
   return window.gamedata.mapObjects.gdmap[id];
 }
 
 function get_gdhexbypos(x,y){
+  var mapsz = window.gamedata.mapsize;
+  if( x<0 || y<0 ) return 0;
+  if( x >= mapsz.cntX ) return 0;
+  if( y >= mapsz.cntY ) return 0;
+  //console.log(`get_gdhexbypos(${x},${y})`);
   return window.gamedata.maphexbuttons[x][y];
 }
 

@@ -209,21 +209,21 @@ function gameUser1EndTurn(){
 
 function gameUser1ShowTurnChangeToInc(){
   var st = window.gamedata.status;
-  st.cntuser1cansend = st.cntuser1;
+  st.turnuser.cansend = st.cntuser1;
   menuMainBtnUpdate();
 
   //выводим сообщение:
   gameMessageClears(window.gamedata.menu.msgText1, window.gamedata.menu.msgText2);
   gameMessageShow(window.gamedata.menu.msgText1, 'ход завершен','#fff',0,1500,400);
-  gameMessageShow(window.gamedata.menu.msgText2, 'раздай +'+st.cntuser1+' силы','#11c9d7',1400,1500,1500);
+  gameMessageShow(window.gamedata.menu.msgText2, 'раздай +'+st.turnuser.cansend+' силы','#11c9d7',1400,1500,1500);
 }
 
 function menuMainBtnUpdate(){
   var mainText = window.gamedata.menu.mainText;
   var mainBtn = window.gamedata.menu.mainBtn;
-  var st = window.gamedata.status;
-  var text = 'раздай силы +'+st.cntuser1cansend;
-  if(st.cntuser1cansend<=0) text = 'вы раздали все силы';
+  var cansend = act_currentUser().cansend;
+  var text = 'раздай силы +'+cansend;
+  if(cansend<=0) text = 'вы раздали все силы';
   mainText.setText(text);
   mainBtn.tint = 0xf0f000; // зеленый
 }
@@ -239,7 +239,7 @@ function gameUser1ShowTurnChangeToWait(){
   gameMessageClears(window.gamedata.menu.msgText1, window.gamedata.menu.msgText2);
   gameMessageShow(window.gamedata.menu.msgText1, 'начат ход соперника','#fff',0,1500,400);
   var msgs = [
-    'думаю не стоит переживать',
+    //'думаю не стоит переживать',
     'он ещё не знает что уже проиграл',
     'пусть ещё чуток порадуется',
     'это его последние ходы',
