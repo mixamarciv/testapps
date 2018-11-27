@@ -77,7 +77,6 @@ function gd_setVal(val){
     //console.log('SET FRAME '+gd.bntobj.frame+'->'+frame);
     this.bntobj.frame = frame;
     
-
     {
       var scale = hs.scaleMin + (hs.scaleMax - hs.scaleMin)/hs.scaleMaxVal*val;
       if(val==1) scale = hs.scaleMin;
@@ -243,6 +242,7 @@ function gd_moveUser2(togd){
 function hexClick(hexbtn){
   const debug = window.GOptions.debug;
   var gd = get_gdhex(hexbtn._id);
+  window.gamedata.lastClickHex_gd = gd;
   debugObj = gd;
   var st = window.gamedata.status;
   if(st.turntype=='move'){  // если пользователь движется
@@ -314,10 +314,16 @@ function hexClick(hexbtn){
 
 //увеличиваем значение силы хекса
 function gd_incVal(){
-  if( act_currentUserCntEnergy() <= 0 ) return 0;
+  if( act_currentUserCntEnergy() <= 0 ){
+    console.log('act_currentUserCntEnergy() <= 0  ('+act_currentUserCntEnergy()+' <= 0)');
+    return 0;
+  }
+  if( this.owner != act_currentUser().id ){
+    console.log('this.owner != act_currentUser().id ('+this.owner+' != '+act_currentUser().id+')');
+    return 0;
+  }
   if( this.getVal() >= 20 ) return 0;
-  if( this.owner != act_currentUser().id ) return 0;
-  
+
   var val = this.getVal();
   act_currentUserIncVal();
   this.setVal(val+1);

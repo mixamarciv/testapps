@@ -24,7 +24,11 @@ var GOptions = {
     loadType: 1,  //0 - buttons, 1 - objects
     screenHSize: 0.07,   // какую часть экрана будет занимать
   },
-  turnSleep: 300,
+  turnSleep: 200,
+
+  inputTimeoutInc: 200,            //минимальное время нажатия за которое переключаемся в hexClick(lastClickHex_gd.bntobj)
+  minDistanceToMoveWithoutInc: 30  //минимальная дистанция на которую нужно переместить 
+                                   //камеру за inputTimeoutInc что бы не переключиться в hexClick(lastClickHex_gd.bntobj)
 }
 
 GOptions.width  = 600;
@@ -111,6 +115,7 @@ window.gamedata = {   // основные данные игры
     width: GOptions.width,
     height: GOptions.height,
   },
+  lastClickHex_gd: null, // по какому объекту последний раз нажимали
   activeuser1btn: null,
   activeuser2btn: null,
   mainuser1btn_id: null,

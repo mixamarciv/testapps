@@ -18,10 +18,17 @@ function act_currentUserCntEnergy(){
 
 // gameStartTurnEnemy - начинаем ход компуктера
 async function gameStartTurnEnemy(){
-  window.gamedata.status.turnuser = window.gamedata.user2;
+  var st = window.gamedata.status;
+  st.turnuser = window.gamedata.user2;
+  
   await act_EnemyMove();
+  st.turnuser.cansend = st.cntuser2;
+
   await act_EnemyInc();
-  window.gamedata.status.turnuser = window.gamedata.user1;
+  st.turnuser = window.gamedata.user1;
+  st.turntype = 'move';
+  await sleep_ms(GOptions.turnSleep);
+  gameUser1ShowTurnChangeToMove();
 }
 
 //двигаем все клетки которые только можно
@@ -50,7 +57,8 @@ function act_getEnemyHexesWhoCanMove(user_id){
 
 //двигаем нашу клетку
 async function act_moveEnemyHex(gd){
-  await sleep_ms(GOptions.turnSleep);
+  //await sleep_ms(GOptions.turnSleep);
+  var curUserid = act_currentUser().id;
   gd.setActiveUser2();
   await sleep_ms(GOptions.turnSleep);
   
@@ -59,7 +67,7 @@ async function act_moveEnemyHex(gd){
     if(!nextgd) break;
     await sleep_ms(GOptions.turnSleep);
     gd.moveUser2(nextgd);
-    gd = nextgd;
+    if(nextgd.owner==curUserid) gd = nextgd; // если захватили точку
   }
   return;
 }
@@ -86,7 +94,7 @@ async function act_EnemyInc(){
   var curUserid = act_currentUser().id;
   console.log('раздает силы игрок: '+curUserid);
   var gdlist = act_getEnemyHexesWithHexesToCanMove(curUserid);
-  console.log(gdlist);
+  //console.log(gdlist);
   for(let i in gdlist){
     let gd = gdlist[i];
     await act_incEnemyHex(gd);
@@ -116,9 +124,9 @@ function act_getEnemyHexesWithHexesToCanMove(user_id){
 
 //увеличиваем силы нашей клетки что бы захватить соседнюю
 async function act_incEnemyHex(gd){
+  //console.log('act_incEnemyHex '+gd.x+'x'+gd.y);
   var neargd = act_getNextMovePointWithMinVal(gd);
   var val = neargd.getVal();
-  await sleep_ms(GOptions.turnSleep);
   while(gd.incVal()){
     await sleep_ms(GOptions.turnSleep);
     if(val < gd.getVal()) return;
@@ -128,10 +136,9 @@ async function act_incEnemyHex(gd){
 
 //увеличиваем силы до упора первой попавшейся клетке
 async function act_incEnemyHex2(gd){
-  await sleep_ms(GOptions.turnSleep);
+  //console.log('act_incEnemyHex2 '+gd.x+'x'+gd.y);
   while(gd.incVal()){
     await sleep_ms(GOptions.turnSleep);
-    if(val < gd.getVal()) return;
   }
   return;
 }

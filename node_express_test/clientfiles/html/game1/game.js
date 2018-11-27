@@ -9,6 +9,10 @@ window.movePointer = null;
 window.movePointerFromMenu = 0;
 window.multitouchDistanceToScale = 0;
 
+window.isIncTapDownStartTime = 0; //является ли нажатие увеличением силы хекса
+window.isIncTapDownTapPoint = null; // место первоначального нажатия
+window.isIncTapDownTapPointLastDist = 0; 
+
 window.debugData = {};
 window.debugObj = {};
 
@@ -92,8 +96,22 @@ function game_update() {
     //если отпустили курсор мышки или тап
     movePointer = null;
     movePointerFromMenu = 0; 
+    isIncTapDownStartTime = 0;
+    isIncTapDownTapPoint = null;
+  }else 
+  if((game.input.mousePointer.isDown || game.input.pointer1.isDown) && isIncTapDownStartTime >= 0){
+    if(game_isTimeoutTapDownIncUserHex()){
+      if(isIncTapDownStartTime==0) isIncTapDownStartTime = new Date();
+      t = new Date() - isIncTapDownStartTime;
+      if(t > GOptions.inputTimeoutInc){
+        hexClick(window.gamedata.lastClickHex_gd.bntobj);
+        isIncTapDownStartTime = new Date() - GOptions.inputTimeoutInc/2;
+      }
+    }
   }
   
+
+
   if      (this.cursors.up.isDown   ) setCamPos(0, -5);
   else if (this.cursors.down.isDown ) setCamPos(0, +5);
   if      (this.cursors.left.isDown ) setCamPos(-5, 0);
@@ -143,15 +161,44 @@ function setCamPos(x,y){
   //game.camera.setPosition(goupmap.x + x, goupmap.y + y);
 }
 
+// определяет все ли условия соблюдены для увеличения силы по таймауту нажатия
+function game_isTimeoutTapDownIncUserHex(){
+  if(isIncTapDownStartTime<0) return 0;
+
+  // если сейчас не увеличиваем силу клеток
+  if(window.gamedata.status.turntype != 'inc') return 0;
+
+  // если небыло ещё последнего нажатого хекса
+  if(!window.gamedata.lastClickHex_gd) return 0;
+
+  // если последний раз нажимал не по своему хексу
+  if(act_currentUser().id != window.gamedata.lastClickHex_gd.owner) return 0;
+
+  // если двинул камеру более чем на distance
+  if(isIncTapDownTapPoint){
+    var p = game.input.mousePointer.position;
+    if(p.x==0 && p.y==0) p = game.input.pointer1.position;
+    var distance = round(p.distance(isIncTapDownTapPoint));
+    isIncTapDownTapPointLastDist = distance;
+    if( distance*PIXEL_RATIO > GOptions.minDistanceToMoveWithoutInc ){
+      isIncTapDownStartTime = -1; // то больше не выполняем этих проверок
+      return 0;
+    }
+  }
+
+  return 1;
+}
+
 function moveCursor(poh,x,y) {
   if(movePointerFromMenu) return;
-  x *= PIXEL_RATIO;
-  y *= PIXEL_RATIO;
   if(game.input.mousePointer.isDown || game.input.pointer1.isDown){
     if(game.input.pointer2.isDown){ // если нажали несколько кнопок
+      isIncTapDownStartTime = -1;
       movePointer = null;
       return;
     }
+    x *= PIXEL_RATIO;
+    y *= PIXEL_RATIO;
     //console.log('mousePointer isDown');
     //const {x,y} = game.input.pointer1;
     if(!movePointer){
@@ -163,13 +210,18 @@ function moveCursor(poh,x,y) {
         return mapMenuClick(x,y);
       } 
       movePointer = {x:x,y:y};
+      isIncTapDownTapPoint = movePointer;
       return;
     }
+    
     game.camera.setPosition(game.camera.x + movePointer.x-x, 
                             game.camera.y + movePointer.y-y);
+    
     movePointer = {x:x,y:y};
   }else{
     movePointer = null;
+    isIncTapDownTapPoint = null;
+    isIncTapDownStartTime = 0;
   }
 }
 

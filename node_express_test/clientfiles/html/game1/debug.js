@@ -36,6 +36,25 @@ function show_debug_info() {
          2, 120, "#00ff00"); 
     }
   }
+
+  {
+    var t = isIncTapDownStartTime;
+    var p = isIncTapDownTapPoint;
+    var text = 'IncTap';
+    
+    if(p) text += '  point: '+p.x+':'+p.y;
+    else  text += '  point: 0:0';
+
+    text += '  time: '+isIncTapDownStartTime;
+    if( t>0) {
+      t = new Date() - isIncTapDownStartTime;
+      text += '   Down ms: '+t;
+    }
+    
+    p = game.input.pointer1.position;
+    text += '  dist: '+isIncTapDownTapPointLastDist+'('+p.x+':'+p.y+')';
+    this.game.debug.text(text,2, 140, "#00ff00"); 
+  }
   
   if(GOptions.debug.main==1){
     var debug = this.game.debug;
