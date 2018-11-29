@@ -177,7 +177,7 @@ function game_isTimeoutTapDownIncUserHex(){
   // если двинул камеру более чем на distance
   if(isIncTapDownTapPoint){
     var p = game.input.mousePointer.position;
-    if(p.x==0 && p.y==0) p = game.input.pointer1.position;
+    if(p && p.x==0 && p.y==0) p = game.input.pointer1.position;
     var distance = round(p.distance(isIncTapDownTapPoint));
     isIncTapDownTapPointLastDist = distance;
     if( distance*PIXEL_RATIO > GOptions.minDistanceToMoveWithoutInc ){

@@ -19,6 +19,7 @@
 var app = {
     // Application Constructor
     initialize: function() {
+	    //alert('initialize');
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
     },
 
@@ -27,6 +28,7 @@ var app = {
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
+	    //alert('onDeviceReady');
         this.receivedEvent('deviceready');
     },
 
@@ -38,9 +40,10 @@ var app = {
 
         //listeningElement.setAttribute('style', 'display:none;');
         //receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
+	    //alert('Received Event: ' + id);
+        //console.log('Received Event: ' + id);
         start_game();
+        //alert('start_game()');
     }
 };
 

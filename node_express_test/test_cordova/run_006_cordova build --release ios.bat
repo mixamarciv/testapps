@@ -19,7 +19,7 @@
 @echo ==== start ===================================================================
 
 TITLE cordova build --release android
-CD "%curpath%/buildcordovaapp"
+CD "%curpath%/buildcordovaapp1"
 
 cordova build --release android > "./../log.txt" 2>&1
 

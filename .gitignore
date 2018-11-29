@@ -1,2 +1,4 @@
 
 *.apk
+
+node_express_test/test_cordova/log\.txt

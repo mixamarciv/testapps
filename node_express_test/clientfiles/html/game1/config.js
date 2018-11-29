@@ -24,7 +24,7 @@ var GOptions = {
     loadType: 1,  //0 - buttons, 1 - objects
     screenHSize: 0.07,   // какую часть экрана будет занимать
   },
-  turnSleep: 200,
+  turnSleep: 50,
 
   inputTimeoutInc: 200,            //минимальное время нажатия за которое переключаемся в hexClick(lastClickHex_gd.bntobj)
   minDistanceToMoveWithoutInc: 30  //минимальная дистанция на которую нужно переместить 

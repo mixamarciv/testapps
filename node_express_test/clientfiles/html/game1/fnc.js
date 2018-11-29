@@ -6,7 +6,7 @@ function getRandomInt(min, max) {
 async function sleep_ms(ms){
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-  
+
 function time_long_str(time_begin,time_end){
   if(!time_begin['getTime']){
         if(time_begin['toFixed']){

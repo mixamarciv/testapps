@@ -51,9 +51,12 @@ CD "%this_file_path%"
 
 
 @SET ANDROID_HOME=C:\Users\user\AppData\Local\Android\sdk
+
+@SET ANDROID_HOME=c:\pg\app\Android_sdk\tools
 @SET PATH=%PATH%;%ANDROID_HOME%
 
-@SET JAVA_HOME=c:\pg\app\Java\jdk1.8.0_191
+
+@SET JAVA_HOME=c:\pg\app\Java\jdk-11.0.1
 @SET PATH=%PATH%;%JAVA_HOME%\bin\
 
 :: ===========================================================================

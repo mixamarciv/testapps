@@ -1,5 +1,0 @@
-
-You have been opted out of telemetry. To change this, run: cordova telemetry on.
-Android Studio project detected
-'ANDROID_HOME' environment variable is set to non-existent path: C:\Users\user\AppData\Local\Android\sdk
-Try update it manually to point to valid SDK directory.

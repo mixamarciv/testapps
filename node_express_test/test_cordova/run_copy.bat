@@ -5,13 +5,14 @@
 
 
 @SET path=%curpath%/../node_modules/.bin/;%path%
+@SET path=%path%;c:\pg\app\Android_sdk\tools\platform-tools
 
 @CLS
 @echo ==== start ===================================================================
 
-TITLE cordova run browser --live-reload
-CD "%curpath%/buildcordovaapp1"
-
-cordova platform add android
+TITLE adb logcat
+SET from=C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp1\platforms\android\app\build\outputs\apk\debug\app-debug.apk 
+SET to=c:\pg\prjs\testapps\node_express_test\clientfiles\app\app-debug.apk 
+copy /y "%from%" "%to%"
 @echo ==== end   ===================================================================
 @pause
