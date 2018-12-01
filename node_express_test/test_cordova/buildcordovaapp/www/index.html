@@ -1,73 +1,130 @@
 <!DOCTYPE html>
-<!--
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
 <html>
-    <head>
-        <!--
-        Customize this policy to fit your own app's needs. For more guidance, see:
-            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
-        Some notes:
-            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
-            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
-            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
-                * Enable inline JS: add 'unsafe-inline' to default-src
-        -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
-        <meta name="format-detection" content="telephone=no">
-        <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <link rel="stylesheet" type="text/css" href="css/index.css">
-        <title>Hello World</title>
-    </head>
-    <body>
-<!-- 
-        <div class="app">
-            <h1>Apache Cordova</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
-        </div>
--->
+<head>
+    <meta charset="utf-8" />
+    <title>test js doc</title>
+    <style>* { padding: 0; margin: 0; }</style>
+
+    <link rel="stylesheet" href="clientfiles/slate.bootstrap4.css">
+    <script src="clientfiles/jquery.min.js"></script>
+    <script src="clientfiles/bootstrap.min.js"></script>
+    
+</head>
+<style>
+    * { padding: 0; margin: 0; }
+    body {
+        padding: 0px;
+        margin: 0px;
+        background: black;
+    }
+</style>
+<body>
 
 <script type="text/javascript" src="cordova.js"></script>
 <script type="text/javascript" src="js/index.js"></script>
 
-<script type="text/javascript" src="clientfiles/jquery.min.js"></script>
-<script type="text/javascript" src="clientfiles/colors.js"></script>
-<script type="text/javascript" src="clientfiles/phaser.min.js"></script>
+<script src="clientfiles/colors.js"></script>
+<script src="clientfiles/phaser.min.js"></script>
 
-<script type="text/javascript" src="clientfiles/html/game1/fnc.js"></script>
-<script type="text/javascript" src="clientfiles/html/game1/config.js"></script>
-<script type="text/javascript" src="clientfiles/html/game1/preload.js"></script>
-<script type="text/javascript" src="clientfiles/html/game1/objhex.js"></script>
-<script type="text/javascript" src="clientfiles/html/game1/createmap.js"></script>
-<script type="text/javascript" src="clientfiles/html/game1/game.js"></script>
+<script src="clientfiles/html/game1/fnc.js"></script>
+<script src="clientfiles/html/game1/config.js"></script>
+<script src="clientfiles/html/game1/preload.js"></script>
+<script src="clientfiles/html/game1/objhex.js"></script>
+<script src="clientfiles/html/game1/createmap.js"></script>
+<script src="clientfiles/html/game1/game.js"></script>
 
-<script type="text/javascript" src="clientfiles/html/game1/gameaction.js"></script>
+<script src="clientfiles/html/game1/gameaction.js"></script>
 
-<script type="text/javascript" src="clientfiles/html/game1/createmapmenu.js"></script>
-<script type="text/javascript" src="clientfiles/html/game1/textmessage.js"></script>
-<script type="text/javascript" src="clientfiles/html/game1/debug.js"></script>
+<script src="clientfiles/html/game1/createmapmenu.js"></script>
+<script src="clientfiles/html/game1/textmessage.js"></script>
+<script src="clientfiles/html/game1/debug.js"></script>
+
+<script src="clientfiles/html/game1/menu/main.js"></script>
+
+<script>
+    setTimeout(function(){
+        //location.reload();
+        //start_game();
+    },1000);
+</script>
 
 
+<div id=game_menu_main >
+<div class="container main_menu_item" id=menu_main>
+    <div class="row">
+        <div class="col-12">
+            <center>
+            <h1>Hexodrocher</h1>
+            <p class="lead">крутая игра про развитие и захват клеток</p>
+            <p>попробуй захватить все клетки противника</p>
+            </center>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <center><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='resumegame'>
+                <b>продолжить</b></a></center>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 justify-content-center">
+            <center><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='newgame'>
+                <b>новая игра</b></a></center>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-12 justify-content-center">
+            <center><b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='mm_go_to_settings' go_to_menu='menu_settings'>
+                настройки</a></b></center>
+        </div>
+    </div>
+</div>
 
-    </body>
+
+<div class="container main_menu_item" id=menu_settings style='display: none;'>
+    <div class="row"><div class="col-12"><center><h1>настройки</h1></center></div></div>
+    
+    <div class="row">
+        <div class="col-12 justify-content-center">
+            <center><b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='ms_go_to_menu_main' go_to_menu="menu_main">
+                назад</a></b></center>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+            <div class="col-12 justify-content-center">
+                <center><b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='ms_go_to_debug' go_to_menu='menu_debug'>
+                    отладка</a></b></center>
+            </div>
+    </div>
+</div>
+
+
+<div class="container main_menu_item" id=menu_debug style='display: none;'>
+    <div class="row"><div class="col-12"><center><h1>меню отладки</h1></center></div></div>
+    <div class="row">
+            <div class="col-12 justify-content-center">
+                <center><b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='md_go_to_settings' go_to_menu="menu_settings">
+                    назад</a></b></center>
+            </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-12">
+            <form>
+                <legend>выводить отладочную информацию:</legend>
+                <fieldset>
+                    <p><label><input type="checkbox" value=""> текущий объект</label></p>
+                    <p><label><input type="checkbox" value=""> карта</label></p>
+                    <p><label><input type="checkbox" value=""> камера</label></p>
+                </fieldset>
+            </form>
+            <hr>
+            <a class="btn btn-primary btn-lg col-10" href='clientfiles/app/app-debug.apk'>скачать отладочную версию</a>
+        </div>
+    </div>
+</div>
+
+</body>
 </html>

@@ -56,7 +56,7 @@ router.get('/list2', rfnc.asyncRoute(async function(req, res){
 }));
 
 async function page_main(req,res,fnc_ret){
-	var html = fs.readFileSync(path.join(__dirname,'page_main.html'));
+	var html = fs.readFileSync(path.join(__dirname,'../test_cordova/buildcordovaapp/www/index.html'));
 	html = html.toString();
 	return fnc_ret(null,html);
 }

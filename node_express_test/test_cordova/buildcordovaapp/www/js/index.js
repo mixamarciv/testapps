@@ -42,7 +42,7 @@ var app = {
         //receivedElement.setAttribute('style', 'display:block;');
 	    //alert('Received Event: ' + id);
         //console.log('Received Event: ' + id);
-        start_game();
+        //start_game();
         //alert('start_game()');
     }
 };

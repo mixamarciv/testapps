@@ -3,10 +3,13 @@ var express = require('express');
 var app = express();
 
 var s = require('./settings.js')();
-const {wlog,wlogf,config} = s;
+const {wlog,wlogf,config,path} = s;
 
 
-app.use('/clientfiles', express.static(__dirname + '/clientfiles'));
+app.use('/clientfiles', express.static(path.join(__dirname,'/test_cordova/buildcordovaapp/www/clientfiles')));
+app.use('/css', express.static(path.join(__dirname,'/test_cordova/buildcordovaapp/www/css')));
+app.use('/img', express.static(path.join(__dirname,'/test_cordova/buildcordovaapp/www/img')));
+app.use('/js', express.static(path.join(__dirname,'/test_cordova/buildcordovaapp/www/js')));
 app.use(require('./routers/default.js'));
 
 

@@ -11,8 +11,8 @@
 @echo ==== start ===================================================================
 
 TITLE adb logcat
-SET from=C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp1\platforms\android\app\build\outputs\apk\debug\app-debug.apk 
-SET to=c:\pg\prjs\testapps\node_express_test\clientfiles\app\app-debug.apk 
+SET from=C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\platforms\android\app\build\outputs\apk\debug\app-debug.apk 
+SET to=C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\www\clientfiles\app\app-debug.apk 
 copy /y "%from%" "%to%"
 @echo ==== end   ===================================================================
 @pause
