@@ -17,6 +17,23 @@ window.debugData = {};
 window.debugObj = {};
 
 function start_game(){
+  {//определяем размер перед загрузкой  
+    //вот тут док для айфона и ещё немного полезной инфы:
+    //  https://www.joshmorony.com/how-to-scale-a-game-for-all-device-sizes-in-phaser/
+    // и тут:
+    //  https://medium.com/slow-cooked-games-blog/how-to-create-a-mobile-game-on-the-cheap-38a7b75999a7
+    // надо юзать * window.devicePixelRatio
+    var w = window,
+        d = document,
+        e = d.documentElement,
+        g = d.getElementsByTagName('body')[0],
+        x = w.innerWidth || e.clientWidth || g.clientWidth,
+        y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+    //alert(x + ' × ' + y);
+    GOptions.width  = x;
+    GOptions.height = y;
+  }
+
   window.game = new Phaser.Game({
     renderer: Phaser.CANVAS,
     //renderer: Phaser.WEBGL,
@@ -142,14 +159,26 @@ function game_update() {
   }else{
     multitouchDistanceToScale = 0;
   }
+  game_world_resize(worldScale);
+}
 
-  worldScale = Phaser.Math.clamp(worldScale, min=0.25, max=2);
+function game_world_resize(new_worldScale){
+  worldScale = Phaser.Math.clamp(new_worldScale, min=0.25, max=2);
   var groupmap = window.gamedata.groupmap;
 
   groupmap.scale.set(worldScale);
   var b = window.gamedata.mapsize;
   game.world.setBounds(0, 0, b.width*worldScale, b.height*worldScale);
+  
+  //сохраняем настройки пользователя
+  //GOptions.gameMap.startWorldScale = worldScale; - но только не здесь
+}
 
+//выполняем подготовку к сохранению пользовательских настроек игры
+function game_prepare_to_save_options(){
+  //сохраняем настройки пользователя
+  if(!mainMenu.gameIsCreated()) return 0; //только если игра уже была создана
+  GOptions.gameMap.startWorldScale = worldScale; //только тут
 }
 
 function game_render() {
@@ -244,6 +273,7 @@ function createEx(game){
   UPDATE_PIXEL_RATIO();
   createGameObjects();
   createMapMenu();
+  game_world_resize(GOptions.gameMap.startWorldScale);
 }
 
 

@@ -1,43 +1,57 @@
 
 function show_debug_info() {
-  {
+  if(GOptions.debug.debug_total==0) return 0;  // вообще не выводим ничего
+  const dbg = GOptions.debug;
+
+  var offsety = 0;
+  var offsety_inc = 20;
+
+  if(dbg.fps){
+    this.game.debug.text(game.time.fps || '--', 2, offsety+=offsety_inc, colors.yellow);  
+  }
+
+  if(dbg.pixel_ratio){
     var text = 'PIXEL_RATIO: '+PIXEL_RATIO+'; '+
     ' w.dPR: '+window.devicePixelRatio+
     ' Wscale: '+Math.round(worldScale*100)/100+' ';
-    this.game.debug.text(text, 2, 28, "#00ff00"); 
+    this.game.debug.text(text, 2, offsety+=offsety_inc, "#00ff00"); 
   }
-  {
+
+  if(dbg.create_map_time){
+    var t = window.gamedata.timeload;
+    this.game.debug.text('createMap: '+t.createMap, 2, offsety+=offsety_inc, "#00ff00"); 
+  }
+
+  if(dbg.map_info){
     var b = window.gamedata.mapsize;
     var mapcnt = b.cntX+'x'+b.cntY;
     var text = 'map['+mapcnt+'] width: '+Math.round(b.width*worldScale)+' height: '+Math.round(b.height*worldScale);
-    this.game.debug.text(text, 2, 40, "#00ff00");  
+    this.game.debug.text(text, 2, offsety+=offsety_inc, "#00ff00");  
   }
-  {
+
+  if(dbg.debugObj_info){
     var o = debugObj;
     if(o && o.x!==undefined){
       var text = 'debugObj: '+o.x+':'+o.y+` size: ${o.width}:${o.height} `;
-      this.game.debug.text(text, 2, 60, "#00ff00"); 
+      this.game.debug.text(text, 2, offsety+=offsety_inc, "#00ff00"); 
       text = 'id: '+o._id;
       if(o.scale) text += ` scale: ${o.scale.x}:${o.scale.y}`;
-      this.game.debug.text(text, 2, 80, "#00ff00"); 
+      this.game.debug.text(text, 2, offsety+=offsety_inc, "#00ff00"); 
     }
   }
-  {
-    var t = window.gamedata.timeload;
-    this.game.debug.text('createMap: '+t.createMap, 2, 100, "#00ff00"); 
-  }
-  {
+
+  if(dbg.movePointer_info){
     var t = movePointer;
     if( t) debugData._lastmovePointer = t;
     if(!t) t = debugData._lastmovePointer;
     if( t){
       this.game.debug._lastmovePointer = t;
       this.game.debug.text('movePointer: '+round(t.x)+','+round(t.y),
-         2, 120, "#00ff00"); 
+         2, offsety+=offsety_inc, "#00ff00"); 
     }
   }
 
-  {
+  if(dbg.IncTap_info){
     var t = isIncTapDownStartTime;
     var p = isIncTapDownTapPoint;
     var text = 'IncTap';
@@ -53,19 +67,24 @@ function show_debug_info() {
     
     p = game.input.pointer1.position;
     text += '  dist: '+isIncTapDownTapPointLastDist+'('+p.x+':'+p.y+')';
-    this.game.debug.text(text,2, 140, "#00ff00"); 
+    this.game.debug.text(text,2, offsety+=offsety_inc, "#00ff00"); 
   }
-  
-  if(GOptions.debug.main==1){
-    var debug = this.game.debug;
-    //this.loadRender();
-    debug.text(game.time.fps || '--', 2, 14, "#00ff00");  
-    debug.cameraInfo(game.camera, 20, 150);
 
-    debug.inputInfo(20, 300, colors.lime);
-    //debug.pointer(this.input.activePointer, colors.aqua);
-    debug.device(420, 20, colors.aqua);
-    //debug.phaser(10, 580, colors.gray);
-    game.debug.body(window.gamedata.groupmap);
+  if(dbg.cameraInfo){
+    this.game.debug.cameraInfo(game.camera, 2, offsety+=offsety_inc);
+    offsety+=offsety_inc*7;
+  }
+
+  if(dbg.inputInfo){
+    this.game.debug.inputInfo(2, offsety+=offsety_inc, colors.lime);
+    offsety+=offsety_inc*14;
+  }
+
+  if(dbg.device){
+    this.game.debug.device(2, offsety+=offsety_inc, colors.aqua);
+  }
+
+  if(dbg.body){
+    this.game.debug.body(window.gamedata.groupmap);
   }
 }

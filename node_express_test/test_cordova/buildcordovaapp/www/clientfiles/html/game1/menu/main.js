@@ -2,8 +2,13 @@
 var mainMenu = {};
 
 $(function(){
+  window.GOptions.localStorage_load();
+
   mainMenu.gameHide();
   mainMenu.mainMenuShow();
+  setTimeout(function(){
+    mainMenu._render_debug_fields();
+  },50);
 
   $('#newgame').click(function(){
     if(mainMenu.gameIsCreated()) createGameObjects();
@@ -28,6 +33,7 @@ $(function(){
 });
 
 mainMenu.gameHide = function(){
+  window.GOptions.localStorage_save(); // сохраняем настройки каждый раз при смене состояния игры
   var canv = $('canvas');
   if(canv) canv.hide();
 }
@@ -39,6 +45,7 @@ mainMenu.gameIsCreated = function(){
 }
 
 mainMenu.gameShow = function(){
+  window.GOptions.localStorage_save(); // сохраняем настройки каждый раз при смене состояния игры
   mainMenu.mainMenuHide();
   if(mainMenu.gameIsCreated()){
     var canv = $('canvas');
@@ -57,3 +64,29 @@ mainMenu.mainMenuShow = function(){
 }
 
 
+mainMenu._render_debug_fields = function(){
+  var f = $('#debug_fields');
+  var html = '';
+  var dbg = window.GOptions.debug;
+  for(var key in dbg){
+    const val = dbg[key];
+    var checked = 'checked';
+    if(!val) checked = '';
+    var objid = 'objid_'+key;
+    html += `
+    <p><label>
+    <input type="checkbox" id='${objid}'
+           onchange="mainMenu_change_dbg_field('#${objid}','${key}')"
+           name="${key}" ${checked}
+    > ${key} </label></p>
+    `;
+  }
+  f.html(html);
+}
+
+function mainMenu_change_dbg_field(idobj,field){
+  var val = $(idobj).prop('checked');
+  if(val) val = 1;
+  else val = 0;
+  window.GOptions.debug[field] = val;
+}

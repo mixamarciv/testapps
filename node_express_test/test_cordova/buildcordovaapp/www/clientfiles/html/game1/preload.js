@@ -4,10 +4,6 @@ function init() {
   debug.lineHeight = 20;
   debug.font = '16px monospace';
 
-  //Load the plugin
-  if(GOptions.usePlugin.kineticScrolling){
-    //this.game.kineticScrolling = this.game.plugins.add(Phaser.Plugin.KineticScrolling);
-  }
 }
 
 function game_preload() {

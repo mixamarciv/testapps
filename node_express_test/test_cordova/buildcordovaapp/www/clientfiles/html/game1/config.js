@@ -1,19 +1,31 @@
 
-var GOptions = {
+window.GOptions = {
   debug: {
-    main: 0,
+    debug_total: 0,
+
+    fps: 1,
+    pixel_ratio: 1,
+    create_map_time: 1,
+    map_info: 1,
+    debugObj_info: 0,
+    movePointer_info: 0,
+    IncTap_info: 0,
+
+    cameraInfo: 0,
+    inputInfo: 0,
+    device: 0,
+    body: 0,
+
     loader: 0,
     userMoveHex: 0,   // пишем лог перемещения по клеткам
     showHexInfo: 0,    // выводим позиции клеток внутри хексов
     showClearMapInfo: 0, // выводить информацию по очистке карты
   },
-  usePlugin: {
-    kineticScrolling: 1
-  },
   fullScreen: 1,
   width: window.screen.availWidth,
   height: window.screen.availHeight,
   gameMap: {
+    startWorldScale: 0.85,
     loadType: 2,  //0 - buttons, 1 - objects, 2 - obj+text
     cntX: 20,   //12 должно быть четное!
     cntY: 20,  //30 должно быть четное!
@@ -24,37 +36,13 @@ var GOptions = {
     loadType: 1,  //0 - buttons, 1 - objects
     screenHSize: 0.07,   // какую часть экрана будет занимать
   },
-  turnSleep: 50,
-
+  turnSleep: 50, 
   inputTimeoutInc: 200,            //минимальное время нажатия за которое переключаемся в hexClick(lastClickHex_gd.bntobj)
   minDistanceToMoveWithoutInc: 30  //минимальная дистанция на которую нужно переместить 
                                    //камеру за inputTimeoutInc что бы не переключиться в hexClick(lastClickHex_gd.bntobj)
 }
 
-GOptions.width  = 600;
-GOptions.height = 800;
-
-{//определяем размер перед загрузкой  89125552202 9121283621
-  //вот тут док для айфона и ещё немного полезной инфы:
-  //  https://www.joshmorony.com/how-to-scale-a-game-for-all-device-sizes-in-phaser/
-  // и тут:
-  //  https://medium.com/slow-cooked-games-blog/how-to-create-a-mobile-game-on-the-cheap-38a7b75999a7
-  // надо юзать * window.devicePixelRatio
-  var w = window,
-      d = document,
-      e = d.documentElement,
-      g = d.getElementsByTagName('body')[0],
-      x = w.innerWidth || e.clientWidth || g.clientWidth,
-      y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-  //alert(x + ' × ' + y);
-  GOptions.width  = x;
-  GOptions.height = y;
-}
-
-window.GOptions = GOptions;
-
-
-GOptions.images = {
+window.GOptions.images = {
   baseURL: 'clientfiles/html/img/hex4',
   hexsprite: {
     path: '/hexsprite.png',
@@ -70,6 +58,48 @@ GOptions.images = {
     },
     size: 64  //20  64
   }
+}
+
+
+window.GOptions.localStorage_load = function(){
+  var opt_set = this._opt_set_data_if_exists;
+  var opt = localStorage.getItem('GOptions');
+  if(!opt) return;
+  opt = JSON.parse(opt);
+  if(!opt) return;
+  this.turnSleep = opt.turnSleep;
+  this.debug     = opt_set(this.debug  ,opt.debug);
+  console.log(this.gameMap.startWorldScale+' LOAD ->'+opt.gameMap.startWorldScale);
+  this.gameMap   = opt_set(this.gameMap,opt.gameMap);
+}
+
+window.GOptions.localStorage_save = function(){
+  game_prepare_to_save_options();
+  const opt_copy = this._opt_copy_data;
+  var opt = {
+    debug: opt_copy(window.GOptions.debug, {}),
+    gameMap: opt_copy(window.GOptions.gameMap, {}),
+    turnSleep: window.GOptions.turnSleep,
+  };
+  console.log(this.gameMap.startWorldScale+' SAVE ->'+opt.gameMap.startWorldScale);
+  opt = JSON.stringify(opt);
+  localStorage.setItem('GOptions',opt);
+}
+
+//копирует из одного массива в другой
+window.GOptions._opt_copy_data = function(from,to){
+  for(var key in from){
+    to[key] = from[key]
+  }
+  return to;
+}
+
+//устанавливает значение в объекте to из обьекта from (если и там и там эти значения ещё есть)
+window.GOptions._opt_set_data_if_exists = function(to,from){
+  for(var key in from){
+    if(from[key] != undefined && to[key] != undefined) to[key] = from[key];
+  }
+  return to;
 }
 
 window.gamedata = {   // основные данные игры
