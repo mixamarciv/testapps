@@ -7,6 +7,13 @@ async function sleep_ms(ms){
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function copyobj_1lvl(from,to){
+    for (key in from) {
+      to[key] = from[key];
+    }
+    return to;
+}
+
 function time_long_str(time_begin,time_end){
   if(!time_begin['getTime']){
         if(time_begin['toFixed']){

@@ -35,11 +35,8 @@ async function gameStartTurnEnemy(){
 async function act_EnemyMove(){
   var curUserid = act_currentUser().id;
   console.log('двигается игрок: '+curUserid);
-  var gdlist = act_getEnemyHexesWhoCanMove(curUserid);
-  for(let i in gdlist){
-    let gd = gdlist[i];
-    await act_moveEnemyHex(gd);
-  }
+  var moveHexes = act_getEnemyHexesWhoCanMove(curUserid);
+  await moveHexes.moveAll();
 }
 
 //возвращает все клетки которые могут двигаться
@@ -52,8 +49,42 @@ function act_getEnemyHexesWhoCanMove(user_id){
       usergdlist.push(gd);
     }
   }
+
+  var moveHexes = {};
+  moveHexes.gdlist = usergdlist;
+  moveHexes.gdlistnotmove = copyobj_1lvl(usergdlist,[]);
+  moveHexes.moveHex = _act_moveEnemyHex;
+  moveHexes.moveAll = _act_moveEnemyHexAll;
+
   return usergdlist;
 }
+
+async function _act_moveEnemyHexAll(){
+  var gdlist = this.gdlistnotmove;
+  for(i in gdlist){
+    var gd = gdlist[i];
+    await this.moveHex(gd);
+  }
+}
+
+//двигаем нашу клетку
+async function _act_moveEnemyHex(gd){
+  //await sleep_ms(GOptions.turnSleep);
+  var curUserid = act_currentUser().id;
+  gd.setActiveUser2();
+  await sleep_ms(GOptions.turnSleep);
+  
+  while( gd.getVal() > 1 ){
+    var nextgd = act_getNextMovePointWithMinVal(gd);
+    if(!nextgd) break;
+    await sleep_ms(GOptions.turnSleep);
+    gd.moveUser2(nextgd);
+    if(nextgd.owner==curUserid) gd = nextgd; // если захватили точку
+  }
+  return;
+}
+
+
 
 //двигаем нашу клетку
 async function act_moveEnemyHex(gd){

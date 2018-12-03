@@ -109,26 +109,6 @@ function game_create() {
 
 function game_update() {
 
-  if(game.input.mousePointer.isUp && game.input.pointer1.isUp){
-    //если отпустили курсор мышки или тап
-    movePointer = null;
-    movePointerFromMenu = 0; 
-    isIncTapDownStartTime = 0;
-    isIncTapDownTapPoint = null;
-  }else 
-  if((game.input.mousePointer.isDown || game.input.pointer1.isDown) && isIncTapDownStartTime >= 0){
-    if(game_isTimeoutTapDownIncUserHex()){
-      if(isIncTapDownStartTime==0) isIncTapDownStartTime = new Date();
-      t = new Date() - isIncTapDownStartTime;
-      if(t > GOptions.inputTimeoutInc){
-        hexClick(window.gamedata.lastClickHex_gd.bntobj);
-        isIncTapDownStartTime = new Date() - GOptions.inputTimeoutInc/2;
-      }
-    }
-  }
-  
-
-
   if      (this.cursors.up.isDown   ) setCamPos(0, -5);
   else if (this.cursors.down.isDown ) setCamPos(0, +5);
   if      (this.cursors.left.isDown ) setCamPos(-5, 0);
@@ -146,6 +126,26 @@ function game_update() {
   ) {
       worldScale *= 0.99;
   }
+
+  if(game.input.mousePointer.isUp && game.input.pointer1.isUp){
+    //если отпустили курсор мышки или тап
+    movePointer = null;
+    movePointerFromMenu = 0; 
+    isIncTapDownStartTime = 0;
+    isIncTapDownTapPoint = null;
+    game.input.reset();
+  }else 
+  if((game.input.mousePointer.isDown || game.input.pointer1.isDown) && isIncTapDownStartTime >= 0){
+    if(game_isTimeoutTapDownIncUserHex()){
+      if(isIncTapDownStartTime==0) isIncTapDownStartTime = new Date();
+      t = new Date() - isIncTapDownStartTime;
+      if(t > GOptions.inputTimeoutInc){
+        hexClick(window.gamedata.lastClickHex_gd.bntobj);
+        isIncTapDownStartTime = new Date() - GOptions.inputTimeoutInc/2;
+      }
+    }
+  }
+  
 
   if(game.input.pointer1.isDown && game.input.pointer2.isDown){
     if(multitouchDistanceToScale==0) { //если только сделали двойной тап

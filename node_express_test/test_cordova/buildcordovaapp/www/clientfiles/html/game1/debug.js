@@ -11,7 +11,7 @@ function show_debug_info() {
   }
 
   if(dbg.pixel_ratio){
-    var text = 'PIXEL_RATIO: '+PIXEL_RATIO+'; '+
+    var text = 'pixel_ratio: '+PIXEL_RATIO+'; '+
     ' w.dPR: '+window.devicePixelRatio+
     ' Wscale: '+Math.round(worldScale*100)/100+' ';
     this.game.debug.text(text, 2, offsety+=offsety_inc, "#00ff00"); 
