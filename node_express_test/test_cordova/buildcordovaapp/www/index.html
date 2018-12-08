@@ -26,6 +26,8 @@
 <script src="clientfiles/colors.js"></script>
 <script src="clientfiles/phaser.min.js"></script>
 
+<script src="clientfiles/html/service/phone.js"></script>
+
 <script src="clientfiles/html/game1/fnc.js"></script>
 <script src="clientfiles/html/game1/config.js"></script>
 <script src="clientfiles/html/game1/preload.js"></script>
@@ -43,6 +45,8 @@
 
 <script>
     setTimeout(function(){
+        window.service_phone.init();
+        
         //location.reload();
         //start_game();
     },1000);

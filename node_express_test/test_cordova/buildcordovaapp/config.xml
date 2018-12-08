@@ -24,6 +24,8 @@
         <allow-intent href="itms-apps:*" />
     </platform>
     <preference name="Fullscreen" value="false" />
+    <plugin name="cordova-plugin-file" spec="^6.0.1" />
+    <plugin name="cordova-hot-code-push-plugin" spec="^1.5.3" />
     <engine name="android" spec="^7.1.4" />
     <engine name="browser" spec="^5.0.4" />
 </widget>

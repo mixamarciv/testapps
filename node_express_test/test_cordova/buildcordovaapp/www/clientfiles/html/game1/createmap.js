@@ -81,7 +81,11 @@ function clearMap(){
   }
   mapObjects.gdmap = {};
   mapObjects.gdlist = [];
-  if(debug.showClearMapInfo) console.log('удалено объектов: '+cnt);
+
+  var msg = 'удалено объектов: '+cnt;
+  if(debug.showClearMapInfo) console.log(msg);
+
+  window.service_phone.writeFileLocal('log_clearmap.log',msg);
 }
 
 

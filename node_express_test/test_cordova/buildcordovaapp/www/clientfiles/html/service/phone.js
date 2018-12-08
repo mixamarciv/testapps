@@ -1,17 +1,6 @@
 //https://developer.mozilla.org/ru/docs/Web/API/Touch_events    - отслеживаем touch event'ы
 window.service_phone = {}
 
-function justForTesting() {
-	logOb.file(function(file) {
-		var reader = new FileReader();
-
-		reader.onloadend = function(e) {
-			console.log(this.result);
-		};
-
-		reader.readAsText(file);
-	}, fail);
-}
 
 //  https://www.npmjs.com/package/cordova-plugin-sms-receive
 //  https://github.com/Pyo25/Phonegap-SMS-reception-plugin
@@ -27,6 +16,14 @@ cordova.plugins.CordovaCall.on('sendCall', handler); // send call
 
 window.service_phone.init = function(){
     if(!window.service_phone.f_file) window.service_phone.f_file = {};
+    if(!window.cordova) {
+        var nullfnc = function(){
+            console.log('FUNCTION NOT WORK: window.cordova is not defined');
+        };
+        window.service_phone.createFileLocal = nullfnc;
+        window.service_phone.writeFileLocal = nullfnc;
+        window.service_phone.readFileLocal = nullfnc;
+    }
 }
 
 window.service_phone.createFileLocal = function(fileName,callBack){
@@ -35,7 +32,7 @@ window.service_phone.createFileLocal = function(fileName,callBack){
     if(f) return callBack(f);
     window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function(dir) {
         console.log("got main dir",dir);
-        dir.getFile(fileName, {create:true}, function(file) {
+        dir.getFile(fileName, {create:true, exclusive: false}, function(file) {
             console.log("got the file", file);
             window.service_phone.f_file[fileName] = file;
             callBack(file);
@@ -45,6 +42,7 @@ window.service_phone.createFileLocal = function(fileName,callBack){
 
 
 window.service_phone.writeFileLocal = function(fileName,str,callBack) {
+    if(!callBack) callBack = function(){};
     window.service_phone.createFileLocal(fileName,function(logOb){
         var log = "[" + (new Date()) + "] "+str+"\n";
         console.log("going to log "+log);
@@ -64,7 +62,7 @@ window.service_phone.writeFileLocal = function(fileName,str,callBack) {
 }
 
 
-window.service_phone.readFile = function(fileName,callBack){
+window.service_phone.readFileLocal = function(fileName,callBack){
     window.service_phone.createFileLocal(fileName,function(logOb){
         logOb.file(function(file) {
             var reader = new FileReader();

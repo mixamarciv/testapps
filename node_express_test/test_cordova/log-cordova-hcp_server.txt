@@ -1,0 +1,21 @@
+Running server
+Checking:  C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\www
+local_url http://localhost:31284
+hidden path: C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\www\clientfiles
+path: C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\www\clientfiles
+rpath: C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\www\clientfiles
+C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\node_modules\winattr\lib\whichLib.js:87
+			throw error;    // !!!!!!!!!!!!!!!!!!!!!!!!!!!# 1
+			^
+
+Error: ���� �� ������
+    at get_parseResult (C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\node_modules\winattr\lib\shell\index.js:44:12)
+    at Object.getSync (C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\node_modules\winattr\lib\shell\index.js:148:11)
+    at C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\node_modules\winattr\lib\index.js:30:30
+    at Object.run (C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\node_modules\winattr\lib\whichLib.js:74:12)
+    at Object.getSync (C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\node_modules\winattr\lib\index.js:25:19)
+    at statSync (C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\node_modules\hidefile\index.js:132:28)
+    at Object.isHiddenSync (C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\node_modules\hidefile\index.js:228:13)
+    at Object.fileChangeFilter [as filter] (C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\node_modules\cordova-hot-code-push-cli\dist\server.js:89:20)
+    at C:\pg\prjs\testapps\node_express_test\test_cordova\buildcordovaapp\node_modules\watch\main.js:53:44
+    at FSReqWrap.oncomplete (fs.js:155:5)

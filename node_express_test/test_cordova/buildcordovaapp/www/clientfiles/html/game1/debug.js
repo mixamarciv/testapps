@@ -6,6 +6,12 @@ function show_debug_info() {
   var offsety = 0;
   var offsety_inc = 20;
 
+  if(dbg.gametouch){
+    var t = window.gametouch;
+    var msg = 'count: '+t.count+' move: '+t.movecount;
+    this.game.debug.text('gametouch: '+msg, 2, offsety+=offsety_inc, "#00ff00");  
+  }
+
   if(dbg.fps){
     this.game.debug.text(game.time.fps || '--', 2, offsety+=offsety_inc, colors.yellow);  
   }

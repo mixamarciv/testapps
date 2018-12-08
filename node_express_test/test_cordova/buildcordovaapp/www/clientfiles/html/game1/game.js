@@ -11,7 +11,12 @@ window.multitouchDistanceToScale = 0;
 
 window.isIncTapDownStartTime = 0; //является ли нажатие увеличением силы хекса
 window.isIncTapDownTapPoint = null; // место первоначального нажатия
-window.isIncTapDownTapPointLastDist = 0; 
+window.isIncTapDownTapPointLastDist = 0;
+window.gametouch = {
+  count:0,
+  movecount: 0, 
+  toches:[],
+};
 
 window.debugData = {};
 window.debugObj = {};
@@ -93,18 +98,55 @@ function game_create() {
   maingamedata.groupmenu = new Phaser.Group(game, game.world, 'z500menu');
   
   game.scale.refresh();
-  /*********************
-  this.game.kineticScrolling.configure({
-      kineticMovement: true,
-      timeConstantScroll: 325, //really mimic iOS
-      horizontalScroll: true,
-      verticalScroll: true,
-      horizontalWheel: false,
-      verticalWheel: true,
-      deltaWheel: 40
-  });
-  *********************/
+
+  {//отлавливаем нажатия по экрану
+    var el = document.getElementsByTagName("canvas")[0];
+    el.addEventListener("touchstart",  handle_touchstart, false);
+    el.addEventListener("touchend",    handle_touchend, false);
+    el.addEventListener("touchcancel", handle_touchcancel, false);
+    el.addEventListener("touchmove",   handle_touchmove, false);
+
+    
+    el.addEventListener("mousedown",   handle_mousedown, false);
+    el.addEventListener("mouseup",     handle_mouseup, false);
+    //el.addEventListener("mousemove",   handle_mousemove, false);
+    el.addEventListener("wheel",       handle_mousewheel, false);
+    el.addEventListener("mousewheel",  handle_mousewheel, false);
+    
+
+  }
   create(this);
+}
+
+function handle_mousewheel(evt){
+  var s = evt.wheelDelta/50;
+  s = worldScale/100 * s;
+  worldScale += s;
+  game_world_resize(worldScale);
+}
+function handle_mousedown(evt){
+  window.gametouch.count += 1;
+}
+function handle_mouseup(evt){
+  window.gametouch.count -= 1;
+}
+
+
+function handle_touchstart(evt){
+  var touches = evt.changedTouches;
+  window.gametouch.count = touches.length;
+}
+function handle_touchend(evt){
+  var touches = evt.changedTouches;
+  window.gametouch.count -= touches.length;
+}
+function handle_touchcancel(evt){
+  var touches = evt.changedTouches;
+  window.gametouch.count -= touches.length;
+}
+function handle_touchmove(evt){
+  var touches = evt.changedTouches;
+  window.gametouch.movecount = touches.length;
 }
 
 function game_update() {

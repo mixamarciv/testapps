@@ -5,17 +5,17 @@
 
 
 @SET path=%curpath%/../node_modules/.bin/;%path%
-
+@SET path=%curpath%/buildcordovaapp/node_modules/.bin/;%path%
 
 @CLS
 @echo ==== start ===================================================================
 
-TITLE cordova build android
+TITLE plugin add cordova-plugin-browsersync
 CD "%curpath%/buildcordovaapp"
 
-cordova build android > "./../log.txt" 2>&1
 
-::copy "%curpath%hello/platforms/android/app/build/outputs/apk/debug/app-debug.apk" %curpath%app.apk"
-::copy "C:/pg/prjs/testapps/node_express_test/test_cordova/hello/platforms/android/app/build/outputs/apk/debug/app-debug.apk" "C:/pg/prjs/testapps/node_express_test/test_cordova/app.apk"
+cordova-hcp server  > "./../log-cordova-hcp_server.txt" 2>&1
+cmd
+::buildcordovaapp\node_modules\winattr\lib\whichLib.js:87
 @echo ==== end   ===================================================================
 @pause

@@ -2,7 +2,7 @@
 window.GOptions = {
   debug: {
     debug_total: 0,
-
+    gametouch: 0,
     fps: 1,
     pixel_ratio: 1,
     create_map_time: 1,
