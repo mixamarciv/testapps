@@ -2,10 +2,13 @@ package com.drocher.hex.svc;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import com.drocher.hex.svc.LoopingThread;
+//import LoopingThread;
 
 public class hexdrocher extends Service {
     private final static String FILENAME = "sample_log3000.txt"; // имя файла
@@ -41,10 +44,11 @@ public class hexdrocher extends Service {
         // если сервис остановлен системой без явного вызова методов stopService() или stopSelf().
         saveFile("onStartCommand()");
         Thread loopThread = new LoopingThread(); // будет выполняться вечно
-        loopThread.getHandler().post(new Runnable() {
+        Handler h = loopThread.getHandler2();
+        h.post(new Runnable() {
             @Override
             public void run() {
-                doLongAndComplicatedTask();
+                //doLongAndComplicatedTask();
             }
         });
         return Service.START_STICKY;
