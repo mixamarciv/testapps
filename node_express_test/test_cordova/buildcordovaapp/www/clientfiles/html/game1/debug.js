@@ -8,7 +8,7 @@ function show_debug_info() {
 
   if(dbg.gametouch){
     var t = window.gametouch;
-    var msg = 'count: '+t.count+' move: '+t.movecount;
+    var msg = 'count: '+t.touches.length+' type: '+t.actiontype+' time: '+t.touchTime();
     this.game.debug.text('gametouch: '+msg, 2, offsety+=offsety_inc, "#00ff00");  
   }
 

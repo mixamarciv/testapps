@@ -85,7 +85,7 @@ function clearMap(){
   var msg = 'удалено объектов: '+cnt;
   if(debug.showClearMapInfo) console.log(msg);
 
-  window.service_phone.writeFileLocal('log_clearmap.log',msg);
+  //window.service_phone.writeFileLocal('log_clearmap.log',msg);
 }
 
 
