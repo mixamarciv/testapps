@@ -12,6 +12,7 @@ window.gametouch = {
   touchStartTime: 0,
   debugCallfnc: {}, //какие функции и сколько раз вызывали
   contTouches: function(){ return this.touches.length; },
+  
 };
 
 window.gametouch.debugCallCntInc = function(name){
