@@ -2,3 +2,5 @@
 *.apk
 
 node_express_test/test_cordova/log\.txt
+
+node_express_test/test_cordova/log-cordova-hcp_server\.txt

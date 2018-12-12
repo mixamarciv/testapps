@@ -1,17 +1,40 @@
 
+function show_debug_info_text(dbg,txt,x,y,offsety_inc,color){
+  txt = txt.split("\n");
+  var offsety = y;
+  for(i in txt){
+    var text = txt[i];
+    dbg.text(text, x,offsety+=offsety_inc, color);
+  }
+  return offsety;
+}
+
 function show_debug_info() {
   if(GOptions.debug.debug_total==0) return 0;  // вообще не выводим ничего
   const dbg = GOptions.debug;
+  var tgd = this.game.debug;
 
   var offsety = 0;
   var offsety_inc = 20;
+
+  //var dbgtext = this.game.debug.text;
 
   if(dbg.gametouch){
     var t = window.gametouch;
     var msg = 'count: '+t.touches.length+' type: '+t.actiontype;
     this.game.debug.text('gametouch: '+msg, 2, offsety+=offsety_inc, "#00ff00");  
-    msg = ' time: '+t.touchTime();
-    this.game.debug.text(' '+msg, 2, offsety+=offsety_inc, "#00ff00");  
+
+    offsety = show_debug_info_text(tgd,t.debugCallCntInfoText(),10,offsety,offsety_inc,"#a0fff0");
+
+
+    this.game.debug.text(' time: '+t.touchTime(), 2, offsety+=offsety_inc, "#00ff00");
+    
+    for(var i=0;i<5;i++){
+      var ti = t.touches[i];
+      var msg = i+' ';
+      if(ti) msg += 'id: '+ti.identifier+' x:'+ti.pageX+' y:'+ti.pageY;
+      this.game.debug.text(' '+msg, 2, offsety+=offsety_inc, "#00ff00");
+    }
   }
 
   if(dbg.fps){

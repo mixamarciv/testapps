@@ -90,3 +90,40 @@ function time_long_str(time_begin,time_end){
   
   return ret_s;
 }
+
+/**********
+date_to_str_format(time,format_str) выводит дату - time в формате format_str:
+format_str - строка задает какие данные даты и в какой последовательности будут выведены:
+Y - год, в виде 1900-2100
+M - месяц (01-12)
+D - день (01-31)
+W - день недели 0-6(0 - воскресенье;1-п)
+h - час (00-23)
+m - минуты (00-59)
+k - миллисекунды (000-999)
+**********/
+exports.date_format = date_to_str_format;
+exports.date_to_str_format = date_to_str_format;
+function date_to_str_format(time,format_str){
+      if(arguments.length==1){
+            format_str = time;
+            time = new Date();
+      }else{
+            time = new Date(time);
+            /*if (typeof(time)!=='Date') {
+                  return "WRONG TIME";
+            }*/
+      }
+      
+      var s = String(format_str);
+      if(!s || s=="") s = "Y.M.D (W) h:m:s.k";
+      if(/Y/gm.test(s)) s = s.replace(/Y/gm,time.getFullYear());
+      if(/M/gm.test(s)) s = s.replace(/M/gm,String(100+time.getMonth()+1).substring(1));       
+      if(/D/gm.test(s)) s = s.replace(/D/gm,String(100+time.getDate()).substring(1));          
+      if(/W/gm.test(s)) s = s.replace(/W/gm,time.getDay());                                    
+      if(/h/gm.test(s)) s = s.replace(/h/gm,String(100+time.getHours()).substring(1));
+      if(/m/gm.test(s)) s = s.replace(/m/gm,String(100+time.getMinutes()).substring(1));
+      if(/s/gm.test(s)) s = s.replace(/s/gm,String(100+time.getSeconds()).substring(1));
+      if(/k/gm.test(s)) s = s.replace(/k/gm,String(1000+time.getMilliseconds()).substring(1));
+      return s;
+}
