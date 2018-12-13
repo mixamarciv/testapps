@@ -37,7 +37,7 @@ window.GOptions = {
     screenHSize: 0.07,   // какую часть экрана будет занимать
   },
   turnSleep: 50, 
-  inputTimeoutInc: 200,            //минимальное время нажатия за которое переключаемся в hexClick(lastClickHex_gd.bntobj)
+  inputTimeoutInc: 100,            //минимальное время нажатия за которое переключаемся в hexClick(lastClickHex_gd.bntobj)
   minDistanceToMoveWithoutInc: 30  //минимальная дистанция на которую нужно переместить 
                                    //камеру за inputTimeoutInc что бы не переключиться в hexClick(lastClickHex_gd.bntobj)
 }

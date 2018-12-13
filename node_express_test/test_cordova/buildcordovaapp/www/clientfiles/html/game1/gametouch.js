@@ -9,10 +9,11 @@ window.gametouch = {
   touches:[],
   actiontype: 'none',
   actiondata: {},
-  touchStartTime: 0,
+  //touchStartTime: 0,
+  lastTouchStartTime: 0,
   debugCallfnc: {}, //какие функции и сколько раз вызывали
   contTouches: function(){ return this.touches.length; },
-  
+  cntTouch: function(){ return this.touches.length; } ,
 };
 
 window.gametouch.debugCallCntInc = function(name){
@@ -66,9 +67,9 @@ function touchIndexById(idToFind) {
   return -1;    // not found
 }
 
-window.gametouch.touchTime = function() {
-  if(this.touchStartTime==0) return -1;
-  return new Date() - this.touchStartTime;
+window.gametouch.lastTouchTime = function() {
+  if(this.lastTouchStartTime==0) return -1;
+  return new Date() - this.lastTouchStartTime;
 }
 
 function handle_mousewheel(evt){
@@ -93,7 +94,7 @@ function handle_mousedown(evt){
 function handle_mousemove(evt){
   if(window.gametouch.ismouse==0) return;
   if(window.gametouch.contTouches()==0) return;
-  console.log(evt);
+  //console.log(evt);
   var from = window.gametouch.touches[0];
   var to = copyTouch(evt);
   window.gametouch.moveCamera(from,to);
@@ -103,7 +104,7 @@ function handle_mousemove(evt){
 function handle_mouseup(evt){
   if(window.gametouch.ismouse==0) return;
   if(window.gametouch.ismouse==-1) window.gametouch.ismouse = 1;
-  window.gametouch.touchStartTime = 0;
+  window.gametouch.lastTouchStartTime = 0;
   window.gametouch.touches = [];
   window.gametouch.end();
   window.gametouch.debugCallCntInc('mouseup');
@@ -162,12 +163,12 @@ function handle_touchmove(evt){
   }
 
   if(gametoches.length==0){  // если до этого не отловили ни одного нажатия
-    console.log('ERROR: handle_touchstart not call');
+    //console.log('ERROR: handle_touchstart not call');
     return;
   }
   if(gametoches.length==1){  // если до этого отловили одно нажатие
     if(touches.length!=1){
-      console.log('ERROR: handle_touchstart not call ('+gametoches.length+'/'+touches.length+')');
+      //console.log('ERROR: handle_touchstart not call ('+gametoches.length+'/'+touches.length+')');
       return;
     }
     var from = gametoches[0];
@@ -198,32 +199,87 @@ function handle_touchmove(evt){
 }
 
 window.gametouch.start = function(){ // нажали 
-  window.gametouch.touchStartTime = new Date();
+  var gt = window.gametouch;
+  gt.lastTouchStartTime = new Date();
+  if(gt.cntTouch()==1){ //обрабатываем одно нажатие
+    return gt.oneTouchFnc();
+  }
+}
+
+window.gametouch.oneTouchFnc = async function(){ //обрабатываем одно нажатие/тап
+  var gt = window.gametouch;
+  var touch = window.gametouch.touches[0];
+  var x = touch.pageX * PIXEL_RATIO; 
+  var y = touch.pageY * PIXEL_RATIO;
+
+  const cam = game.camera;
+  var menuPos = cam.height - cam.height * GOptions.gameMenu.screenHSize;
+  if( y > menuPos ){
+    console.log('gametouch -> mapMenuClick('+x+','+y+')');
+    //await sleep_ms(150);  // нужно для того что бы успела отжаться клавиша мыши
+    return mapMenuClick(x,y);
+  }
 }
 
 window.gametouch.end = function(){ // отжали 
-  window.gametouch.touchStartTime = 0;
+  window.gametouch.lastTouchStartTime = 0;
 }
 
-window.gametouch.moveCamera = function(from,to){
-  window.gametouch.actiontype = 'move';
-  window.gametouch.actiondata = {from:from,to:to};
+window.gametouch.moveCamera = function(from,to){ // обрабатываем перемещение камеры
+  var gt = window.gametouch;
+  gt.actiontype = 'move';
+  gt.actiondata = {from:from,to:to};
+
+  var x1 = from.pageX, x2 = to.pageX;
+  var y1 = from.pageY, y2 = to.pageY;
+  
+  x1 *= PIXEL_RATIO;
+  y1 *= PIXEL_RATIO;
+  x2 *= PIXEL_RATIO;
+  y2 *= PIXEL_RATIO;
+
+  const cam = game.camera;
+  cam.setPosition(cam.x + x1 - x2, cam.y + y1 - y2);
+
+  gt.endAction();
 }
 
 window.gametouch.resizeCamera = function(from1,from2,to1,to2){
-  window.gametouch.actiontype = 'resize';
-  window.gametouch.actiondata = {from1:from1,from2:from2,to1:to1,to2:to2};
+  var gt = window.gametouch;
+  gt.actiontype = 'resize';
+  gt.actiondata = {from1:from1,from2:from2,to1:to1,to2:to2};
+
+  var f1 = new Phaser.Point(from1.pageX,from1.pageY);
+  var f2 = new Phaser.Point(from2.pageX,from2.pageY);
+  var t1 = new Phaser.Point(to1.pageX,to1.pageY);
+  var t2 = new Phaser.Point(to2.pageX,to2.pageY);
+  
+  
+  var dfrom = f1.distance(f2);
+  var dto = t1.distance(t2);
+  var newdist = dto - dfrom;
+  var msize = Math.max(game.scale.width,game.scale.height);
+  var oldWorldScale = worldScale;
+  worldScale += newdist*PIXEL_RATIO/msize;
+
+  game_world_resize(worldScale);
+
+  //var centr = Phaser.centroid(t1,t2);
+
+  //cam.setPosition(centr.x, centr.y);
+
+  gt.endAction();
 }
 
 window.gametouch.endAction = function(){
   var gt = window.gametouch;
   var gametoches = gt.touches;
   if(gt.actiontype == 'move'){
-    gametoches[0] = window.gametouch.actiondata.to;
+    gametoches[0] = gt.actiondata.to;
   }
   if(gt.actiontype == 'resize'){
-    gametoches[0] = window.gametouch.actiondata.to1;
-    gametoches[1] = window.gametouch.actiondata.to2;
+    gametoches[0] = gt.actiondata.to1;
+    gametoches[1] = gt.actiondata.to2;
   }
   gt.actiontype = 'none';
 }

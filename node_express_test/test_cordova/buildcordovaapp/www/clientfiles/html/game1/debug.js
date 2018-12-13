@@ -27,7 +27,7 @@ function show_debug_info() {
     offsety = show_debug_info_text(tgd,t.debugCallCntInfoText(),10,offsety,offsety_inc,"#a0fff0");
 
 
-    this.game.debug.text(' time: '+t.touchTime(), 2, offsety+=offsety_inc, "#00ff00");
+    this.game.debug.text(' time: '+t.lastTouchTime(), 2, offsety+=offsety_inc, "#00ff00");
     
     for(var i=0;i<5;i++){
       var ti = t.touches[i];

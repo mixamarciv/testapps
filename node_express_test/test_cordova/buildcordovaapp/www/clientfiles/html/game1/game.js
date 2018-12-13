@@ -5,13 +5,8 @@ window.round = Math.round;
 window.PIXEL_RATIO = 1;
 
 window.worldScale = 1;
-window.movePointer = null;
-window.movePointerFromMenu = 0;
-window.multitouchDistanceToScale = 0;
 
-window.isIncTapDownStartTime = 0; //является ли нажатие увеличением силы хекса
-window.isIncTapDownTapPoint = null; // место первоначального нажатия
-window.isIncTapDownTapPointLastDist = 0;
+window.lastIncTime = 0; // время последнего инкремента при зажатии на хексе
 
 window.debugData = {};
 window.debugObj = {};
@@ -108,25 +103,36 @@ function game_update() {
       else if (this.cursors.right.isDown) setCamPos(+5, 0);
 
       // zoom
+      var oldScale = worldScale, newScale = worldScale;
       if (   game.input.keyboard.isDown(Phaser.Keyboard.PLUS)
           || game.input.keyboard.isDown(Phaser.Keyboard.EQUALS)
           || game.input.keyboard.isDown(Phaser.Keyboard.NUMPAD_ADD)
       ) {
-          worldScale *= 1.01;
+          newScale *= 1.01;
       }else 
       if (   game.input.keyboard.isDown(Phaser.Keyboard.MINUS)
           || game.input.keyboard.isDown(Phaser.Keyboard.NUMPAD_SUBTRACT)
       ) {
-          worldScale *= 0.99;
+          newScale *= 0.99;
+      }
+      if(oldScale != newScale){
+        game_world_resize(newScale);
       }
   }
 
-  
+  if(countTouch==1){
+    var isinc = game_isTimeoutTapDownIncUserHex();
+    if(isinc){
+      hexClick(window.gamedata.lastClickHex_gd.bntobj);
+      //var time = window.gametouch.lastTouchTime();
+      window.lastIncTime = window.gametouch.lastTouchTime();
+    }
+  }
+  /***
   //if(game.input.mousePointer.isUp && game.input.pointer1.isUp){
   if(countTouch==0){
     //если отпустили курсор мышки или тап
     movePointer = null;
-    movePointerFromMenu = 0; 
     isIncTapDownStartTime = 0;
     isIncTapDownTapPoint = null;
     game.input.reset();
@@ -143,8 +149,9 @@ function game_update() {
         return;
     }
   }
-  
+  ***/
 
+  /***
   //if(game.input.pointer1.isDown && game.input.pointer2.isDown){
   if(countTouch==2){
     if(multitouchDistanceToScale==0) { //если только сделали двойной тап
@@ -159,18 +166,28 @@ function game_update() {
     multitouchDistanceToScale = 0;
   }
   game_world_resize(worldScale);
+  ***/
 }
 
 function game_world_resize(new_worldScale){
-  worldScale = Phaser.Math.clamp(new_worldScale, min=0.25, max=2);
+  var newWorldScale = Phaser.Math.clamp(new_worldScale, min=0.25, max=2);
+  var oldWorldScale = worldScale;
+  if(newWorldScale==oldWorldScale) return; // ничего не изменилось, расходимся
+  worldScale = newWorldScale;
   var groupmap = window.gamedata.groupmap;
+  
+  const cam = game.camera;
+  var b = window.gamedata.mapsize;
+  
+  var x = cam.x;
+  var y = cam.y;
 
   groupmap.scale.set(worldScale);
-  var b = window.gamedata.mapsize;
   game.world.setBounds(0, 0, b.width*worldScale, b.height*worldScale);
-  
-  //сохраняем настройки пользователя
-  //GOptions.gameMap.startWorldScale = worldScale; - но только не здесь
+
+  var s = oldWorldScale - newWorldScale;
+  cam.setPosition( x - x*s, y - y*s );
+
 }
 
 //выполняем подготовку к сохранению пользовательских настроек игры
@@ -191,9 +208,6 @@ function setCamPos(x,y){
 
 // определяет все ли условия соблюдены для увеличения силы по таймауту нажатия
 function game_isTimeoutTapDownIncUserHex(){
-  if(isIncTapDownStartTime<0) return 0;
-
-  // если сейчас не увеличиваем силу клеток
   if(window.gamedata.status.turntype != 'inc') return 0;
 
   // если небыло ещё последнего нажатого хекса
@@ -202,23 +216,22 @@ function game_isTimeoutTapDownIncUserHex(){
   // если последний раз нажимал не по своему хексу
   if(act_currentUser().id != window.gamedata.lastClickHex_gd.owner) return 0;
 
+  var time = window.gametouch.lastTouchTime();
+  if( window.lastIncTime > time ) window.lastIncTime = 0;
+
+  //если еще не прошел нужный таймаут
+  if( time - window.lastIncTime < GOptions.inputTimeoutInc ) return 0;
+
   // если двинул камеру более чем на distance
-  if(isIncTapDownTapPoint){
-    var p = game.input.mousePointer.position;
-    if(p && p.x==0 && p.y==0) p = game.input.pointer1.position;
-    var distance = round(p.distance(isIncTapDownTapPoint));
-    isIncTapDownTapPointLastDist = distance;
-    if( distance*PIXEL_RATIO > GOptions.minDistanceToMoveWithoutInc ){
-      isIncTapDownStartTime = -1; // то больше не выполняем этих проверок
-      return 0;
-    }
+  if(1){
+    // тут будут проверки из window.gametouch
   }
 
   return 1;
 }
 
 function moveCursor(poh,x,y) {
-  if(movePointerFromMenu) return;
+  //if(movePointerFromMenu) return;
   if(game.input.mousePointer.isDown || game.input.pointer1.isDown){
     if(game.input.pointer2.isDown){ // если нажали несколько кнопок
       isIncTapDownStartTime = -1;
@@ -233,7 +246,7 @@ function moveCursor(poh,x,y) {
       const cam = game.camera;
       var menuPos = cam.height - cam.height*GOptions.gameMenu.screenHSize;
       if( y > menuPos){
-        movePointerFromMenu = 1;
+        //movePointerFromMenu = 1;
         console.log('mapMenuClick('+x+','+y+')');
         return mapMenuClick(x,y);
       } 

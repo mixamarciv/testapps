@@ -102,8 +102,7 @@ h - час (00-23)
 m - минуты (00-59)
 k - миллисекунды (000-999)
 **********/
-exports.date_format = date_to_str_format;
-exports.date_to_str_format = date_to_str_format;
+var date_format = date_to_str_format;
 function date_to_str_format(time,format_str){
       if(arguments.length==1){
             format_str = time;
