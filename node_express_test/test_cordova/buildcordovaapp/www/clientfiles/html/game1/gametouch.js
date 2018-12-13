@@ -260,9 +260,9 @@ window.gametouch.resizeCamera = function(from1,from2,to1,to2){
   var newdist = dto - dfrom;
   var msize = Math.max(game.scale.width,game.scale.height);
   var oldWorldScale = worldScale;
-  worldScale += newdist*PIXEL_RATIO/msize;
+  var newWorldScale = oldWorldScale + newdist*PIXEL_RATIO/msize;
 
-  game_world_resize(worldScale);
+  game_world_resize(newWorldScale);
 
   //var centr = Phaser.centroid(t1,t2);
 
