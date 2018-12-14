@@ -56,6 +56,16 @@ function gd_setVal(val){
     
     this.bntobj.visible = true;
     var frame = hs.neutral;
+
+    if(this.owner==window.gamedata.user1.id){
+      frame = hs.user1;
+    }else if(this.owner==window.gamedata.user2.id){
+      frame = hs.user2;
+    }else{ // если это нейтральный хекс
+      frame = hs.neutral;
+    }
+
+    /****** 
     if(this.owner==window.gamedata.user1.id){
       frame = hs.user1;
       if(this.id == window.gamedata.mainuser1btn_id){ // если это главный хекс
@@ -73,14 +83,20 @@ function gd_setVal(val){
     }else{ // если это нейтральный хекс
       this.bntobj.tint = 0xbbbbbb;  
     }
+    ********/
     frame = frame*20 + val-1;
     //console.log('SET FRAME '+gd.bntobj.frame+'->'+frame);
     this.bntobj.frame = frame;
     
     {
       var scale = hs.scaleMin + (hs.scaleMax - hs.scaleMin)/hs.scaleMaxVal*val;
-      if(val==1) scale = hs.scaleMin;
-      else if(val>=hs.scaleMaxVal) scale = hs.scaleMax;
+      if(val==1){
+        scale = hs.scaleMin;
+        this.bntobj.tint = 0x909090;
+      }else{
+        if(val>=hs.scaleMaxVal) scale = hs.scaleMax;
+        this.bntobj.tint = 0xc0c0c0;
+      }
       
       this.bntobj.scale.x = scale;
       this.bntobj.scale.y = scale;
@@ -90,6 +106,14 @@ function gd_setVal(val){
       //console.log(offset);
       this.bntobj.x = this.xpos + offset;
       this.bntobj.y = this.ypos + offset;
+    }
+
+    const btnu1 = window.gamedata.activeuser1btn;
+    const btnu2 = window.gamedata.activeuser1btn;
+    
+    if((btnu1 && btnu1._id == this.id) || (btnu2 && btnu2._id == this.id)){
+      if(val!==1) this.bntobj.tint = 0xffffff;
+      console.log('x:'+this.x+',y:'+this.y+' id:'+this.id+' act.id:'+btnu1._id+' tint:'+this.bntobj.tint);
     }
 }
 
@@ -102,7 +126,15 @@ function gd_setNeutral(val){
 
 function gd_setActiveUser1(val){
   this.owner = window.gamedata.user1.id;
+
+  var prevActiveBtn = window.gamedata.activeuser1btn;
   window.gamedata.activeuser1btn = this.bntobj;
+
+  if(prevActiveBtn){  // делаем неактивной предыдущую активную кнопку
+    var prevActivegd = get_gdhex(prevActiveBtn._id);
+    prevActivegd.setVal(prevActivegd.getVal());
+  }
+
   return this.setVal(val||this.value);
 }
 
@@ -113,7 +145,15 @@ function gd_setOwnerUser1(val){
 
 function gd_setActiveUser2(val){
   this.owner = window.gamedata.user2.id;
+
+  var prevActiveBtn = window.gamedata.activeuser2btn;
   window.gamedata.activeuser2btn = this.bntobj;
+
+  if(prevActiveBtn){  // делаем неактивной предыдущую активную кнопку
+    var prevActivegd = get_gdhex(prevActiveBtn._id);
+    prevActivegd.setVal(prevActivegd.getVal());
+  }
+
   //console.log(this.id+': '+this.bntobj);
   return this.setVal(val||this.value);
 }
