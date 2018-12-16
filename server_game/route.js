@@ -21,8 +21,6 @@ function loadRoutes(io){
     socket.on('registeruser',(user)=>{registerUser(socket,user);});
     socket.on('updateuser',(user)=>{updateUser(socket,user);});
   });
-
-
 }
 
 function getListGames(){

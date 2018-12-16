@@ -118,7 +118,7 @@
     <hr>
     <div class="row">
             <div class="col-12 justify-content-center">
-                <center><b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='ms_go_to_newnetgame' go_to_menu='menu_newnetgame'>
+                <center><b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='ms_go_to_createnetgame2' go_to_menu='menu_createnetgame'>
                     создать новую игру </a></b></center>
             </div>
     </div>
@@ -142,6 +142,90 @@
                 </ul>
             </div>
     </div>
+</div>
+
+
+<div class="container main_menu_item" id=menu_createnetgame style='display: none;'>
+    <div class="row"><div class="col-12"><center>
+    <h1>новая сетевая игра</h1>
+    <b></b>
+    </center></div></div>
+    <hr>
+    <div class="row">
+        <div class="col-12 justify-content-center">
+            <center><b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='ms_go_to_back197' go_to_menu="menu_newnetgame">
+                назад</a></b></center>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+            <div class="col-12 justify-content-center">
+                <center><b>
+                Имя: <a class="col-10 username" href="#" id='ms_go_to_edituser' go_to_menu='menu_edituser'>
+                    anonim </a>
+                </b></center>
+            </div>
+    </div>
+    <hr>
+    <div class="row">
+            <div class="col-12 justify-content-center" id=mapsize>
+                <center>
+                
+                    <b>размер карты:</b>
+                    <br>
+<script>
+$(()=>{
+    var s = ''
+    $('#mapsizebuttons').html('');
+
+    var arr = [10,14,20,26,36,48];
+    for(var i=0;i<arr.length;i++){
+        var m = arr[i];
+        var sl = '';
+        for(var j=0;j<arr.length;j++){
+            var n = arr[j];
+            if(i==1 && j==3){
+                sl += `
+                    <button type="button" class="btn btn-primary">${m}x${n}</button>
+                `;
+            }else{
+                sl += `
+                    <button type="button" class="btn btn-outline-primary">${m}x${n}</button>
+                `;
+            }
+        }
+        sl += '';
+        s += sl;
+    }
+    s = '<center>'+s+'</center>';
+    $('#mapsizebuttons').html(s);
+});
+</script>      
+
+<div id=mapsizebuttons>
+</div>          
+                </center>
+                
+            </div>
+    </div>
+    <hr>
+    <div class="row">
+    <div class="col-12 justify-content-center">
+        <center>
+        <b>открытая карта:</b><br>
+        <button type="button" class="btn btn-primary">on</button>
+        <button type="button" class="btn btn-outline-primary">off</button>
+        </center>
+    </div>
+    </div>
+    <hr>
+    <div class="row">
+            <div class="col-12 justify-content-center">
+                <center><b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='createnetgame1'>
+                    создать</a></b></center>
+            </div>
+    </div>
+    <hr>
 </div>
 
 
