@@ -77,8 +77,8 @@ function handle_mousewheel(evt){
   if(window.gametouch.ismouse==-1) window.gametouch.ismouse = 1;
   var s = evt.wheelDelta/50;
   s = worldScale/100 * s;
-  worldScale += s;
-  game_world_resize(worldScale);
+  var newWorldScale = worldScale + s;
+  game_world_resize(newWorldScale);
   window.gametouch.debugCallCntInc('mousewheel');
 }
 

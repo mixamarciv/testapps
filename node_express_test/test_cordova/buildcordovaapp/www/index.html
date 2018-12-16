@@ -26,32 +26,10 @@
 <script type="text/javascript" src="clientfiles/colors.js"></script>
 <script type="text/javascript" src="clientfiles/phaser.min.js"></script>
 
-<script type="text/javascript" src="clientfiles/html/loadjs.js"></script>
+<script type="text/javascript" src="clientfiles/html/loaderjsfiles.js"></script>
+<script type="text/javascript" src="clientfiles/html/init.js"></script>
 
-<!--
-<script src="clientfiles/html/game1/fnc.js"></script>
-<script src="clientfiles/html/game1/config.js"></script>
-<script src="clientfiles/html/game1/preload.js"></script>
-<script src="clientfiles/html/game1/objhex.js"></script>
-<script src="clientfiles/html/game1/createmap.js"></script>
-
-<script src="clientfiles/html/game1/gametouch.js"></script>
-<script src="clientfiles/html/game1/game.js"></script>
-
-<script src="clientfiles/html/game1/gameaction.js"></script>
-
-<script src="clientfiles/html/game1/createmapmenu.js"></script>
-<script src="clientfiles/html/game1/textmessage.js"></script>
-<script src="clientfiles/html/game1/debug.js"></script>
-
-<script src="clientfiles/html/game1/menu/main.js"></script>
--->
-
-<script>
-    setTimeout(function(){
-        window.loaderjsfiles.load();
-    },100);
-</script>
+<script type="text/javascript" src="clientfiles/socket.io.js"></script>
 
 
 <div id=game_menu_main >
@@ -60,7 +38,7 @@
         <div class="col-12">
             <center>
             <h1>calculon3000</h1>
-            <h2>пошаговая стратегия - захвати клетки быстрее противника</h2>
+            <h2>разделяй и умножай</h2>
             </center>
         </div>
     </div>
@@ -72,10 +50,16 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-12 justify-content-center">
-            <center><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='newgame'>
-                <b>новая игра</b></a></center>
-        </div>
+            <div class="col-12 justify-content-center">
+                <center><b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='newgame'>
+                    игра против искуственного сверх интеллекта</a></b></center>
+            </div>
+    </div>
+    <div class="row">
+            <div class="col-12 justify-content-center">
+                <center><b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='ms_go_to_newnetgame' go_to_menu='menu_newnetgame'>
+                    сетевая игра</a></b></center>
+            </div>
     </div>
     <hr>
     <div class="row">
@@ -109,6 +93,141 @@
     </div>
 </div>
 
+
+<div class="container main_menu_item" id=menu_newnetgame style='display: none;'>
+    <div class="row"><div class="col-12"><center>
+    <h1>сетевая игра</h1>
+    <b>создай новую игру или выбери из списка</b>
+    </center></div></div>
+    <hr>
+    <div class="row">
+        <div class="col-12 justify-content-center">
+            <center><b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='ms_go_to_menu_main111' go_to_menu="menu_main">
+                назад</a></b></center>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+            <div class="col-12 justify-content-center">
+                <center><b>
+                <a class="col-10 username" href="#" id='ms_go_to_edituser' go_to_menu='menu_edituser'>
+                    anonim </a>
+                </b></center>
+            </div>
+    </div>
+    <hr>
+    <div class="row">
+            <div class="col-12 justify-content-center">
+                <center><b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='ms_go_to_newnetgame' go_to_menu='menu_newnetgame'>
+                    создать новую игру </a></b></center>
+            </div>
+    </div>
+    <hr>
+    <div class="row">
+            <div class="col-12 justify-content-center">
+                <center><b>выберите игрока для поединка:</b></center>
+                <ul class="list-group" id='netgameslist'>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        игрок 1
+                        <span class="badge badge-primary badge-pill">14</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        игрок 2
+                        <span class="badge badge-primary badge-pill">2</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        игрок 3
+                        <span class="badge badge-primary badge-pill">1</span>
+                    </li>
+                </ul>
+            </div>
+    </div>
+</div>
+
+
+<div class="container main_menu_item" id=menu_edituser style='display: none;'>
+    <div class="row">
+    <div class="col-12">
+        <center>
+        <h1>данные игрока</h1>
+        <b>
+            <a class="col-10 username" href="#" id='ms_go_to_edituser' go_to_menu='menu_edituser'>
+                anonim </a>
+        </b>
+        </center>
+    </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 justify-content-center">
+            <center><b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='ms_go_to_menu_main' go_to_menu="menu_main">
+                назад</a></b></center>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+    <div class="col-12 justify-content-center">
+        <ul class="list-group" id=userinfo>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Cras justo odio
+                <span class="badge badge-primary badge-pill">14</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Dapibus ac facilisis in
+                <span class="badge badge-primary badge-pill">2</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Morbi leo risus
+                <span class="badge badge-primary badge-pill">1</span>
+            </li>
+        </ul>
+    </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-12 justify-content-center">
+
+<center>
+<div class="form-group">
+
+<label for="eduserName">Имя</label>
+<input type="text" class="form-control" id="eduserName" placeholder="Enter name">
+<small id="emailHelp" class="form-text text-muted">Имя которое все запомнят и будет бояться каждый )</small>
+
+<small><small><br></small></small>
+
+<label for="eduserPass">Пароль</label>
+<input type="text" class="form-control" id="eduserPass" placeholder="Enter password">
+<small id="emailHelp" class="form-text text-muted">нужен для восстановления аккаунта на другом устройстве</small>
+
+<small><small><br></small></small>
+
+<label for="eduserEmail">*Email address</label>
+<input type="email" class="form-control" id="eduserEmail" aria-describedby="emailHelp" placeholder="Enter email">
+<small class="form-text text-muted">We'll never share your email with anyone else.</small>
+
+
+*Email может понадобиться для восстановления аккаунта с вашей статистикой если нет логина и пароля.
+
+<b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='edituser_save'>сохранить</a></b>
+<div><b id='edituser_save_info' style=''></b></div>  
+
+</div>      
+</center>
+
+        </div>
+    </div>
+
+    <hr>
+    <div class="row">
+    <div class="col-12 justify-content-center">
+        <center>
+        нажмите "восстановить" если вы уже играли на другом устройстве и хотите восстановить статистику
+        <b><a class="btn btn-primary btn-lg col-10" href="#" role="button" id='edituser_restore'>восстановить</a></b>
+        </center>
+    </div>
+    </div>
+</div>
 
 <div class="container main_menu_item" id=menu_settings style='display: none;'>
     <div class="row"><div class="col-12"><center><h1>настройки</h1></center></div></div>

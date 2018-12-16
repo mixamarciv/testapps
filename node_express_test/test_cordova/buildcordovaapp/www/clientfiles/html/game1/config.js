@@ -38,8 +38,28 @@ window.GOptions = {
   },
   turnSleep: 50, 
   inputTimeoutInc: 100,            //минимальное время нажатия за которое переключаемся в hexClick(lastClickHex_gd.bntobj)
-  minDistanceToMoveWithoutInc: 30  //минимальная дистанция на которую нужно переместить 
+  minDistanceToMoveWithoutInc: 30, //минимальная дистанция на которую нужно переместить 
                                    //камеру за inputTimeoutInc что бы не переключиться в hexClick(lastClickHex_gd.bntobj)
+
+  user: {
+    id: -1,
+    uuid: '',
+    name: 'anonim',
+    pass: '',
+    email: '',
+    datecreate: date_to_str_format('YMD-hms'),   // время первого запуска игры! (сохраняем это значение)
+    uinfo: {},
+  },
+
+  server: '192.168.0.245:81',
+  serverTimeOut: 25 * 1000,         // таймаут после которого возвращаем ошибку
+}
+
+window.GOptions.checkUser = function(u){
+  if(u && (u.id>0 || u.id==-1) && u.name!=''){
+    return 1;
+  }
+  return 0;
 }
 
 window.GOptions.images = {
@@ -69,19 +89,22 @@ window.GOptions.localStorage_load = function(){
   if(!opt) return;
   this.turnSleep = opt.turnSleep;
   this.debug     = opt_set(this.debug  ,opt.debug);
-  console.log(this.gameMap.startWorldScale+' LOAD ->'+opt.gameMap.startWorldScale);
+  //console.log(this.gameMap.startWorldScale+' LOAD ->'+opt.gameMap.startWorldScale);
   this.gameMap   = opt_set(this.gameMap,opt.gameMap);
+  this.user      = opt_set(this.user,opt.user);
+  if(this.user.id==-1) this.user.id = getRandomInt(10000, 1000*1000*1000*2000);
 }
 
 window.GOptions.localStorage_save = function(){
   game_prepare_to_save_options();
   const opt_copy = this._opt_copy_data;
   var opt = {
+    user: opt_copy(window.GOptions.user, {}),
     debug: opt_copy(window.GOptions.debug, {}),
     gameMap: opt_copy(window.GOptions.gameMap, {}),
     turnSleep: window.GOptions.turnSleep,
   };
-  console.log(this.gameMap.startWorldScale+' SAVE ->'+opt.gameMap.startWorldScale);
+  //console.log(this.gameMap.startWorldScale+' SAVE ->'+opt.gameMap.startWorldScale);
   opt = JSON.stringify(opt);
   localStorage.setItem('GOptions',opt);
 }
@@ -93,6 +116,8 @@ window.GOptions._opt_copy_data = function(from,to){
   }
   return to;
 }
+
+window.GOptions.copy_object1lvl = GOptions._opt_copy_data
 
 //устанавливает значение в объекте to из обьекта from (если и там и там эти значения ещё есть)
 window.GOptions._opt_set_data_if_exists = function(to,from){
@@ -126,7 +151,7 @@ window.gamedata = {   // основные данные игры
   },
   user1: {
     id: 3000,
-    name: 'pro100gamer',
+    name: 'anonim',
     cansend: 0, // количество силы у игрока1 которую он может раздать
   },
   user2: {

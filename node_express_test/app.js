@@ -10,12 +10,13 @@ app.use('/clientfiles', express.static(path.join(__dirname,'/test_cordova/buildc
 app.use('/css', express.static(path.join(__dirname,'/test_cordova/buildcordovaapp/www/css')));
 app.use('/img', express.static(path.join(__dirname,'/test_cordova/buildcordovaapp/www/img')));
 app.use('/js', express.static(path.join(__dirname,'/test_cordova/buildcordovaapp/www/js')));
+app.use('/cordova.js', (req, res)=>{res.send('"all ok";')});
 app.use(require('./routers/default.js'));
 
 
 var server = http.createServer(app);
 
-require('kill-prev-app-process')(function () {
+require('kill-prev-app-process')(__dirname+'/temp/pid',function () {
 	server.listen({
 		host: config.app.host,
 		port: config.app.port,

@@ -21,7 +21,7 @@ function createHexButton(x,y,xpos,ypos,scale){
     xpos: xpos,
     ypos: ypos,
     value: 0, // значение силы по умолчанию 0 - нельзя ходить
-    owner: 0, // владелец по умолчанию
+    owner: 0, // id владельца
   };
   mapObjects.gdmap[id] = gd;
   mapObjects.gdlist.push(gd);
@@ -113,7 +113,7 @@ function gd_setVal(val){
     
     if((btnu1 && btnu1._id == this.id) || (btnu2 && btnu2._id == this.id)){
       if(val!==1) this.bntobj.tint = 0xffffff;
-      console.log('x:'+this.x+',y:'+this.y+' id:'+this.id+' act.id:'+btnu1._id+' tint:'+this.bntobj.tint);
+      //console.log('x:'+this.x+',y:'+this.y+' id:'+this.id+' act.id:'+btnu1._id+' tint:'+this.bntobj.tint);
     }
 }
 

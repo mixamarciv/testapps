@@ -36,7 +36,8 @@ window.loaderjsfiles.load = async function(){
         "clientfiles/html/game1/createmapmenu.js",
         "clientfiles/html/game1/textmessage.js",
         "clientfiles/html/game1/debug.js",
-        "clientfiles/html/game1/menu/main.js"
+        "clientfiles/html/game1/menu/main.js",
+        "clientfiles/html/game1/menu/netgame.js",
     ];
 
     loader.totalFiles = files.length;
@@ -48,6 +49,7 @@ window.loaderjsfiles.load = async function(){
     }
     loader.loadTime = new Date() - loader.loadStart;
     loadingJsFilesProgressShow2();
+    return;
 }
 
 async function loadJsFileFromServers(servers,file){

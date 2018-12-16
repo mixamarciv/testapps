@@ -1,0 +1,2 @@
+window.gamealgo1 = {}
+
