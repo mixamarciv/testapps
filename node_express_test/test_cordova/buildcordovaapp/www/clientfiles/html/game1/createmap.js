@@ -1,20 +1,31 @@
 //var game = window.game;
 //var maingamedata = window.gamedata;
+var createmap = {
 
-function createMap(){
+}
+
+// задаем параметры из net игры
+createmap.setOptionsFromNet = ()=>{
+  if(GOptions.net.id != 0){
+    var n = GOptions.net;
+    if(n.mapsize && n.mapsize>0){
+      GOptions.gameMap.cntX = n.mapsize.x;
+      GOptions.gameMap.cntY = n.mapsize.y; 
+    }  
+  }
+}
+
+createmap.createMap = function(){
   var start_load = new Date();
-  let game = window.game;
-  const GOptions = window.GOptions;
-  //game.add.image(100, 100, 'hex1');
+
+  createmap.setOptionsFromNet();
+
   let scale = 1;
   let cntX = GOptions.gameMap.cntX;
   let cntY = GOptions.gameMap.cntY;
 
   let objSize = window.GOptions.images.hexsprite.size;
   window.gamedata.objSize = objSize;
-
-  let objOffsetX = objSize; 
-  let objOffsetY = objSize/2; 
   
   let offsetXstart = objSize;
   let offsetYstart = objSize;
@@ -63,8 +74,7 @@ function createMap(){
   
 }
 
-
-function clearMap(){
+createmap.clearMap = function(){
   const debug = window.GOptions.debug;
   
   window.gamedata.maphexbuttons = [];
@@ -98,7 +108,7 @@ function getInitHexValue(){
 }
 
 //создаем пользовательские объекты:
-function createuserobj(){
+createmap.createuserobj = function createuserobj(){
   const map = GOptions.gameMap;
 
   //задаем случайные позиции игроков

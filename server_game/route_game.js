@@ -49,11 +49,20 @@ function getListGames(){
     var match = {id: u.id, name: u.name, startTime: m.startTime, mapsize: opt.mapsize};
     arrGames.push(match);
   }
+  var playcnt = s.data.matches_play.length;
+  var playcnt2 = s.data.matches_play.length;
+  if(!playcnt){
+    playcnt = 0;
+    playcnt2 = 0;
+    for(i in s.data.matches_play) playcnt2++;
+  }
   var list = {
     time: new Date(),
     gamelist: arrGames,
-    cntmatchesplay: s.data.matches_play.length,
+    cntmatchesplay: playcnt,
+    playcnt2: playcnt2,
   }
+  console.log(list);
   return list;
 }
 
@@ -77,7 +86,7 @@ async function registerUser(socket,user){
     return await registerUserNew(socket,user);
   }
   console.log('old user reg: ');
-  console.log(user);
+  //console.log(user);
   var u = await findUser(user);
   socket.emit('registeruser', u);
 }
@@ -100,10 +109,10 @@ async function updateUser(socket,user){
   var args = [u0.name, u0.pass, u0.email, u1.uuid];
   await sqlrun(sql,args);
 
-  console.log('updateuser0: ');
-  console.log(u0);
-  console.log('updateuser1: ');
-  console.log(u1);
+  //console.log('updateuser0: ');
+  //console.log(u0);
+  //console.log('updateuser1: ');
+  //console.log(u1);
 
   socket.emit('updateuser', u0);
 }

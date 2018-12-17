@@ -295,9 +295,9 @@ function createGameObjects(){
   console.log('GOptions: ');
   console.log(GOptions);
 
-  clearMap();
-  createMap();
-  createuserobj();
+  createmap.clearMap();
+  createmap.createMap();
+  createmap.createuserobj();
   //game.camera.flash( '#ff0',300 );//[color] [, duration] [, force] [, alpha])
   
   var gd = window.gamedata;

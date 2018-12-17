@@ -146,7 +146,7 @@ mainMenu.loadButtonsForMapSize = function(){
   var s = ''
   $('.mapsizebuttons').html('');
 
-  var arr = [10,14,20,26,36,48];
+  var arr = [12,16,24,36,48];
   for(var i=0;i<arr.length;i++){
       var m = arr[i];
       var sl = '';
@@ -198,9 +198,7 @@ mainMenu.createNetGame = function(){
   options.mapsize = mainMenu.getSelectedNetMapSize(obj);
 
   mainMenu.createNetGameStatusShow('подключаемся к серверу');
-  netGame.createNetGame(options,function(){
-    mainMenu.gameShow();
-  });
+  netGame.createNetGame(options,function(){});
 }
 
 mainMenu.createNetGameStatusShow = (msg)=>{
@@ -246,18 +244,19 @@ mainMenu.updateListNetGames = (d) => {
                align-items-center"
     >
     <big><b>${m.name}</b></big>
-    <hr><hr>${time} / id:${m.id}
+    ${time} / id:${m.id}
       <span class="badge badge-primary badge-pill">
-      <big><big>${mapsize.x}x${mapsize.y}</big></big>
+      <big><big> ${mapsize.x} x ${mapsize.y} </big></big>
       </span>
+    <span class=status></span>
     </li>
     </a>
     `;
   }
   o.html(s);
   
-  var info = 'всего игроков ждут/матчей: '
-        +d.gamelist.length+' / '+d.cntmatchesplay
+  var info = 'в ожидании/матчей: '
+        +d.gamelist.length+' / '+d.cntmatchesplay+' / '+d.playcnt2
         +'<br>время сервера: '+d.time;
   $('#netgameslistinfo').html(info);
   $('.connectToNetGameBtn').click();
@@ -266,5 +265,13 @@ mainMenu.updateListNetGames = (d) => {
 mainMenu.connectToNetGame = (id)=>{
   //var obj = $(e);
   //var idmatch = obj.attr('id');
-  alert(id);
+  netGame.connectNetGame(id,function(){});
+}
+
+mainMenu.connectNetGameStatusShow = (id,msg)=>{
+  $('#netgameslistinfo').html(msg);
+}
+
+mainMenu.connectNetGameStatusShowError = (id,msg)=>{
+  $('#netgameslistinfo').html(msg);
 }

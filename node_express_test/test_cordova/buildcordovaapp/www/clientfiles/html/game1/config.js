@@ -51,6 +51,16 @@ window.GOptions = {
     uinfo: {},
   },
 
+  net: {  // параметры сетевой игры
+    id: 0,
+    turnUserid: 0, // юзер который сейчас ходит
+    cntmove: 0, // количество перемещений
+    cntinc: 0,  //
+    cntturn: 0, // количество завершенных ходов
+    mapsize: {x:0,y:0},  // размер карты
+    mapdata: [], //данные карты
+  },
+
   server: '192.168.0.245:81',
   serverTimeOut: 25 * 1000,         // таймаут после которого возвращаем ошибку
 }
@@ -92,6 +102,7 @@ window.GOptions.localStorage_load = function(){
   //console.log(this.gameMap.startWorldScale+' LOAD ->'+opt.gameMap.startWorldScale);
   this.gameMap   = opt_set(this.gameMap,opt.gameMap);
   this.user      = opt_set(this.user,opt.user);
+  this.net       = opt_set(this.net, opt.net);
   if(this.user.id==-1) this.user.id = getRandomInt(10000, 1000*1000*1000*2000);
 }
 
@@ -99,6 +110,7 @@ window.GOptions.localStorage_save = function(){
   game_prepare_to_save_options();
   const opt_copy = this._opt_copy_data;
   var opt = {
+    net: opt_copy(window.GOptions.net, {}),
     user: opt_copy(window.GOptions.user, {}),
     debug: opt_copy(window.GOptions.debug, {}),
     gameMap: opt_copy(window.GOptions.gameMap, {}),
