@@ -11,6 +11,8 @@ window.lastIncTime = 0; // время последнего инкремента 
 window.debugData = {};
 window.debugObj = {};
 
+window.game = {};
+window.game.start_game = start_game;
 
 function start_game(){
   {//определяем размер перед загрузкой  

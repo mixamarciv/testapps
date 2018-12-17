@@ -10,6 +10,12 @@ module.exports = function() {
 }
 
 s.data = {};    //список глобальных переменных
+
+s.data.sc_game = {};       // сокет основных событий игры
+s.data.sc_match = {};      // сокет матчей игры
+s.data.matches_wait = {};  // матчи которые ждут противника
+s.data.matches_play = {};  // матчи которые сейчас играют
+
 s.data.app_start_time = new Date();
 s.data.db = {}; //список установленных подключений к бд
 

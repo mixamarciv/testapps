@@ -1,6 +1,7 @@
 
 window.netGame = {
   sc_gamelist: null,
+  sc_match: null,
 }
 
 //отправляет евент с данными на сервер, ждет и возвращает результат
@@ -46,11 +47,12 @@ netGame.f_loadEvents = ()=>{
   sc.on('list', function (d) {
     console.log('gamelist.on list:');
     console.log(d);
+    mainMenu.updateListNetGames(d);
   });
 }
 
 //обновляем информацию о пользователе на сервере
-window.netGame.registerUser = function(fn){
+netGame.registerUser = function(fn){
   return new Promise(function(resolve, reject) {
     var sc = netGame.sc_gamelist;
     var user = window.GOptions.user;
@@ -83,3 +85,20 @@ window.netGame.updateUser = async function(user){
 }
 
 
+netGame.createNetGame = function(options,fn){
+    options.user1 = GOptions.user;
+
+    const server = 'http://'+ GOptions.server +'/match';
+    console.log('connect to server: '+server);
+    netGame.sc_match = io.connect(server);
+
+    netGame.sc_match.on('connect', function (d) {
+      console.log('sc_match connect',d);
+      mainMenu.createNetGameStatusShow('подключение успешно установлено, игра создана, ждем противника..');
+      netGame.sc_match.emit('startoptions',options);
+    });
+    netGame.sc_match.on('error', function (err) {
+      console.log('sc_match error',err);
+      mainMenu.createNetGameStatusShowError('ОШИБКА подключения: '+err);
+    });
+}

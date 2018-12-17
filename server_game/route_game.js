@@ -7,10 +7,13 @@ const sqlrun = s.data.db.dbGameRun;
 const type = s.mixa.type;
 
 module.exports.loadRoutes = loadRoutes;
+module.exports.updateListGamesOnAllClients = updateListGamesOnAllClients;
 
 function loadRoutes(io){
-  var gamelist = io.of('/game');
-  gamelist.on('connection', function (socket) {
+  require('./route_match.js').loadRoutes(io);
+
+  s.data.sc_game = io.of('/game');
+  s.data.sc_game.on('connection', function (socket) {
     console.log('connection: ');
     
     var list = getListGames();
@@ -23,17 +26,35 @@ function loadRoutes(io){
   });
 }
 
+// отправляем обновленный список игр всем клиентам
+function updateListGamesOnAllClients(){
+  var list = getListGames();
+  s.data.sc_game.emit('list', list);
+  //s.data.sc_game.broadcast.emit('list', list);
+}
+
+//возвращает список созданых матчей которые ждут противников
 function getListGames(){
   console.log('getListGames()');
-  var arrGames = [
-    { name: 'superserver', startTime: new Date()},
-  ];
-
-  var d = {
+  var arrGames = [];
+  for(i in s.data.matches_wait){
+    var m = s.data.matches_wait[i];
+    var opt = m.options;
+    var u = opt.user1;
+    if(!m || !opt || !u || !u.id){
+      console.log('ERROR ERROR undefined match:');
+      console.log(m);
+      continue;
+    }
+    var match = {id: u.id, name: u.name, startTime: m.startTime, mapsize: opt.mapsize};
+    arrGames.push(match);
+  }
+  var list = {
     time: new Date(),
     gamelist: arrGames,
+    cntmatchesplay: s.data.matches_play.length,
   }
-  return d;
+  return list;
 }
 
 function connectToGame(d){
@@ -103,7 +124,7 @@ async function registerUserNew(socket,user){
   var u = user;
   u.uuid = s.mixa.uuid.v4();
   if(u.pass=='') u.pass = s.mixa.str.pass_generator(7);
-  var tid = await sqlquery('SELECT IFNULL(MAX(id),100) AS id FROM guser');
+  var tid = await sqlquery('SELECT IFNULL(MAX(id),100)+1 AS id FROM guser');
   u.id = tid[0].id;
 
   var sql = `INSERT INTO guser(id,uuid,name, pass,email,datecreate, uinfo)

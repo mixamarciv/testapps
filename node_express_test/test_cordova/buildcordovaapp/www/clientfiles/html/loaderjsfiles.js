@@ -12,7 +12,18 @@ window.loaderjsfiles = {
     strLoadList: [],
 }
 
-window.loaderjsfiles.load = async function(){
+loaderjsfiles._ok_load_url = function(url){
+    window.loaderjsfiles.cntLoad++;
+    window.loaderjsfiles.okFiles.push(url);
+    window.loaderjsfiles.strLoadList.push('ok: '+url);
+}
+loaderjsfiles._err_load_url = function(url){
+    window.loaderjsfiles.cntError++;
+    window.loaderjsfiles.errorFiles.push(url);
+    window.loaderjsfiles.strLoadList.push('err: '+url);
+}
+
+loaderjsfiles.load = async function(){
     var loader = window.loaderjsfiles;
     loader.loadStart = new Date();
     loadingJsFilesProgressShow();
@@ -21,24 +32,12 @@ window.loaderjsfiles.load = async function(){
         '',
     ];
 
-    var files = [
-        "clientfiles/html/game1/fnc.js",
-        "clientfiles/html/game1/config.js",
-        "clientfiles/html/game1/preload.js",
-        "clientfiles/html/game1/objhex.js",
-        "clientfiles/html/game1/createmap.js",
+    {//загружаем файл со списком файлов
+        var file = "clientfiles/html/fileslist.js";
+        await loadJsFileFromServers(servers,file);
+    }
 
-        "clientfiles/html/game1/gametouch.js",
-        "clientfiles/html/game1/game.js",
-
-        "clientfiles/html/game1/gameaction.js",
-
-        "clientfiles/html/game1/createmapmenu.js",
-        "clientfiles/html/game1/textmessage.js",
-        "clientfiles/html/game1/debug.js",
-        "clientfiles/html/game1/menu/main.js",
-        "clientfiles/html/game1/menu/netgame.js",
-    ];
+    var files = window.filesForLoader;
 
     loader.totalFiles = files.length;
     loader.cntLoad = 0;
@@ -57,7 +56,12 @@ async function loadJsFileFromServers(servers,file){
         var server = servers[i];
         var url = server + file;
         loadingJsFilesProgressShow2(-1,url);
-        var b = await loadJsFile(url);
+        var b = 0;
+        if(/\.html$/i.test(url)){
+            b = await loadHtmlFile(url);
+        }else if(/\.js$/i.test(url)){
+            b = await loadJsFile(url);
+        }
         loadingJsFilesProgressShow2(b,url);
         if(b) return 1;
     }
@@ -69,16 +73,26 @@ function loadJsFile(url) {
         $.getScript( url )
         .done(function( script, textStatus ) {
             //console.log( textStatus );
-            window.loaderjsfiles.cntLoad++;
-            window.loaderjsfiles.okFiles.push(url);
-            window.loaderjsfiles.strLoadList.push('ok: '+url);
+            loaderjsfiles._ok_load_url(url);
             succeed(1);
         })
         .fail(function( jqxhr, settings, exception ) {
-            window.loaderjsfiles.cntError++;
-            window.loaderjsfiles.errorFiles.push(url);
-            window.loaderjsfiles.strLoadList.push('err: '+url);
+            loaderjsfiles._err_load_url(url);
             //fail(new Error("Load error"));
+            succeed(0);
+        });
+    });
+}
+
+function loadHtmlFile(url){
+    return new Promise(function(succeed, fail) {
+        $.get(url).done(function(data) {
+            loaderjsfiles._ok_load_url(url);
+            $('#game_menu_main').prepend(data);
+            succeed(1);
+        })
+        .fail(function() {
+            loaderjsfiles._err_load_url(url);
             succeed(0);
         });
     });
@@ -93,8 +107,8 @@ function loadingJsFilesProgressShow(){
     </center>
     `);
 }
+
 function loadingJsFilesProgressShow2(b,url){
-    
     var t = window.loaderjsfiles;
     var curload = ''
     if(arguments.length!=0){

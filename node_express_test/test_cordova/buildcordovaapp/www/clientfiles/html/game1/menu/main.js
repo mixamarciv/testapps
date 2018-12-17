@@ -6,9 +6,15 @@ var mainMenu = {
 mainMenu.init = function(){
   mainMenu.gameHide();
   mainMenu.mainMenuShow();
+  
   setTimeout(function(){
+    mainMenu.loadButtonsForMapSize();
     mainMenu._render_debug_fields();
-  },50);
+  },200);
+
+  setTimeout(function(){
+    $('#loader').hide();
+  },2000);
 
   $('#newgame').click(function(){
     if(mainMenu.gameIsCreated()) createGameObjects();
@@ -41,6 +47,7 @@ mainMenu.init = function(){
   });
 
   $('#edituser_save').click(save_eduser);
+  $('#createnetgamebtn').click(mainMenu.createNetGame);
 };
 
 mainMenu.gameHide = function(){
@@ -62,7 +69,7 @@ mainMenu.gameShow = function(){
     var canv = $('canvas');
     canv.show();
   }else{
-    start_game();
+    game.start_game();
   }
 }
 
@@ -133,4 +140,131 @@ async function save_eduser() {
   }
   load_eduser();
   $('#edituser_save_info').html('данные успешно обновлены');
+}
+
+mainMenu.loadButtonsForMapSize = function(){
+  var s = ''
+  $('.mapsizebuttons').html('');
+
+  var arr = [10,14,20,26,36,48];
+  for(var i=0;i<arr.length;i++){
+      var m = arr[i];
+      var sl = '';
+      for(var j=0;j<arr.length;j++){
+          var n = arr[j];
+          var uniqid = 'i'+m+'x'+n+'_'+getRandomInt(0, 100000);          
+          if(i==1 && j==3){
+              sl += `
+                  <button type="button" class="mapsizebtn btn btn-primary">${m}x${n}</button>
+              `;
+          }else{
+              sl += `
+                  <button type="button" class="mapsizebtn btn btn-outline-primary">${m}x${n}</button>
+              `;
+          }
+      }
+      sl += '';
+      s += sl;
+  }
+  s = '<center>'+s+'</center>';
+  $('.mapsizebuttons').html(s);
+
+  $('.mapsizebtn').click(function(e){
+    var t = $(this);
+    t.parent().find('.btn-primary')
+        .removeClass('btn-primary')
+        .addClass('btn-outline-primary');
+
+    t.removeClass('btn-outline-primary');
+    t.addClass('btn-primary');
+
+    //alert(val);
+  });
+}
+
+//возвращает размеры карты с нажатой кнопки в указанном меню obj
+mainMenu.getSelectedNetMapSize = function(obj){
+  var btns = obj.find('.mapsizebuttons');
+  var btn = btns.find('.btn-primary');
+  var val = btn.html();
+  var t = val.split('x');
+  var size = {x: t[0], y: t[1]}
+  return size;
+}
+
+mainMenu.createNetGame = function(){
+  var options = {};
+  var obj = $('#menu_createnetgame');
+  options.mapsize = mainMenu.getSelectedNetMapSize(obj);
+
+  mainMenu.createNetGameStatusShow('подключаемся к серверу');
+  netGame.createNetGame(options,function(){
+    mainMenu.gameShow();
+  });
+}
+
+mainMenu.createNetGameStatusShow = (msg)=>{
+  $('#createnetgamebtn_container').hide();
+  $('#createnetgamecancelbtn_container').show();
+  $('#createnetgame_msg').show();
+  $('#createnetgame_msg').html(`
+    <b>${msg}</b>
+  `);
+}
+
+mainMenu.createNetGameStatusShowError = (msg)=>{
+  $('#createnetgamebtn_container').show();
+  $('#createnetgamecancelbtn_container').hide();
+  $('#createnetgame_msg').show();
+  $('#createnetgame_msg').html(`
+    <b>${msg}</b>
+  `);
+}
+
+mainMenu.createNetGameStatusHide = (msg)=>{
+  $('#createnetgamebtn_container').show();
+  $('#createnetgamecancelbtn_container').hide();
+  $('#createnetgame_msg').hide();
+  $('#createnetgame_msg').html('');
+}
+
+
+mainMenu.updateListNetGames = (d) => {
+  var o = $('#netgameslist').html('');
+  var s = '';
+  for(i in d.gamelist){
+    var m = d.gamelist[i];
+    var time = date_to_str_format(m.startTime,'h:m:s');
+    var mapsize = m.mapsize;
+    if(!mapsize) mapsize = {x:'?',y:'?'};
+
+    s += `<a href='#' id="m${m.id}" 
+           onclick="mainMenu.connectToNetGame('${m.id}')"
+           >
+    <li class="list-group-item d-flex 
+               justify-content-between 
+               align-items-center"
+    >
+    <big><b>${m.name}</b></big>
+    <hr><hr>${time} / id:${m.id}
+      <span class="badge badge-primary badge-pill">
+      <big><big>${mapsize.x}x${mapsize.y}</big></big>
+      </span>
+    </li>
+    </a>
+    `;
+  }
+  o.html(s);
+  
+  var info = 'всего игроков ждут/матчей: '
+        +d.gamelist.length+' / '+d.cntmatchesplay
+        +'<br>время сервера: '+d.time;
+  $('#netgameslistinfo').html(info);
+  $('.connectToNetGameBtn').click();
+}
+
+mainMenu.connectToNetGame = (id)=>{
+  //var obj = $(e);
+  //var idmatch = obj.attr('id');
+  alert(id);
 }
