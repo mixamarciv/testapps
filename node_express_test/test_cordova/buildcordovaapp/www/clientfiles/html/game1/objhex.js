@@ -1,12 +1,21 @@
 
 var hexmap = {
   arrdata: [], // данные ходов для отправки второму юзеру
-               // перемещение в виде ['m',from[x1,y1,v1101],to[1,1,v2104]]
+               // перемещение в виде 
+               //['m', frombefore[x1,y1,v2105],tobefore[1,1,v1]
+               //      fromafter [x1,y1,v2001],toafter [1,1,v2104]  ]
                // инкремент в виде ['i',from[x1,y1,v1101],to[1,1,v2104]]
 };
 
-hexmap.send_netdata = function(gd){
-  var d = hexmap.get_netdata(gd);
+hexmap.send_netdata = function(options){
+  var o = options;
+  var d = [];
+  if(o.type=='m'){
+    d = ['m',o.frombefore,o.tobefore,o.fromafter,o.toafter];
+  }
+  if(o.type=='i'){
+    d = ['i',o.before,o.after];
+  }
   hexmap.arrdata.push(d);
   netGame.send_data(hexmap.arrdata);
   hexmap.arrdata = [];
@@ -59,12 +68,18 @@ hexmap.get_netdata = function(gd){
 hexmap.set_netarrdata = async function(options){
   var d = options.data;
   for(i in d){
-      if(i%2==0 && i>=2) await sleep_ms(GOptions.turnSleep);
+      if(i>0) await sleep_ms(GOptions.turnSleep);
       var t = d[i];
-      var from = t[0];
-      var to = t[1];
-      hexmap.set_data(from.x,from.y,from.v);
-      hexmap.set_data(to.x,to.y,to.v);
+      if(t[0]=='m'){
+        var from = t[3];
+        var to = t[4];
+        hexmap.set_netdata(from.x,from.y,from.v);
+        hexmap.set_netdata(to.x,to.y,to.v);
+      }else
+      if(t[0]=='i'){
+        var to = t[2];
+        hexmap.set_netdata(to.x,to.y,to.v);
+      }
   }
 }
 
@@ -322,22 +337,26 @@ function gd_moveUser1(togd){
     let valto = togd.value;    // val1
     let valfrom = this.value;  // val2
 
-    //this.setVal(1);
+    var opt = {type:'m',
+      frombefore: hexmap.get_netdata(this),
+      tobefore: hexmap.get_netdata(togd),
+    };
+
     this.setOwnerUser1(1);
-
     if( valto > valfrom ){
-      return togd.setVal(valto - valfrom);
-    }
-
+      togd.setVal(valto - valfrom);
+    }else
     if( valto < valfrom ){
       updatehex_catch(this,togd);
       togd.setActiveUser1(valfrom - valto);
-      return ;
-    }
-
+    }else
     if( valto == valfrom ){
-      return togd.setVal(1);
+      togd.setVal(1);
+      togd.setNeutral();
     }
+    opt.fromafter = hexmap.get_netdata(this);
+    opt.toafter = hexmap.get_netdata(togd);
+    hexmap.send_netdata(opt);
 }
 
 function gd_moveUser2(togd){ 
@@ -452,9 +471,14 @@ function gd_incVal(){
   }
   if( this.getVal() >= 20 ) return 0;
 
+  var opt = {type:'i', from: hexmap.get_netdata(this)};
+
   var val = this.getVal();
   act_currentUserIncVal();
   this.setVal(val+1);
+
+  opt.to = hexmap.get_netdata(this),
+  hexmap.send_netdata(opt);
   return 1;
 }
 

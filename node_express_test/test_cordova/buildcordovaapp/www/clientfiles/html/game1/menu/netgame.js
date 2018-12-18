@@ -157,7 +157,11 @@ netGame.on_fulldata = function(options){
 netGame.on_data = function(options){
   options.lastTime;
   options.turnn;
-  options.arrdata; // [from[x1,y1,v1101],to[1,1,v2104]],
+  options.arrdata;                
+  // данные   перемещение в виде: 
+  //['m', frombefore[x1,y1,v2105],tobefore[1,1,v1]
+  //      fromafter [x1,y1,v2001],toafter [1,1,v2104]  ]
+  // инкремент в виде ['i',from[x1,y1,v1101],to[1,1,v2104]]
   hexmap.set_netarrdata(options);
 }
 
