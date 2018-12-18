@@ -130,45 +130,7 @@ function game_update() {
       window.lastIncTime = window.gametouch.lastTouchTime();
     }
   }
-  /***
-  //if(game.input.mousePointer.isUp && game.input.pointer1.isUp){
-  if(countTouch==0){
-    //если отпустили курсор мышки или тап
-    movePointer = null;
-    isIncTapDownStartTime = 0;
-    isIncTapDownTapPoint = null;
-    game.input.reset();
-  }else 
-  //if((game.input.mousePointer.isDown || game.input.pointer1.isDown) && isIncTapDownStartTime >= 0){
-  if(countTouch==1 && isIncTapDownStartTime >= 0){
-    if(game_isTimeoutTapDownIncUserHex()){
-        if(isIncTapDownStartTime==0) isIncTapDownStartTime = new Date();
-        t = new Date() - isIncTapDownStartTime;
-        if(t > GOptions.inputTimeoutInc){
-          hexClick(window.gamedata.lastClickHex_gd.bntobj);
-          isIncTapDownStartTime = new Date() - GOptions.inputTimeoutInc/2;
-        }
-        return;
-    }
-  }
-  ***/
-
-  /***
-  //if(game.input.pointer1.isDown && game.input.pointer2.isDown){
-  if(countTouch==2){
-    if(multitouchDistanceToScale==0) { //если только сделали двойной тап
-      multitouchDistanceToScale = game.input.pointer1.position.distance(game.input.pointer2);
-    }else{
-      var newdist = game.input.pointer1.position.distance(game.input.pointer2) - multitouchDistanceToScale;
-      var msize = Math.max(game.scale.width,game.scale.height);
-      worldScale += newdist*PIXEL_RATIO/msize;
-      multitouchDistanceToScale = game.input.pointer1.position.distance(game.input.pointer2);
-    }
-  }else{
-    multitouchDistanceToScale = 0;
-  }
-  game_world_resize(worldScale);
-  ***/
+  
 }
 
 function game_world_resize(new_worldScale){
@@ -292,19 +254,21 @@ function createEx(game){
 
 
 function createGameObjects(){
-  console.log('GOptions: ');
-  console.log(GOptions);
+  //console.log('GOptions: ');
+  //console.log(GOptions);
 
-  createmap.clearMap();
+  //createmap.clearMap();
   createmap.createMap();
-  createmap.createuserobj();
+  //createmap.createuserobj();
   //game.camera.flash( '#ff0',300 );//[color] [, duration] [, force] [, alpha])
   
   var gd = window.gamedata;
   game.world.setBounds(0, 0, gd.mapsize.width, gd.mapsize.height);
   
   var focusbutton = gd.activeuser1btn; //кнопка текущего юзера
-  game.camera.focusOn(focusbutton);
+  if(focusbutton){
+    game.camera.focusOn(focusbutton);
+  }
 }
 
 

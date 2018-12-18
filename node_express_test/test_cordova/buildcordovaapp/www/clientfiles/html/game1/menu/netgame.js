@@ -141,6 +141,9 @@ netGame.connectNetGame = function(id,fn){
 
 netGame._work_with_messages = function(){
   netGame.sc_match.on('fulldata',netGame.on_fulldata);
+  netGame.sc_match.on('data',netGame.on_data);
+  netGame.sc_match.on('endturn',netGame.on_endturn);
+  netGame.sc_match.on('endgame',netGame.on_endgame);
 }
 
 netGame.on_fulldata = function(options){
@@ -148,4 +151,19 @@ netGame.on_fulldata = function(options){
   GOptions.localStorage_save();
 
   mainMenu.gameShow();
+  createmap.setMapDataFromNet();
+}
+
+netGame.on_data = function(options){
+  options.lastTime;
+  options.turnn;
+  options.arrdata; // [from[x1,y1,v1101],to[1,1,v2104]],
+  hexmap.set_netarrdata(options);
+}
+
+netGame.send_data = function(data){
+  options.id = gamedata.status.id;
+  options.turnn = gamedata.status.turnn;
+  options.arrdata = data; 
+  netGame.sc_match.emit('data',options);
 }

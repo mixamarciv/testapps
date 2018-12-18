@@ -7,18 +7,27 @@ var createmap = {
 // задаем параметры из net игры
 createmap.setOptionsFromNet = ()=>{
   if(GOptions.net.id != 0){
+    GOptions.lastGame.gameType = 'netGame';
+    GOptions.lastGame.id = GOptions.net.id;
+    gamedata.gameType = 'netGame';
+    gamedata.status.id = GOptions.net.id;
     var n = GOptions.net;
-    if(n.mapsize && n.mapsize>0){
+    if(n.mapsize && n.mapsize.x>0){
       GOptions.gameMap.cntX = n.mapsize.x;
       GOptions.gameMap.cntY = n.mapsize.y; 
-    }  
+    }
   }
 }
 
 createmap.createMap = function(){
   var start_load = new Date();
+  createmap.clearMap();
 
-  createmap.setOptionsFromNet();
+  if(  gamedata.gameType !== 'netGame' 
+    && gamedata.gameType !== 'localGame'){
+      gamedata.gameType = GOptions.lastGame.gameType;
+      return createmap.createMap();
+  }
 
   let scale = 1;
   let cntX = GOptions.gameMap.cntX;
@@ -36,19 +45,6 @@ createmap.createMap = function(){
   //offsetY += 64;
   var maphexbuttons = [];
 
-  /*****************  v2: *
-  for(let iy=0;iy<cntY;iy++){
-    offsetX = offsetXstart;
-    if(iy%2==0) offsetX += objSize*3/4;
-    offsetY += objSize/2;
-    for(let ix=0;ix<cntX;ix++){
-      var hexbutton = new createHexButton(ix,iy,offsetX,offsetY,scale);
-      offsetX += objSize*1.5;
-      if(!maphexbuttons[ix]) maphexbuttons[ix] = [];
-      maphexbuttons[ix][iy] = hexbutton;
-    }
-  }
-  /**********************/
   /*****************  v3: */
   for(let ix=0;ix<cntX;ix++){
     offsetY = offsetYstart;
@@ -62,16 +58,19 @@ createmap.createMap = function(){
     }
   }
   /**********************/
-  window.gamedata.mapsize = {
-    cntX: cntX,
-    cntY: cntY,
-    width: offsetX + objSize*2, 
-    height: offsetY + objSize*4 
-  }
+  gamedata.mapsize.cntX = cntX;
+  gamedata.mapsize.cntY = cntY;
+  gamedata.mapsize.width = offsetX + objSize*2;
+  gamedata.mapsize.height = offsetY + objSize*4;
+
 
   window.gamedata.maphexbuttons = maphexbuttons;
   window.gamedata.timeload.createMap = time_long_str(start_load);
   
+  if(gamedata.gameType == 'netGame'){
+    createmap.setMapDataFromNet();
+  }
+
 }
 
 createmap.clearMap = function(){
@@ -108,7 +107,7 @@ function getInitHexValue(){
 }
 
 //создаем пользовательские объекты:
-createmap.createuserobj = function createuserobj(){
+createmap.createuserobj = function(){
   const map = GOptions.gameMap;
 
   //задаем случайные позиции игроков
@@ -201,4 +200,70 @@ function animate_new_map(){
 }
 
 function gl_endTurn(){
+}
+
+createmap.setMapDataFromNet = function(){
+
+  createmap.setOptionsFromNet();
+
+  var curUser = GOptions.user;
+  var net = GOptions.net;
+
+  gamedata.changeUser = {1:1, 2:2}; // номера юзера с кем меняем местами
+  if(net.user2.id == curUser.id){
+    gamedata.changeUser = {1:2, 2:1};
+  }
+  
+  var cu = gamedata.changeUser;
+  gamedata.user1 = net['user'+cu[1]];
+  gamedata.user2 = net['user'+cu[2]];
+  
+  if(gamedata.mapsize.cntX !== net.mapsize.x ||
+     gamedata.mapsize.cntY !== net.mapsize.y ){
+        createmap.createMap();
+  }
+  
+  //задаем данные карты с последней полученной карты сервера 
+  var cntx = gamedata.mapsize.cntX;
+  var cnty = gamedata.mapsize.cntY;
+  var data = net.mapdata;
+  console.log(gamedata.mapsize);
+  console.log(data);
+  
+  var map = gamedata.maphexbuttons;
+  for(let x=0;x<cntx;x++){
+    for(let y=0;y<cnty;y++){
+        let v = data[x][y];
+        hexmap.set_data(x,y,v);
+        continue;
+        let gd = map[x][y];
+        
+        gd.bntobj.alpha = 1;
+        if(v-500>0){ // это одна из ячеек юзера
+
+          var user = 1;
+          v -= 1000;
+          if(v-1000 > 0){
+            v -= 1000;
+            user = 2;
+          }
+
+          var active = 0;
+          if(v-100 > 0){
+            v -= 100;
+            active = 1;
+          }
+
+          user = cu[user];
+          if(active){
+            gd['setActiveUser'+user](v);
+          }else{
+            gd['setOwnerUser'+user](v);
+          }
+        }else{
+          gd.setVal(v);
+        }
+    }
+  }
+  //animate_new_map2();
 }

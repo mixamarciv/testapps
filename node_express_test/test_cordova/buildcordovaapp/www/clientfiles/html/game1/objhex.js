@@ -1,4 +1,72 @@
 
+var hexmap = {
+  arrdata: [], // данные ходов для отправки второму юзеру
+               // перемещение в виде ['m',from[x1,y1,v1101],to[1,1,v2104]]
+               // инкремент в виде ['i',from[x1,y1,v1101],to[1,1,v2104]]
+};
+
+hexmap.send_netdata = function(gd){
+  var d = hexmap.get_netdata(gd);
+  hexmap.arrdata.push(d);
+  netGame.send_data(hexmap.arrdata);
+  hexmap.arrdata = [];
+}
+
+
+//задаем данные у ячейки полученные по сети
+hexmap.set_netdata = function(x,y,v){
+  let gd = get_gdhexbypos(x,y);
+  if(!gd) return;
+
+  //gd.bntobj.alpha = 1;
+  if(v>20){ // это одна из ячеек юзера
+      var user = 1;
+      v -= 1000;
+      if(v-1000 > 0){
+        v -= 1000;
+        user = 2;
+      }
+
+      var active = 0;
+      if(v-100 > 0){
+        v -= 100;
+        active = 1;
+      }
+
+      let cu = gamedata.changeUser;
+      user = cu[user];
+      if(active){
+        gd['setActiveUser'+user](v);
+      }else{
+        gd['setOwnerUser'+user](v);
+      }
+  }else{
+      gd.setVal(v);
+  }
+}
+
+hexmap.get_netdata = function(gd){
+  var t = [gd.x,gd.y,gd.getVal()];
+  if(gd.isActive()){
+    t[3] += 100;
+  }
+  let user = gd.getOwnerUserN();
+  t[3] += 1000 * user;
+  return t;
+}
+
+//задаем данные ячейкам 
+hexmap.set_netarrdata = async function(options){
+  var d = options.data;
+  for(i in d){
+      if(i%2==0 && i>=2) await sleep_ms(GOptions.turnSleep);
+      var t = d[i];
+      var from = t[0];
+      var to = t[1];
+      hexmap.set_data(from.x,from.y,from.v);
+      hexmap.set_data(to.x,to.y,to.v);
+  }
+}
 
 function createHexButton(x,y,xpos,ypos,scale){
   const hs = GOptions.images.hexsprite.sprites;
@@ -11,7 +79,7 @@ function createHexButton(x,y,xpos,ypos,scale){
   hexbtn.events.onInputDown.add(hexClick, hexbtn);
   hexbtn.frame = hs.neutral;
   hexbtn._id = id; // сохраняем id для нашего спрайта (так будем находить данные по этому хексу)
-  hexbtn.alpha = 0;
+  //hexbtn.alpha = 0;
 
   var gd = {
     id: id,
@@ -38,6 +106,8 @@ function createHexButton(x,y,xpos,ypos,scale){
   gd.moveUser1      = gd_moveUser1;
   gd.moveUser2      = gd_moveUser2;
   gd.nearHexes      = gd_nearHexes;
+  gd.isActive       = gd_isActive;
+  gd.getOwnerUserN  = gd_getOwnerUserN;
   gd.nearHexesToCanMove = gd_nearHexesToCanMove;
 
   return gd;
@@ -122,6 +192,19 @@ function gd_getVal(){ return this.value; }
 function gd_setNeutral(val){
   this.owner = 0;
   return this.setVal(val||this.value);
+}
+
+function gd_isActive(){
+  if(window.gamedata.activeuser1btn == this.bntobj) return 1;
+  if(window.gamedata.activeuser2btn == this.bntobj) return 1;
+  return 0;
+}
+
+function gd_getOwnerUserN(){
+  if(this.owner == 0) return 0;
+  if(this.owner == gamedata.user1.id) return 1;
+  if(this.owner == gamedata.user2.id) return 2;
+  return 0;
 }
 
 function gd_setActiveUser1(val){
@@ -304,7 +387,12 @@ function hexClick(hexbtn){
       return;
     }
 
-    var agd = get_gdhex(window.gamedata.activeuser1btn._id);
+    if(!gamedata.activeuser1btn || !gamedata.activeuser1btn._id){
+      if(debug.userMoveHex) console.log('нет активных-выбранных клеток');
+      return gameUser1ShowCantMoveWithoutEnergy();
+      return;
+    }
+    var agd = get_gdhex(gamedata.activeuser1btn._id);
     //console.log('active id: '+activebtnId);
     //console.log(agd);
 

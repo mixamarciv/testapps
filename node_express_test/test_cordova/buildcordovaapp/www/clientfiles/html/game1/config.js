@@ -1,5 +1,5 @@
 
-window.GOptions = {
+var GOptions = {
   debug: {
     debug_total: 0,
     gametouch: 0,
@@ -53,6 +53,8 @@ window.GOptions = {
 
   net: {  // параметры сетевой игры
     id: 0,
+    user1: {},  // данные юзера - автора игры
+    user2: {},  
     turnUserid: 0, // юзер который сейчас ходит
     cntmove: 0, // количество перемещений
     cntinc: 0,  //
@@ -63,16 +65,21 @@ window.GOptions = {
 
   server: '192.168.0.245:81',
   serverTimeOut: 25 * 1000,         // таймаут после которого возвращаем ошибку
+
+  lastGame: {  // последняя запущенная игра
+    gameType: 'localGame or netGame or null',
+    id: 0,  // id сетевой игры если была игра
+  },
 }
 
-window.GOptions.checkUser = function(u){
+GOptions.checkUser = function(u){
   if(u && (u.id>0 || u.id==-1) && u.name!=''){
     return 1;
   }
   return 0;
 }
 
-window.GOptions.images = {
+GOptions.images = {
   baseURL: 'clientfiles/html/img/hex4',
   hexsprite: {
     path: '/hexsprite.png',
@@ -91,13 +98,14 @@ window.GOptions.images = {
 }
 
 
-window.GOptions.localStorage_load = function(){
+GOptions.localStorage_load = function(){
   var opt_set = this._opt_set_data_if_exists;
   var opt = localStorage.getItem('GOptions');
   if(!opt) return;
   opt = JSON.parse(opt);
   if(!opt) return;
   this.turnSleep = opt.turnSleep;
+  this.lastGame  = opt_set(this.lastGame,opt.lastGame);
   this.debug     = opt_set(this.debug  ,opt.debug);
   //console.log(this.gameMap.startWorldScale+' LOAD ->'+opt.gameMap.startWorldScale);
   this.gameMap   = opt_set(this.gameMap,opt.gameMap);
@@ -106,7 +114,7 @@ window.GOptions.localStorage_load = function(){
   if(this.user.id==-1) this.user.id = getRandomInt(10000, 1000*1000*1000*2000);
 }
 
-window.GOptions.localStorage_save = function(){
+GOptions.localStorage_save = function(){
   game_prepare_to_save_options();
   const opt_copy = this._opt_copy_data;
   var opt = {
@@ -114,6 +122,7 @@ window.GOptions.localStorage_save = function(){
     user: opt_copy(window.GOptions.user, {}),
     debug: opt_copy(window.GOptions.debug, {}),
     gameMap: opt_copy(window.GOptions.gameMap, {}),
+    lastGame: opt_copy(window.GOptions.lastGame, {}),
     turnSleep: window.GOptions.turnSleep,
   };
   //console.log(this.gameMap.startWorldScale+' SAVE ->'+opt.gameMap.startWorldScale);
@@ -122,25 +131,31 @@ window.GOptions.localStorage_save = function(){
 }
 
 //копирует из одного массива в другой
-window.GOptions._opt_copy_data = function(from,to){
+GOptions._opt_copy_data = function(from,to){
   for(var key in from){
     to[key] = from[key]
   }
   return to;
 }
 
-window.GOptions.copy_object1lvl = GOptions._opt_copy_data
+GOptions.copy_object1lvl = GOptions._opt_copy_data
 
 //устанавливает значение в объекте to из обьекта from (если и там и там эти значения ещё есть)
-window.GOptions._opt_set_data_if_exists = function(to,from){
+GOptions._opt_set_data_if_exists = function(to,from){
   for(var key in from){
     if(from[key] != undefined && to[key] != undefined) to[key] = from[key];
   }
   return to;
 }
 
-window.gamedata = {   // основные данные игры
+var gamedata = {   // основные данные игры
+  gameType: 'localGame or netGame',
+  changeUser:  {1:1, 2:2}, // номера юзеров для сетевой игры, кто с кем меняется
+                           // {1:1, 2:2} - если мы создали игру
+                           // {1:2, 2:1} - если мы подключились к созданной игре       
   status: {
+    id: 0,         // id матча при сетевой игре
+    turnn: 0,      // номер хода
     text: '',      // строка статуса используется для вывода в update_status()
     cntuser1: 0,   // количество захваченных хексов у игрока1
     //cntuser1cansend: 0, // количество силы у игрока1 которую он может раздать
@@ -148,7 +163,7 @@ window.gamedata = {   // основные данные игры
     //cntuser2cansend: 0, // количество силы у игрока2 которую он может раздать
     turnuser: null,   // кто сейчас ходит [gamedata.user1,gamedata.user2]
     turntype: 'move',      // тип хода ['move','inc','wait']
-  },
+  }, 
   timeload: {
 
   },
@@ -161,8 +176,9 @@ window.gamedata = {   // основные данные игры
     msgText2: null,
     msgText3: null,
   },
-  user1: {
-    id: 3000,
+  user1: {      // игрок1 это всегда текущий игрок!!
+    id: 3000,   //  (для сетевой игры они меняются местами и данные 
+                //     отправляются на сервер)
     name: 'anonim',
     cansend: 0, // количество силы у игрока1 которую он может раздать
   },
